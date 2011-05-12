@@ -24,8 +24,25 @@
 #include "WorldSession.h"
 
 /// Correspondence between opcodes and their names
-OpcodeHandler opcodeTable[NUM_MSG_TYPES] =
+OpcodeHandler opcodeTable[NUM_MSG_TYPES];
+
+static void DefineOpcode(uint32 opcode, const char* name, SessionStatus status, PacketProcessing packetProcessing, void (WorldSession::*handler)(WorldPacket& recvPacket) )
 {
+    opcodeTable[opcode].name = name;
+    opcodeTable[opcode].status = status;
+    opcodeTable[opcode].packetProcessing = packetProcessing;
+    opcodeTable[opcode].handler = handler;
+}
+
+#define OPCODE( name, status, packetProcessing, handler ) DefineOpcode( name, #name, status, packetProcessing, handler )
+
+void InitOpcodeTable()
+{
+    for( int i = 0; i < NUM_MSG_TYPES; ++i )
+    {
+        DefineOpcode( i, "UNKNOWN", STATUS_NEVER, PROCESS_INPLACE,  &WorldSession::Handle_NULL );
+    }
+
     /*0x000*/ { "MSG_NULL_ACTION",                              STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     },
     /*0x001*/ { "CMSG_BOOTME",                                  STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     },
     /*0x002*/ { "CMSG_DBLOOKUP",                                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     },

@@ -1348,6 +1348,8 @@ enum Opcodes
     NUM_MSG_TYPES                                   = 0x51F
 };
 
+extern void InitOpcodeTable();
+
 /// Player state
 enum SessionStatus
 {
