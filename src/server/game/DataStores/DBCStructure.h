@@ -655,40 +655,37 @@ struct CharTitlesEntry
 {
     uint32  ID;                                             // 0, title ids, for example in Quest::GetCharTitleId()
     //uint32      unk1;                                     // 1 flags?
-    char*   name[16];                                       // 2-17
-                                                            // 18 string flag, unused
-    //char*       name2[16];                                // 19-34, unused
-                                                            // 35 string flag, unused
-    uint32  bit_index;                                      // 36 used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
+    DBCString name;                                         // 2        m_name_lang
+    //char*       name2;                                    // 3        m_name1_lang
+    uint32  bit_index;                                      // 4        m_mask_ID used in PLAYER_CHOSEN_TITLE and 1<<index in PLAYER__FIELD_KNOWN_TITLES
+    //uint32                                                // 5
 };
 
 struct ChatChannelsEntry
 {
     uint32  ChannelID;                                      // 0
     uint32  flags;                                          // 1
-    char*   pattern[16];                                    // 3-18
-                                                            // 19 string flags, unused
-    //char*       name[16];                                 // 20-35 unused
-                                                            // 36 string flag, unused
+    //uint32                                                // 2        m_factionGroup
+    DBCString pattern;                                      // 3        m_name_lang
+    //char*       name;                                     // 4        m_shortcut_lang
 };
 
 struct ChrClassesEntry
 {
     uint32  ClassID;                                        // 0
-                                                            // 1, unused
-    uint32  powerType;                                      // 2
-                                                            // 3-4, unused
-    //char*       name[16];                                 // 5-20 unused
-                                                            // 21 string flag, unused
-    //char*       nameFemale[16];                           // 21-36 unused, if different from base (male) case
-                                                            // 37 string flag, unused
-    //char*       nameNeutralGender[16];                    // 38-53 unused, if different from base (male) case
-                                                            // 54 string flag, unused
-                                                            // 55, unused
-    uint32  spellfamily;                                    // 56
-                                                            // 57, unused
-    uint32  CinematicSequence;                              // 58 id from CinematicSequences.dbc
-    uint32  expansion;                                       // 59 (0 - original race, 1 - tbc addon, ...)
+    uint32  powerType;                                      // 1        m_DisplayPower
+                                                            // 2        m_petNameToken
+    DBCString name;                                         // 3        m_name_lang
+    //char*       nameFemale;                               // 4        m_name_female_lang
+    //char*       nameNeutralGender;                        // 5        m_name_male_lang
+    //char*       capitalizedName                           // 6,       m_filename
+    uint32  spellfamily;                                    // 7        m_spellClassSet
+    //uint32 flags2;                                        // 8        m_flags (0x08 HasRelicSlot)
+    uint32  CinematicSequence;                              // 9        m_cinematicSequenceID
+    uint32  expansion;                                      // 10       m_required_expansion
+    //uint32                                                // 11
+    //uint32                                                // 12
+    //uint32                                                // 13
 };
 
 struct ChrRacesEntry
@@ -703,15 +700,16 @@ struct ChrRacesEntry
     uint32      TeamID;                                     // 7 (7-Alliance 1-Horde)
                                                             // 8-11 unused
     uint32      CinematicSequence;                          // 12 id from CinematicSequences.dbc
-    //uint32    unk_322;                                    // 13 faction (0 alliance, 1 horde, 2 not available?)
-    char*       name[16];                                   // 14-29 used for DBC language detection/selection
-                                                            // 30 string flags, unused
-    //char*       nameFemale[16];                           // 31-46, if different from base (male) case
-                                                            // 47 string flags, unused
-    //char*       nameNeutralGender[16];                    // 48-63, if different from base (male) case
-                                                            // 64 string flags, unused
-                                                            // 65-67 unused
-    uint32      expansion;                                  // 68 (0 - original race, 1 - tbc addon, ...)
+    //uint32    unk_322;                                    // 13       m_alliance (0 alliance, 1 horde, 2 not available?)
+    DBCString name;                                         // 14       m_name_lang used for DBC language detection/selection
+    //char*       nameFemale;                               // 15       m_name_female_lang
+    //char*       nameNeutralGender;                        // 16       m_name_male_lang
+                                                            // 17-18    m_facialHairCustomization[2]
+                                                            // 19       m_hairCustomization
+    uint32      expansion;                                  // 20       m_required_expansion
+    //uint32                                                // 21 (23 for worgens)
+    //uint32                                                // 22 4.0.0
+    //uint32                                                // 23 4.0.0
 };
 
 /* not used
@@ -751,6 +749,7 @@ struct CreatureDisplayInfoEntry
                                                             // 13       m_particleColorID
                                                             // 14       m_creatureGeosetData
                                                             // 15       m_objectEffectPackageID
+                                                            // 16       all 0
 };
 
 struct CreatureFamilyEntry
@@ -764,9 +763,8 @@ struct CreatureFamilyEntry
     uint32  petFoodMask;                                    // 7        m_petFoodMask
     int32   petTalentType;                                  // 8        m_petTalentType
                                                             // 9        m_categoryEnumID
-    char*   Name[16];                                       // 10-25    m_name_lang
-                                                            // 26 string flags
-                                                            // 27       m_iconFile
+    DBCString Name;                                         // 10       m_name_lang
+                                                            // 11       m_iconFile
 };
 
 #define MAX_CREATURE_SPELL_DATA_SLOT 4
@@ -781,9 +779,8 @@ struct CreatureSpellDataEntry
 struct CreatureTypeEntry
 {
     uint32    ID;                                           // 0        m_ID
-    //char*   Name[16];                                     // 1-16     name
-                                                            // 17       string flags
-    //uint32    no_expirience;                              // 18 no exp? critters, non-combat pets, gas cloud.
+    //char*   Name;                                         // 1        m_name_lang
+    //uint32    no_expirience;                              // 2        m_flags no exp? critters, non-combat pets, gas cloud.
 };
 
 /* not used
@@ -881,10 +878,9 @@ struct FactionEntry
     float       spilloverRateOut;                           // 20       Faction outputs rep * spilloverRateOut as spillover reputation
     uint32      spilloverMaxRankIn;                         // 21       The highest rank the faction will profit from incoming spillover
     //uint32    spilloverRank_unk;                          // 22       It does not seem to be the max standing at which a faction outputs spillover ...so no idea
-    char*       name[16];                                   // 23-38    m_name_lang
-                                                            // 39 string flags
-    //char*     description[16];                            // 40-55    m_description_lang
-                                                            // 56 string flags
+    DBCString name;                                         // 23       m_name_lang
+    //char*     description;                                // 24       m_description_lang
+    //uint32                                                // 25
 };
 
 #define MAX_FACTION_RELATIONS 4
@@ -959,9 +955,12 @@ struct GameObjectDisplayInfoEntry
 
 struct GemPropertiesEntry
 {
-    uint32      ID;
-    uint32      spellitemenchantement;
-    uint32      color;
+    uint32      ID;                                         // 0        m_id
+    uint32      spellitemenchantement;                      // 1        m_enchant_id
+                                                            // 2        m_maxcount_inv
+                                                            // 3        m_maxcount_item
+    uint32      color;                                      // 4        m_type
+    //uint32                                                // 5
 };
 
 struct GlyphPropertiesEntry
@@ -984,21 +983,25 @@ struct GlyphSlotEntry
 
 struct GtBarberShopCostBaseEntry
 {
+    //uint32 level;
     float   cost;
 };
 
 struct GtCombatRatingsEntry
 {
+    //uint32 level;
     float    ratio;
 };
 
 struct GtChanceToMeleeCritBaseEntry
 {
+    //uint32 level;
     float    base;
 };
 
 struct GtChanceToMeleeCritEntry
 {
+    //uint32 level;
     float    ratio;
 };
 
@@ -1079,11 +1082,31 @@ struct ItemEntry
    uint32   Sheath;                                         // 7
 };
 
+struct ItemArmorQualityEntry
+{
+  uint32    Id;                                             // 0 item level
+  float     Value[7];                                       // 1-7 multiplier for item quality
+  uint32    Id2;                                            // 8 item level
+};
+
+struct ItemArmorShieldEntry
+{
+  uint32    Id;                                             // 0 item level
+  uint32    Id2;                                            // 1 item level
+  float     Value[7];                                       // 2-8 multiplier for item quality
+};
+
+struct ItemArmorTotalEntry
+{
+  uint32    Id;                                             // 0 item level
+  uint32    Id2;                                            // 1 item level
+  float     Value[4];                                       // 2-5 multiplier for armor types (cloth...plate)
+};
+
 struct ItemBagFamilyEntry
 {
     uint32   ID;                                            // 0
-    //char*     name[16]                                    // 1-16     m_name_lang
-    //                                                      // 17       name flags
+    //char*     name;                                       // 1        m_name_lang
 };
 
 struct ItemDisplayInfoEntry
@@ -1109,6 +1132,22 @@ struct ItemDisplayInfoEntry
 //    uint32      itemextendedcostentry;                    // ItemTemplate::ExtendedCost
 //    uint32      arenaseason;                              // arena season number(1-4)
 //};
+
+// common struct for:
+// ItemDamageAmmo.dbc
+// ItemDamageOneHand.dbc
+// ItemDamageOneHandCaster.dbc
+// ItemDamageRanged.dbc
+// ItemDamageThrown.dbc
+// ItemDamageTwoHand.dbc
+// ItemDamageTwoHandCaster.dbc
+// ItemDamageWand.dbc
+struct ItemDamageEntry
+{
+  uint32    Id;                                             // 0 item level
+  float     Value[7];                                       // 1-7 multiplier for item quality
+  uint32    Id2;                                            // 8 item level
+};
 
 #define MAX_ITEM_EXTENDED_COST_REQUIREMENTS 5
 
