@@ -521,9 +521,17 @@ struct AreaTableEntry
     uint32  flags;                                          // 4, unknown value but 312 for all cities
                                                             // 5-9 unused
     int32   area_level;                                     // 10
-    char*   area_name[16];                                  // 11-26
-                                                            // 27, string flags, unused
-    uint32  team;                                           // 28
+    DBCString area_name;                                    // 11       m_AreaName_lang
+    uint32  team;                                           // 12       m_factionGroupMask
+                                                            // 13-16    m_liquidTypeID[4]
+                                                            // 17       m_minElevation
+                                                            // 18       m_ambient_multiplier
+                                                            // 19       m_lightid
+    //uint32 unk20;                                         // 20 4.0.0
+    //uint32 unk21;                                         // 21 4.0.0
+    //uint32 unk22;                                         // 22 4.0.0
+    //uint32 unk23;                                         // 23 4.0.0
+    //uint32 unk24;                                         // 24 4.0.1, may be worldStateId
 
     // helpers
     bool IsSanctuary() const
@@ -568,11 +576,14 @@ struct AreaTriggerEntry
     float   x;                                              // 2        m_x
     float   y;                                              // 3        m_y
     float   z;                                              // 4        m_z
-    float   radius;                                         // 5        m_radius
-    float   box_x;                                          // 6        m_box_length
-    float   box_y;                                          // 7        m_box_width
-    float   box_z;                                          // 8        m_box_heigh
-    float   box_orientation;                                // 9        m_box_yaw
+    //uint32                                                // 5
+    //uint32                                                // 6
+    //uint32                                                // 7
+    float   radius;                                         // 8        m_radius
+    float   box_x;                                          // 9        m_box_length
+    float   box_y;                                          // 10       m_box_width
+    float   box_z;                                          // 11       m_box_heigh
+    float   box_orientation;                                // 12       m_box_yaw
 };
 
 struct AuctionHouseEntry
