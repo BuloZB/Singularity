@@ -860,7 +860,7 @@ bool GameObject::isAlwaysVisibleFor(WorldObject const* seer) const
     if (IsTransport())
         return true;
 
-    if (IsDynTransport())
+    if (IsDestructableBuilding())
         return true;
 
     return false;
