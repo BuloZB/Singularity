@@ -2285,7 +2285,7 @@ int32 Unit::GetMechanicResistChance(const SpellEntry *spell)
     int32 resist_mech = 0;
     for (uint8 eff = 0; eff < MAX_SPELL_EFFECTS; ++eff)
     {
-        if (spell->Effect[eff] == 0)
+        if (spell->GetSpellEffectIdByIndex(eff) == 0)
            break;
         int32 effect_mech = GetEffectMechanic(spell, eff);
         if (effect_mech)
@@ -6095,7 +6095,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     int EffIndex = 0;
                     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
                     {
-                        if (GoPoH->Effect[i] == SPELL_EFFECT_APPLY_AURA)
+                        if (GoPoH->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA)
                         {
                             EffIndex = i;
                             break;

@@ -273,21 +273,21 @@ void ScriptMgr::FillSpellSummary()
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_ANY_FRIEND-1);
 
             //Make sure that this spell includes a damage effect
-            if (pTempSpell->Effect[j] == SPELL_EFFECT_SCHOOL_DAMAGE ||
-                pTempSpell->Effect[j] == SPELL_EFFECT_INSTAKILL ||
-                pTempSpell->Effect[j] == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
-                pTempSpell->Effect[j] == SPELL_EFFECT_HEALTH_LEECH)
+            if (pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_SCHOOL_DAMAGE ||
+                pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_INSTAKILL ||
+                pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
+                pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEALTH_LEECH)
                 SpellSummary[i].Effects |= 1 << (SELECT_EFFECT_DAMAGE-1);
 
             //Make sure that this spell includes a healing effect (or an apply aura with a periodic heal)
-            if (pTempSpell->Effect[j] == SPELL_EFFECT_HEAL ||
-                pTempSpell->Effect[j] == SPELL_EFFECT_HEAL_MAX_HEALTH ||
-                pTempSpell->Effect[j] == SPELL_EFFECT_HEAL_MECHANICAL ||
-                (pTempSpell->Effect[j] == SPELL_EFFECT_APPLY_AURA  && pTempSpell->EffectApplyAuraName[j] == 8))
+            if (pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEAL ||
+                pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEAL_MAX_HEALTH ||
+                pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEAL_MECHANICAL ||
+                (pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA  && pTempSpell->EffectApplyAuraName[j] == 8))
                 SpellSummary[i].Effects |= 1 << (SELECT_EFFECT_HEALING-1);
 
             //Make sure that this spell applies an aura
-            if (pTempSpell->Effect[j] == SPELL_EFFECT_APPLY_AURA)
+            if (pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA)
                 SpellSummary[i].Effects |= 1 << (SELECT_EFFECT_AURA-1);
         }
     }

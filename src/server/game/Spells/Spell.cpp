@@ -62,8 +62,8 @@ bool IsQuestTameSpell(uint32 spellId)
     SpellEntry const *spellproto = sSpellStore.LookupEntry(spellId);
     if (!spellproto) return false;
 
-    return spellproto->Effect[0] == SPELL_EFFECT_THREAT
-        && spellproto->Effect[1] == SPELL_EFFECT_APPLY_AURA && spellproto->EffectApplyAuraName[1] == SPELL_AURA_DUMMY;
+    return spellproto->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_THREAT
+        && spellproto->GetSpellEffectIdByIndex(1) == SPELL_EFFECT_APPLY_AURA && spellproto->EffectApplyAuraName[1] == SPELL_AURA_DUMMY;
 }
 
 SpellCastTargets::SpellCastTargets() : m_elevation(0), m_speed(0)
@@ -517,7 +517,7 @@ m_caster(Caster), m_spellValue(new SpellValue(m_spellInfo))
     {
         for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
-            if (m_spellInfo->Effect[j] == 0)
+            if (m_spellInfo->GetSpellEffectIdByIndex(j) == 0)
                 continue;
 
             if (!IsPositiveTarget(m_spellInfo->EffectImplicitTargetA[j], m_spellInfo->EffectImplicitTargetB[j]))
@@ -596,10 +596,10 @@ void Spell::SelectSpellTargets()
     {
         // not call for empty effect.
         // Also some spells use not used effect targets for store targets for dummy effect in triggered spells
-        if (!m_spellInfo->Effect[i])
+        if (!m_spellInfo->GetSpellEffectIdByIndex(i))
             continue;
 
-        uint32 effectTargetType = EffectTargetType[m_spellInfo->Effect[i]];
+        uint32 effectTargetType = EffectTargetType[m_spellInfo->GetSpellEffectIdByIndex(i)];
 
         // is it possible that areaaura is not applied to caster?
         if (effectTargetType == SPELL_REQUIRE_NONE)
@@ -635,7 +635,7 @@ void Spell::SelectSpellTargets()
 
             // add here custom effects that need default target.
             // FOR EVERY TARGET TYPE THERE IS A DIFFERENT FILL!!
-            switch(m_spellInfo->Effect[i])
+            switch(m_spellInfo->GetSpellEffectIdByIndex(i))
             {
                 case SPELL_EFFECT_DUMMY:
                 {
@@ -700,7 +700,7 @@ void Spell::SelectSpellTargets()
                     if (m_targets.getUnitTarget())
                         AddUnitTarget(m_targets.getUnitTarget(), i);
                     // Triggered spells have additional spell targets - cast them even if no explicit unit target is given (required for spell 50516 for example)
-                    else if (m_spellInfo->Effect[i] == SPELL_EFFECT_TRIGGER_SPELL)
+                    else if (m_spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_TRIGGER_SPELL)
                         AddUnitTarget(m_caster, i);
                     break;
                 case SPELL_EFFECT_SUMMON_PLAYER:
@@ -930,7 +930,7 @@ void Spell::CleanupTargetList()
 
 void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex)
 {
-    if (m_spellInfo->Effect[effIndex] == 0)
+    if (m_spellInfo->GetSpellEffectIdByIndex(effIndex) == 0)
         return;
 
     if (!CheckTarget(pVictim, effIndex))
@@ -1032,7 +1032,7 @@ void Spell::AddUnitTarget(uint64 unitGUID, uint32 effIndex)
 
 void Spell::AddGOTarget(GameObject* pVictim, uint32 effIndex)
 {
-    if (m_spellInfo->Effect[effIndex] == 0)
+    if (m_spellInfo->GetSpellEffectIdByIndex(effIndex) == 0)
         return;
 
     uint64 targetGUID = pVictim->GetGUID();
@@ -1080,7 +1080,7 @@ void Spell::AddGOTarget(uint64 goGUID, uint32 effIndex)
 
 void Spell::AddItemTarget(Item* pitem, uint32 effIndex)
 {
-    if (m_spellInfo->Effect[effIndex] == 0)
+    if (m_spellInfo->GetSpellEffectIdByIndex(effIndex) == 0)
         return;
 
     // Lookup target in already in list
@@ -1118,7 +1118,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         // create far target mask
         for(uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (IsFarUnitTargetEffect(m_spellInfo->Effect[i]))
+            if (IsFarUnitTargetEffect(m_spellInfo->GetSpellEffectIdByIndex(i)))
                 if ((1<<i) & mask)
                     farMask |= (1<<i);
         }
@@ -1453,7 +1453,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask, bool 
 
     uint8 aura_effmask = 0;
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (effectMask & (1<<i) && IsUnitOwnedAuraEffect(m_spellInfo->Effect[i]))
+        if (effectMask & (1<<i) && IsUnitOwnedAuraEffect(m_spellInfo->GetSpellEffectIdByIndex(i)))
             aura_effmask |= 1<<i;
 
     if (aura_effmask)
@@ -1469,7 +1469,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask, bool 
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
                 basePoints[i] = aurSpellInfo->EffectBasePoints[i];
-                if (m_spellInfo->Effect[i] != aurSpellInfo->Effect[i])
+                if (m_spellInfo->GetSpellEffectIdByIndex(i) != aurSpellInfo->GetSpellEffectIdByIndex(i))
                 {
                     aurSpellInfo = m_spellInfo;
                     break;
@@ -1655,7 +1655,7 @@ bool Spell::UpdateChanneledTargetList()
     uint8 channelTargetEffectMask = m_channelTargetEffectMask;
     uint8 channelAuraMask = 0;
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA)
+        if (m_spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA)
             channelAuraMask |= 1<<i;
 
     channelAuraMask &= channelTargetEffectMask;

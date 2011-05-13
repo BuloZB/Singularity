@@ -1684,7 +1684,7 @@ bool Creature::IsImmunedToSpellEffect(SpellEntry const* spellInfo, uint32 index)
     if (GetCreatureInfo()->MechanicImmuneMask & (1 << (spellInfo->EffectMechanic[index] - 1)))
         return true;
 
-    if (GetCreatureInfo()->type == CREATURE_TYPE_MECHANICAL && spellInfo->Effect[index] == SPELL_EFFECT_HEAL)
+    if (GetCreatureInfo()->type == CREATURE_TYPE_MECHANICAL && spellInfo->GetSpellEffectIdByIndex(index) == SPELL_EFFECT_HEAL)
         return true;
 
     return Unit::IsImmunedToSpellEffect(spellInfo, index);
@@ -1709,10 +1709,10 @@ SpellEntry const *Creature::reachWithSpellAttack(Unit *pVictim)
         bool bcontinue = true;
         for (uint32 j = 0; j < MAX_SPELL_EFFECTS; j++)
         {
-            if ((spellInfo->Effect[j] == SPELL_EFFECT_SCHOOL_DAMAGE)       ||
-                (spellInfo->Effect[j] == SPELL_EFFECT_INSTAKILL)            ||
-                (spellInfo->Effect[j] == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE) ||
-                (spellInfo->Effect[j] == SPELL_EFFECT_HEALTH_LEECH)
+            if ((spellInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_SCHOOL_DAMAGE)       ||
+                (spellInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_INSTAKILL)            ||
+                (spellInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE) ||
+                (spellInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEALTH_LEECH)
 )
             {
                 bcontinue = false;
@@ -1759,7 +1759,7 @@ SpellEntry const *Creature::reachWithSpellCure(Unit *pVictim)
         bool bcontinue = true;
         for (uint32 j = 0; j < MAX_SPELL_EFFECTS; j++)
         {
-            if ((spellInfo->Effect[j] == SPELL_EFFECT_HEAL))
+            if ((spellInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEAL))
             {
                 bcontinue = false;
                 break;

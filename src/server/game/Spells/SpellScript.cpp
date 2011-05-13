@@ -104,11 +104,11 @@ std::string _SpellScript::EffectHook::EffIndexToString()
 
 bool _SpellScript::EffectNameCheck::Check(SpellEntry const* spellEntry, uint8 effIndex)
 {
-    if (!spellEntry->Effect[effIndex] && !effName)
+    if (!spellEntry->GetSpellEffectIdByIndex(effIndex) && !effName)
         return true;
-    if (!spellEntry->Effect[effIndex])
+    if (!spellEntry->GetSpellEffectIdByIndex(effIndex))
         return false;
-    return (effName == SPELL_EFFECT_ANY) || (spellEntry->Effect[effIndex] == effName);
+    return (effName == SPELL_EFFECT_ANY) || (spellEntry->GetSpellEffectIdByIndex(effIndex) == effName);
 }
 
 std::string _SpellScript::EffectNameCheck::ToString()

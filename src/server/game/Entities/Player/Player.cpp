@@ -4381,7 +4381,7 @@ bool Player::resetTalents(bool no_cost)
             removeSpell(talentInfo->RankID[rank], true);
             if (const SpellEntry *_spellEntry = sSpellStore.LookupEntry(talentInfo->RankID[rank]))
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)                  // search through the SpellEntry for valid trigger spells
-                    if (_spellEntry->EffectTriggerSpell[i] > 0 && _spellEntry->Effect[i] == SPELL_EFFECT_LEARN_SPELL)
+                    if (_spellEntry->EffectTriggerSpell[i] > 0 && _spellEntry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL)
                         removeSpell(_spellEntry->EffectTriggerSpell[i], true); // and remove any spells that the talent teaches
             // if this talent rank can be found in the PlayerTalentMap, mark the talent as removed so it gets deleted
             PlayerTalentMap::iterator plrTalent = m_talents[m_activeSpec]->find(talentInfo->RankID[rank]);
@@ -21550,7 +21550,7 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
     bool found = false;
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (spellInfo->Effect[i] == SPELL_EFFECT_LEARN_SPELL && !HasSpell(spellInfo->EffectTriggerSpell[i]))
+        if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL && !HasSpell(spellInfo->EffectTriggerSpell[i]))
         {
             found = true;
             break;
@@ -21580,7 +21580,7 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
             uint32 profSpell = itr2->second;
 
             // specialization
-            if (learnedInfo->Effect[0] == SPELL_EFFECT_TRADE_SKILL && learnedInfo->Effect[1] == 0 && profSpell)
+            if (learnedInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_TRADE_SKILL && learnedInfo->GetSpellEffectIdByIndex(1) == 0 && profSpell)
             {
                 // search other specialization for same prof
                 for (PlayerSpellMap::const_iterator itr = m_spells.begin(); itr != m_spells.end(); ++itr)
@@ -21593,7 +21593,7 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
                         return;
 
                     // compare only specializations
-                    if (itrInfo->Effect[0] != SPELL_EFFECT_TRADE_SKILL || itrInfo->Effect[1] != 0)
+                    if (itrInfo->GetSpellEffectIdByIndex(0) != SPELL_EFFECT_TRADE_SKILL || itrInfo->GetSpellEffectIdByIndex(1) != 0)
                         continue;
 
                     // compare same chain spells
@@ -24240,7 +24240,7 @@ void Player::ActivateSpec(uint8 spec)
             removeSpell(talentInfo->RankID[rank], true); // removes the talent, and all dependant, learned, and chained spells..
             if (const SpellEntry *_spellEntry = sSpellStore.LookupEntry(talentInfo->RankID[rank]))
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)                  // search through the SpellEntry for valid trigger spells
-                    if (_spellEntry->EffectTriggerSpell[i] > 0 && _spellEntry->Effect[i] == SPELL_EFFECT_LEARN_SPELL)
+                    if (_spellEntry->EffectTriggerSpell[i] > 0 && _spellEntry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL)
                         removeSpell(_spellEntry->EffectTriggerSpell[i], true); // and remove any spells that the talent teaches
             // if this talent rank can be found in the PlayerTalentMap, mark the talent as removed so it gets deleted
             //PlayerTalentMap::iterator plrTalent = m_talents[m_activeSpec]->find(talentInfo->RankID[rank]);

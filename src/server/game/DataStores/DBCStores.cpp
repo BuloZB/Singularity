@@ -582,7 +582,7 @@ void LoadDBCStores(const std::string& dataPath)
         for (uint32 i = 1; i < sSpellStore.GetNumRows (); ++i)
             if (SpellEntry const* sInfo = sSpellStore.LookupEntry (i))
                 for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
-                    if (sInfo->Effect[j] == SPELL_EFFECT_SEND_TAXI)
+                    if (sInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_SEND_TAXI)
                         spellPaths.insert(sInfo->EffectMiscValue[j]);
 
         memset(sTaxiNodesMask, 0, sizeof(sTaxiNodesMask));

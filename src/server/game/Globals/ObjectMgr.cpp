@@ -4158,8 +4158,8 @@ void ObjectMgr::LoadQuests()
                     bool found = false;
                     for (uint8 k = 0; k < MAX_SPELL_EFFECTS; ++k)
                     {
-                        if ((spellInfo->Effect[k] == SPELL_EFFECT_QUEST_COMPLETE && uint32(spellInfo->EffectMiscValue[k]) == qinfo->QuestId) ||
-                            spellInfo->Effect[k] == SPELL_EFFECT_SEND_EVENT)
+                        if ((spellInfo->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_QUEST_COMPLETE && uint32(spellInfo->EffectMiscValue[k]) == qinfo->QuestId) ||
+                            spellInfo->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_SEND_EVENT)
                         {
                             found = true;
                             break;
@@ -4429,7 +4429,7 @@ void ObjectMgr::LoadQuests()
 
         for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
-            if (spellInfo->Effect[j] != SPELL_EFFECT_QUEST_COMPLETE)
+            if (spellInfo->GetSpellEffectIdByIndex(j) != SPELL_EFFECT_QUEST_COMPLETE)
                 continue;
 
             uint32 quest_id = spellInfo->EffectMiscValue[j];
@@ -4895,7 +4895,7 @@ void ObjectMgr::LoadSpellScripts()
 
         uint8 i = (uint8)((uint32(itr->first) >> 24) & 0x000000FF);
         //check for correct spellEffect
-        if (!spellInfo->Effect[i] || (spellInfo->Effect[i] != SPELL_EFFECT_SCRIPT_EFFECT && spellInfo->Effect[i] != SPELL_EFFECT_DUMMY))
+        if (!spellInfo->GetSpellEffectIdByIndex(i) || (spellInfo->GetSpellEffectIdByIndex(i) != SPELL_EFFECT_SCRIPT_EFFECT && spellInfo->GetSpellEffectIdByIndex(i) != SPELL_EFFECT_DUMMY))
             sLog->outErrorDb("Table `spell_scripts` - spell %u effect %u is not SPELL_EFFECT_SCRIPT_EFFECT or SPELL_EFFECT_DUMMY", spellId, i);
     }
 }
@@ -4919,7 +4919,7 @@ void ObjectMgr::LoadEventScripts()
         {
             for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
-                if (spell->Effect[j] == SPELL_EFFECT_SEND_EVENT)
+                if (spell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_SEND_EVENT)
                 {
                     if (spell->EffectMiscValue[j])
                         evt_scripts.insert(spell->EffectMiscValue[j]);
@@ -8310,7 +8310,7 @@ void ObjectMgr::AddSpellToTrainer( uint32 entry, uint32 spell, uint32 spellCost,
     trainerSpell.learnedSpell[0] = spell;
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (spellinfo->Effect[i] != SPELL_EFFECT_LEARN_SPELL)
+        if (spellinfo->GetSpellEffectIdByIndex(i) != SPELL_EFFECT_LEARN_SPELL)
             continue;
         if (trainerSpell.learnedSpell[0] == spell)
             trainerSpell.learnedSpell[0] = 0;

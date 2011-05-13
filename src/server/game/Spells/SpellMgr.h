@@ -505,8 +505,8 @@ inline uint32 GetSpellMechanicMask(SpellEntry const* spellInfo, int32 effect)
     uint32 mask = 0;
     if (spellInfo->GetMechanic())
         mask |= 1<<spellInfo->GetMechanic();
-    if (spellInfo->EffectMechanic[effect])
-        mask |= 1<<spellInfo->EffectMechanic[effect];
+    if (spellInfo->GetSpellEffectMechanic(effect))
+        mask |= 1<<spellInfo->GetSpellEffectMechanic(effect);
     return mask;
 }
 
@@ -516,15 +516,15 @@ inline uint32 GetAllSpellMechanicMask(SpellEntry const* spellInfo)
     if (spellInfo->GetMechanic())
         mask |= 1<<spellInfo->GetMechanic();
     for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (spellInfo->GetSpellEffectIdByIndex(i) && spellInfo->EffectMechanic[i])
-            mask |= 1<<spellInfo->EffectMechanic[i];
+        if (spellInfo->GetSpellEffectIdByIndex(i) && spellInfo->GetSpellEffectMechanic(i))
+            mask |= 1<<spellInfo->GetSpellEffectMechanic(i);
     return mask;
 }
 
 inline Mechanics GetEffectMechanic(SpellEntry const* spellInfo, int32 effect)
 {
-    if (spellInfo->EffectMechanic[effect])
-        return Mechanics(spellInfo->EffectMechanic[effect]);
+    if (spellInfo->GetSpellEffectMechanic(effect))
+        return Mechanics(spellInfo->GetSpellEffectMechanic(effect));
     if (spellInfo->GetMechanic())
         return Mechanics(spellInfo->GetMechanic());
     return MECHANIC_NONE;

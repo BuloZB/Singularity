@@ -252,6 +252,18 @@ uint32 SpellEntry::GetSpellEffectIdByIndex(uint32 index) const
     return effect ? effect->Effect : SPELL_EFFECT_NONE;
 }
 
+uint32 SpellEntry::GetSpellEffectMechanic(uint32 index) const
+{
+    SpellEffectEntry const* effect = GetSpellEffect(index);
+    return effect ? effect->EffectMechanic : SPELL_EFFECT_NONE;
+}
+
+uint32 SpellEntry::GetSpellEffectBasePoints(uint32 index) const
+{
+    SpellEffectEntry const* effect = GetSpellEffect(index);
+    return effect ? effect->EffectBasePoints : SPELL_EFFECT_NONE;
+}
+
 uint32 SpellEntry::GetAuraInterruptFlags() const
 {
     SpellInterruptsEntry const* interrupt = GetSpellInterrupts();

@@ -1036,7 +1036,7 @@ bool ChatHandler::HandleLookupSpellCommand(const char *args)
                 }
 
                 bool known = target && target->HasSpell(id);
-                bool learn = (spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL);
+                bool learn = (spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_LEARN_SPELL);
 
                 uint32 talentCost = GetTalentSpellCost(id);
 

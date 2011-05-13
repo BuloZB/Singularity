@@ -449,7 +449,7 @@ AuraState GetSpellAuraState(SpellEntry const* spellInfo)
         return AURA_STATE_JUDGEMENT;
 
     // Conflagrate aura state on Immolate and Shadowflame
-    if (spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK &&
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK &&
         // Immolate
         ((spellInfo->SpellFamilyFlags[0] & 4) ||
         // Shadowflame
@@ -457,23 +457,23 @@ AuraState GetSpellAuraState(SpellEntry const* spellInfo)
         return AURA_STATE_CONFLAGRATE;
 
     // Faerie Fire (druid versions)
-    if (spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x400)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x400)
         return AURA_STATE_FAERIE_FIRE;
 
     // Sting (hunter's pet ability)
-    if (spellInfo->Category == 1133)
+    if (spellInfo->GetCategory() == 1133)
         return AURA_STATE_FAERIE_FIRE;
 
     // Victorious
-    if (spellInfo->SpellFamilyName == SPELLFAMILY_WARRIOR &&  spellInfo->SpellFamilyFlags[1] & 0x00040000)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARRIOR &&  spellInfo->SpellFamilyFlags[1] & 0x00040000)
         return AURA_STATE_WARRIOR_VICTORY_RUSH;
 
     // Swiftmend state on Regrowth & Rejuvenation
-    if (spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x50)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x50)
         return AURA_STATE_SWIFTMEND;
 
     // Deadly poison aura state
-    if (spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && spellInfo->SpellFamilyFlags[0] & 0x10000)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && spellInfo->SpellFamilyFlags[0] & 0x10000)
         return AURA_STATE_DEADLY_POISON;
 
     // Enrage aura state
@@ -503,7 +503,7 @@ AuraState GetSpellAuraState(SpellEntry const* spellInfo)
 
 SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
 {
-    switch(spellInfo->SpellFamilyName)
+    switch(spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
         {
@@ -643,14 +643,14 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
 
         case SPELLFAMILY_DEATHKNIGHT:
             if (spellInfo->Id == 48266 || spellInfo->Id == 48263 || spellInfo->Id == 48265)
-            //if (spellInfo->Category == 47)
+            //if (spellInfo->GetCategory() == 47)
                 return SPELL_SPECIFIC_PRESENCE;
             break;
     }
 
     for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA)
+        if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA)
         {
             switch(spellInfo->EffectApplyAuraName[i])
             {
@@ -800,7 +800,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
             break;
     }
 
-    switch (spellproto->Mechanic)
+    switch (spellproto->GetMechanic())
     {
         case MECHANIC_IMMUNE_SHIELD:
             return true;
@@ -815,7 +815,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
             return true;
     }
 
-    switch(spellproto->Effect[effIndex])
+    switch(spellproto->GetSpellEffectIdByIndex(effIndex))
     {
         case SPELL_EFFECT_DUMMY:
             // some explicitly required dummy effect sets
@@ -873,7 +873,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                             // non-positive targets of main spell return early
                             for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
                             {
-                                if (!spellTriggeredProto->Effect[i])
+                                if (!spellTriggeredProto->GetSpellEffectIdByIndex(i))
                                     continue;
                                 // if non-positive trigger cast targeted to positive target this main cast is non-positive
                                 // this will place this spell auras as debuffs
@@ -886,7 +886,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                     // many positive auras have negative triggered spells at damage for example and this not make it negative (it can be canceled for example)
                     break;
                 case SPELL_AURA_MOD_STUN:                   //have positive and negative spells, we can't sort its correctly at this moment.
-                    if (effIndex == 0 && spellproto->Effect[1] == 0 && spellproto->Effect[2] == 0)
+                    if (effIndex == 0 && spellproto->GetSpellEffectIdByIndex(1) == 0 && spellproto->GetSpellEffectIdByIndex(2) == 0)
                         return false;                       // but all single stun aura spells is negative
                     break;
                 case SPELL_AURA_MOD_PACIFY_SILENCE:
@@ -1065,15 +1065,15 @@ SpellCastResult GetErrorAtShapeshiftedCast (SpellEntry const *spellInfo, uint32 
     // talents that learn spells can have stance requirements that need ignore
     // (this requirement only for client-side stance show in talent description)
     if (GetTalentSpellCost(spellInfo->Id) > 0 &&
-        (spellInfo->Effect[0] == SPELL_EFFECT_LEARN_SPELL || spellInfo->Effect[1] == SPELL_EFFECT_LEARN_SPELL || spellInfo->Effect[2] == SPELL_EFFECT_LEARN_SPELL))
+        (spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_LEARN_SPELL || spellInfo->GetSpellEffectIdByIndex(1) == SPELL_EFFECT_LEARN_SPELL || spellInfo->GetSpellEffectIdByIndex(2) == SPELL_EFFECT_LEARN_SPELL))
         return SPELL_CAST_OK;
 
     uint32 stanceMask = (form ? 1 << (form - 1) : 0);
 
-    if (stanceMask & spellInfo->StancesNot)                 // can explicitly not be casted in this stance
+    if (stanceMask & spellInfo->GetStancesNot())                 // can explicitly not be casted in this stance
         return SPELL_FAILED_NOT_SHAPESHIFT;
 
-    if (stanceMask & spellInfo->Stances)                    // can explicitly be casted in this stance
+    if (stanceMask & spellInfo->GetStances())                    // can explicitly be casted in this stance
         return SPELL_CAST_OK;
 
     bool actAsShifted = false;
@@ -1093,13 +1093,13 @@ SpellCastResult GetErrorAtShapeshiftedCast (SpellEntry const *spellInfo, uint32 
     {
         if (spellInfo->Attributes & SPELL_ATTR0_NOT_SHAPESHIFT) // not while shapeshifted
             return SPELL_FAILED_NOT_SHAPESHIFT;
-        else if (spellInfo->Stances != 0)                   // needs other shapeshift
+        else if (spellInfo->GetStances() != 0)                   // needs other shapeshift
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
     else
     {
         // needs shapeshift
-        if (!(spellInfo->AttributesEx2 & SPELL_ATTR2_NOT_NEED_SHAPESHIFT) && spellInfo->Stances != 0)
+        if (!(spellInfo->AttributesEx2 & SPELL_ATTR2_NOT_NEED_SHAPESHIFT) && spellInfo->GetStances() != 0)
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
 
@@ -1172,7 +1172,7 @@ void SpellMgr::LoadSpellTargetPositions()
             if (spellInfo->EffectImplicitTargetA[i] == TARGET_DST_DB || spellInfo->EffectImplicitTargetB[i] == TARGET_DST_DB)
             {
                 // additional requirements
-                if (spellInfo->Effect[i]==SPELL_EFFECT_BIND && spellInfo->EffectMiscValue[i])
+                if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_BIND && spellInfo->EffectMiscValue[i])
                 {
                     uint32 area_id = sMapMgr->GetAreaId(st.target_mapId, st.target_X, st.target_Y, st.target_Z);
                     if (area_id != uint32(spellInfo->EffectMiscValue[i]))
@@ -1243,7 +1243,7 @@ bool SpellMgr::IsAffectedByMod(SpellEntry const *spellInfo, SpellModifier *mod) 
 
     SpellEntry const *affect_spell = sSpellStore.LookupEntry(mod->spellId);
     // False if affect_spell == NULL or spellFamily not equal
-    if (!affect_spell || affect_spell->SpellFamilyName != spellInfo->SpellFamilyName)
+    if (!affect_spell || affect_spell->SpellFamilyName != spellInfo->GetSpellFamilyName())
         return false;
 
     // true
@@ -1687,22 +1687,22 @@ bool SpellMgr::canStackSpellRanks(SpellEntry const *spellInfo)
     // All stance spells. if any better way, change it.
     for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        switch(spellInfo->SpellFamilyName)
+        switch(spellInfo->GetSpellFamilyName())
         {
             case SPELLFAMILY_PALADIN:
                 // Paladin aura Spell
-                if (spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AREA_AURA_RAID)
+                if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AREA_AURA_RAID)
                     return false;
                 break;
             case SPELLFAMILY_DRUID:
                 // Druid form Spell
-                if (spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA &&
+                if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA &&
                     spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_SHAPESHIFT)
                     return false;
                 break;
             case SPELLFAMILY_ROGUE:
                 // Rogue Stealth
-                if (spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA &&
+                if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA &&
                     spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_SHAPESHIFT)
                     return false;
         }
@@ -1718,7 +1718,7 @@ bool SpellMgr::IsProfessionOrRidingSpell(uint32 spellId)
 
     for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS ; ++i)
     {
-        if (spellInfo->Effect[i] == SPELL_EFFECT_SKILL)
+        if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
         {
             uint32 skill = spellInfo->EffectMiscValue[i];
 
@@ -1738,7 +1738,7 @@ bool SpellMgr::IsProfessionSpell(uint32 spellId)
 
     for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS ; ++i)
     {
-        if (spellInfo->Effect[i] == SPELL_EFFECT_SKILL)
+        if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
         {
             uint32 skill = spellInfo->EffectMiscValue[i];
 
@@ -1758,7 +1758,7 @@ bool SpellMgr::IsPrimaryProfessionSpell(uint32 spellId)
 
     for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS ; ++i)
     {
-        if (spellInfo->Effect[i] == SPELL_EFFECT_SKILL)
+        if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
         {
             uint32 skill = spellInfo->EffectMiscValue[i];
 
@@ -3503,7 +3503,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 case SPELL_EFFECT_JUMP:
                 case SPELL_EFFECT_JUMP_DEST:
                 case SPELL_EFFECT_LEAP_BACK:
-                    if (!spellInfo->speed && !spellInfo->SpellFamilyName)
+                    if (!spellInfo->speed && !spellInfo->GetSpellFamilyName())
                         spellInfo->speed = SPEED_CHARGE;
                     mSpellCustomAttr[i] |= SPELL_ATTR0_CU_CHARGE;
                     ++count;
@@ -4107,7 +4107,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         }
 
-        switch (spellInfo->SpellFamilyName)
+        switch (spellInfo->GetSpellFamilyName())
         {
             case SPELLFAMILY_WARRIOR:
                 // Shout
