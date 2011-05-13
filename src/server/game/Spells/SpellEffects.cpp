@@ -241,7 +241,7 @@ void Spell::EffectUnused(SpellEffIndex /*effIndex*/)
     // NOT USED BY ANY SPELL OR USELESS OR IMPLEMENTED IN DIFFERENT WAY IN TRINITY
 }
 
-void Spell::EffectResurrectNew(SpellEffIndex effIndex)
+void Spell::EffectResurrectNew(SpellEffectEntry const* effect)
 {
     if (!unitTarget || unitTarget->isAlive())
         return;
@@ -258,8 +258,8 @@ void Spell::EffectResurrectNew(SpellEffIndex effIndex)
         return;
 
     uint32 health = damage;
-    uint32 mana = m_spellInfo->EffectMiscValue[effIndex];
-    ExecuteLogEffectResurrect(effIndex, pTarget);
+    uint32 mana = effect->EffectMiscValue;
+    ExecuteLogEffectResurrect(effect, pTarget);
     pTarget->setResurrectRequestData(m_caster->GetGUID(), m_caster->GetMapId(), m_caster->GetPositionX(), m_caster->GetPositionY(), m_caster->GetPositionZ(), health, mana);
     SendResurrectRequest(pTarget);
 }

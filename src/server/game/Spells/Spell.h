@@ -383,7 +383,7 @@ class Spell
         void EffectTaunt(SpellEffIndex effIndex);
         void EffectDurabilityDamagePCT(SpellEffIndex effIndex);
         void EffectModifyThreatPercent(SpellEffIndex effIndex);
-        void EffectResurrectNew(SpellEffIndex effIndex);
+        void EffectResurrectNew(SpellEffectEntry const* effect);
         void EffectAddExtraAttacks(SpellEffIndex effIndex);
         void EffectSpiritHeal(SpellEffIndex effIndex);
         void EffectSkinPlayerCorpse(SpellEffIndex effIndex);
@@ -850,7 +850,7 @@ namespace Trinity
     #endif
 }
 
-typedef void(Spell::*pEffect)(SpellEffIndex effIndex);
+typedef void(Spell::*pEffect)(SpellEffectEntry const* spellEffect);
 
 class SpellEvent : public BasicEvent
 {
