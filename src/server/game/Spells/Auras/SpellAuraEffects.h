@@ -31,9 +31,9 @@ class AuraEffect
         int32 GetBaseAmount() const { return m_baseAmount; }
         int32 GetAmplitude() const { return m_amplitude; }
 
-        int32 GetMiscValueB() const { return m_spellProto->EffectMiscValueB[m_effIndex]; }
-        int32 GetMiscValue() const { return m_spellProto->EffectMiscValue[m_effIndex]; }
-        AuraType GetAuraType() const { return (AuraType)m_spellProto->EffectApplyAuraName[m_effIndex]; }
+        //int32 GetMiscValueB() const { return m_spellProto->EffectMiscValueB[m_effIndex]; }
+        int32 GetMiscValue() const { return m_spellProto->GetEffectMiscValue(m_effIndex); }
+        AuraType GetAuraType() const { return (AuraType)m_spellProto->GetEffectApplyAuraNameByIndex(m_effIndex); }
         int32 GetAmount() const { return m_amount; }
         void SetAmount(int32 amount) { m_amount = amount; m_canBeRecalculated = false;}
 
@@ -277,13 +277,13 @@ namespace Trinity
                 SpellEntry const * spellProtoB = aurEffB->GetSpellProto();
 
                 // Wards
-                if ((spellProtoA->SpellFamilyName == SPELLFAMILY_MAGE) ||
-                    (spellProtoA->SpellFamilyName == SPELLFAMILY_WARLOCK))
-                    if (spellProtoA->Category == 56)
+                if ((spellProtoA->GetSpellFamilyName() == SPELLFAMILY_MAGE) ||
+                    (spellProtoA->GetSpellFamilyName() == SPELLFAMILY_WARLOCK))
+                    if (spellProtoA->GetCategory() == 56)
                         return true;
-                if ((spellProtoB->SpellFamilyName == SPELLFAMILY_MAGE) ||
-                    (spellProtoB->SpellFamilyName == SPELLFAMILY_WARLOCK))
-                    if (spellProtoB->Category == 56)
+                if ((spellProtoB->GetSpellFamilyName() == SPELLFAMILY_MAGE) ||
+                    (spellProtoB->GetSpellFamilyName() == SPELLFAMILY_WARLOCK))
+                    if (spellProtoB->GetCategory() == 56)
                         return false;
 
                 // Sacred Shield
@@ -305,16 +305,16 @@ namespace Trinity
                     return false;
 
                 // Ice Barrier
-                if (spellProtoA->Category == 471)
+                if (spellProtoA->GetCategory() == 471)
                     return true;
-                if (spellProtoB->Category == 471)
+                if (spellProtoB->GetCategory() == 471)
                     return false;
 
                 // Sacrifice
-                if ((spellProtoA->SpellFamilyName == SPELLFAMILY_WARLOCK) &&
+                if ((spellProtoA->GetSpellFamilyName() == SPELLFAMILY_WARLOCK) &&
                     (spellProtoA->SpellIconID == 693))
                     return true;
-                if ((spellProtoB->SpellFamilyName == SPELLFAMILY_WARLOCK) &&
+                if ((spellProtoB->GetSpellFamilyName() == SPELLFAMILY_WARLOCK) &&
                     (spellProtoB->SpellIconID == 693))
                     return false;
 

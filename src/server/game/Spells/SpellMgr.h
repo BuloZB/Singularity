@@ -187,7 +187,7 @@ inline float GetSpellMaxRangeForHostile(SpellRangeEntry const *range) { return (
 inline float GetSpellMinRangeForFriend(SpellRangeEntry const *range) { return (range ? range->minRangeFriend : 0); }
 inline float GetSpellMaxRangeForFriend(SpellRangeEntry const *range) { return (range ? range->maxRangeFriend : 0); }
 inline uint32 GetSpellRangeType(SpellRangeEntry const *range) { return (range ? range->type : 0); }
-inline uint32 GetSpellRecoveryTime(SpellEntry const *spellInfo) { return spellInfo->RecoveryTime > spellInfo->CategoryRecoveryTime ? spellInfo->RecoveryTime : spellInfo->CategoryRecoveryTime; }
+inline uint32 GetSpellRecoveryTime(SpellEntry const *spellInfo) { return spellInfo->GetRecoveryTime() > spellInfo->GetCategoryRecoveryTime() ? spellInfo->GetRecoveryTime() : spellInfo->GetCategoryRecoveryTime(); }
 int32 GetSpellDuration(SpellEntry const *spellInfo);
 int32 GetSpellMaxDuration(SpellEntry const *spellInfo);
 inline float GetSpellRadius(SpellEntry const *spellInfo, uint32 effectIdx, bool positive)
@@ -240,8 +240,8 @@ inline float GetSpellMaxRange(uint32 id, bool positive)
 
 inline bool IsSpellHaveEffect(SpellEntry const *spellInfo, SpellEffects effect)
 {
-    for (int i= 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (SpellEffects(spellInfo->Effect[i]) == effect)
+    for (int i= 0; i < MAX_SPELL_EFFECTS; ++i)        
+        if (SpellEffects(spellInfo->GetSpellEffectIdByIndex(i)) == effect)
             return true;
     return false;
 }
@@ -249,7 +249,7 @@ inline bool IsSpellHaveEffect(SpellEntry const *spellInfo, SpellEffects effect)
 inline bool IsSpellHaveAura(SpellEntry const *spellInfo, AuraType aura)
 {
     for (int i= 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (AuraType(spellInfo->EffectApplyAuraName[i]) == aura)
+        if (AuraType(spellInfo->GetEffectApplyAuraNameByIndex(i)) == aura)
             return true;
     return false;
 }
@@ -259,7 +259,7 @@ inline bool IsSpellHaveAura(SpellEntry const *spellInfo, AuraType aura)
 inline bool IsSealSpell(SpellEntry const *spellInfo)
 {
     //Collection of all the seal family flags. No other paladin spell has any of those.
-    return spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN &&
+    return spellInfo->GetSpellFamilyName() == SPELLFAMILY_PALADIN &&
         (spellInfo->SpellFamilyFlags[1] & 0x26000C00
         || spellInfo->SpellFamilyFlags[0] & 0x0A000000);
 }
@@ -274,17 +274,17 @@ inline bool IsElementalShield(SpellEntry const *spellInfo)
 
 inline bool IsExplicitDiscoverySpell(SpellEntry const *spellInfo)
 {
-    return (((spellInfo->Effect[0] == SPELL_EFFECT_CREATE_RANDOM_ITEM
-        || spellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM_2)
-        && spellInfo->Effect[1] == SPELL_EFFECT_SCRIPT_EFFECT)
+    return (((spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_CREATE_RANDOM_ITEM
+        || spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_CREATE_ITEM_2)
+        && spellInfo->GetSpellEffectIdByIndex(1) == SPELL_EFFECT_SCRIPT_EFFECT)
         || spellInfo->Id == 64323);                          // Book of Glyph Mastery (Effect0 == SPELL_EFFECT_SCRIPT_EFFECT without any other data)
 }
 
 inline bool IsLootCraftingSpell(SpellEntry const *spellInfo)
 {
-    return (spellInfo->Effect[0] == SPELL_EFFECT_CREATE_RANDOM_ITEM ||
+    return (spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_CREATE_RANDOM_ITEM ||
         // different random cards from Inscription (121==Virtuoso Inking Set category) r without explicit item
-        (spellInfo->Effect[0] == SPELL_EFFECT_CREATE_ITEM_2 &&
+        (spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_CREATE_ITEM_2 &&
         (spellInfo->TotemCategory[0] != 0 || spellInfo->EffectItemType[0]==0)));
 }
 
@@ -376,11 +376,11 @@ inline bool IsSpellWithCasterSourceTargetsOnly(SpellEntry const* spellInfo)
 {
     for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        uint32 targetA = spellInfo->EffectImplicitTargetA[i];
+        uint32 targetA = spellInfo->GetEffectImplicitTargetAByIndex(i);
         if (targetA && !IsCasterSourceTarget(targetA))
             return false;
 
-        uint32 targetB = spellInfo->EffectImplicitTargetB[i];
+        uint32 targetB = spellInfo->GetEffectImplicitTargetAByIndex(i);
         if (targetB && !IsCasterSourceTarget(targetB))
             return false;
 
@@ -392,18 +392,18 @@ inline bool IsSpellWithCasterSourceTargetsOnly(SpellEntry const* spellInfo)
 
 inline bool IsAreaOfEffectSpell(SpellEntry const *spellInfo)
 {
-    if (IsAreaEffectTarget[spellInfo->EffectImplicitTargetA[0]] || IsAreaEffectTarget[spellInfo->EffectImplicitTargetB[0]])
+    if (IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(0)] || IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(0)])
         return true;
-    if (IsAreaEffectTarget[spellInfo->EffectImplicitTargetA[1]] || IsAreaEffectTarget[spellInfo->EffectImplicitTargetB[1]])
+    if (IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(1)] || IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(1)])
         return true;
-    if (IsAreaEffectTarget[spellInfo->EffectImplicitTargetA[2]] || IsAreaEffectTarget[spellInfo->EffectImplicitTargetB[2]])
+    if (IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(2)] || IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(2)])
         return true;
     return false;
 }
 
 inline bool IsAreaOfEffectSpellEffect(SpellEntry const *spellInfo, uint8 effIndex)
 {
-    if (IsAreaEffectTarget[spellInfo->EffectImplicitTargetA[effIndex]] || IsAreaEffectTarget[spellInfo->EffectImplicitTargetB[effIndex]])
+    if (IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(effIndex)] || IsAreaEffectTarget[spellInfo->GetEffectImplicitTargetAByIndex(effIndex)])
         return true;
     return false;
 }
@@ -433,7 +433,7 @@ inline bool IsAreaAuraEffect(uint32 effect)
 inline bool HasAreaAuraEffect(SpellEntry const *spellInfo)
 {
     for (uint8 i=0;i<MAX_SPELL_EFFECTS;++i)
-        if (IsAreaAuraEffect(spellInfo->Effect[i]))
+        if (IsAreaAuraEffect(spellInfo->GetSpellEffectIdByIndex(i)))
             return true;
     return false;
 }
@@ -446,9 +446,9 @@ inline bool IsUnitOwnedAuraEffect(uint32 effect)
 inline bool IsDispel(SpellEntry const *spellInfo)
 {
     //spellsteal is also dispel
-    if (spellInfo->Effect[0] == SPELL_EFFECT_DISPEL ||
-        spellInfo->Effect[1] == SPELL_EFFECT_DISPEL ||
-        spellInfo->Effect[2] == SPELL_EFFECT_DISPEL)
+    if (spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_DISPEL ||
+        spellInfo->GetSpellEffectIdByIndex(1) == SPELL_EFFECT_DISPEL ||
+        spellInfo->GetSpellEffectIdByIndex(2) == SPELL_EFFECT_DISPEL)
         return true;
     return false;
 }
@@ -456,9 +456,9 @@ inline bool IsDispel(SpellEntry const *spellInfo)
 inline bool IsDispelSpell(SpellEntry const *spellInfo)
 {
     //spellsteal is also dispel
-    if (spellInfo->Effect[0] == SPELL_EFFECT_STEAL_BENEFICIAL_BUFF ||
-        spellInfo->Effect[1] == SPELL_EFFECT_STEAL_BENEFICIAL_BUFF ||
-        spellInfo->Effect[2] == SPELL_EFFECT_STEAL_BENEFICIAL_BUFF
+    if (spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_STEAL_BENEFICIAL_BUFF ||
+        spellInfo->GetSpellEffectIdByIndex(1) == SPELL_EFFECT_STEAL_BENEFICIAL_BUFF ||
+        spellInfo->GetSpellEffectIdByIndex(2) == SPELL_EFFECT_STEAL_BENEFICIAL_BUFF
         ||IsDispel(spellInfo))
         return true;
     return false;
@@ -477,7 +477,7 @@ inline bool IsAutoRepeatRangedSpell(SpellEntry const* spellInfo)
 inline bool IsRangedWeaponSpell(SpellEntry const* spellInfo)
 {
     //spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED should be checked outside
-    return (spellInfo->SpellFamilyName == SPELLFAMILY_HUNTER && !(spellInfo->SpellFamilyFlags[1] & 0x10000000)) // for 53352, cannot find better way
+    return (spellInfo->GetSpellFamilyName() == SPELLFAMILY_HUNTER && !(spellInfo->SpellFamilyFlags[1] & 0x10000000)) // for 53352, cannot find better way
         || (spellInfo->EquippedItemSubClassMask & ITEM_SUBCLASS_MASK_WEAPON_RANGED);
 }
 
@@ -501,8 +501,8 @@ inline SpellSchoolMask GetSpellSchoolMask(SpellEntry const* spellInfo)
 inline uint32 GetSpellMechanicMask(SpellEntry const* spellInfo, int32 effect)
 {
     uint32 mask = 0;
-    if (spellInfo->Mechanic)
-        mask |= 1<<spellInfo->Mechanic;
+    if (spellInfo->GetMechanic())
+        mask |= 1<<spellInfo->GetMechanic();
     if (spellInfo->EffectMechanic[effect])
         mask |= 1<<spellInfo->EffectMechanic[effect];
     return mask;
@@ -511,10 +511,10 @@ inline uint32 GetSpellMechanicMask(SpellEntry const* spellInfo, int32 effect)
 inline uint32 GetAllSpellMechanicMask(SpellEntry const* spellInfo)
 {
     uint32 mask = 0;
-    if (spellInfo->Mechanic)
-        mask |= 1<<spellInfo->Mechanic;
+    if (spellInfo->GetMechanic())
+        mask |= 1<<spellInfo->GetMechanic();
     for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (spellInfo->Effect[i] && spellInfo->EffectMechanic[i])
+        if (spellInfo->GetSpellEffectIdByIndex(i) && spellInfo->EffectMechanic[i])
             mask |= 1<<spellInfo->EffectMechanic[i];
     return mask;
 }
@@ -523,8 +523,8 @@ inline Mechanics GetEffectMechanic(SpellEntry const* spellInfo, int32 effect)
 {
     if (spellInfo->EffectMechanic[effect])
         return Mechanics(spellInfo->EffectMechanic[effect]);
-    if (spellInfo->Mechanic)
-        return Mechanics(spellInfo->Mechanic);
+    if (spellInfo->GetMechanic())
+        return Mechanics(spellInfo->GetMechanic());
     return MECHANIC_NONE;
 }
 
@@ -1348,7 +1348,7 @@ class SpellMgr
         inline bool IsSpellWithCasterSourceTargetsOnly(SpellEntry const* spellInfo)
         {
             for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                if (uint32 target = spellInfo->EffectImplicitTargetA[i])
+                if (uint32 target = spellInfo->GetEffectImplicitTargetAByIndex(i))
                     if (!IsCasterSourceTarget(target))
                         return false;
             return true;

@@ -1703,6 +1703,23 @@ struct SpellScalingEntry
 };
 
 // SpellShapeshift.dbc
+//struct SpellShapeshiftEntry
+//{
+//    uint32 ID;                                              // 0
+//    //uint32 buttonPosition;                                // 1 unused
+//    //char*  Name;                                          // 2        m_name_lang
+//    uint32 flags1;                                          // 3        m_flags
+//    int32  creatureType;                                    // 4        m_creatureType <=0 humanoid, other normal creature types
+//    //uint32 unk1;                                          // 5        m_attackIconID
+//    uint32 attackSpeed;                                     // 6        m_combatRoundTime
+//    uint32 modelID_A;                                       // 7        m_creatureDisplayID[4]
+//    uint32 modelID_H;                                       // 8
+//    //uint32 unk3;                                          // 9 unused always 0
+//    //uint32 unk4;                                          // 10 unused always 0
+//    uint32 spellId[8];                                      // 11-18    m_presetSpellID[8]
+//    //uint32 unk5;                                          // 19 unused, !=0 for fligh forms
+//};
+
 struct SpellShapeshiftEntry
 {
     //uint32    Id;                                           // 0        m_ID
@@ -1902,22 +1919,7 @@ struct SpellRuneCostEntry
 
 #define MAX_SHAPESHIFT_SPELLS 8
 
-struct SpellShapeshiftEntry
-{
-    uint32 ID;                                              // 0
-    //uint32 buttonPosition;                                // 1 unused
-    //char*  Name;                                          // 2        m_name_lang
-    uint32 flags1;                                          // 3        m_flags
-    int32  creatureType;                                    // 4        m_creatureType <=0 humanoid, other normal creature types
-    //uint32 unk1;                                          // 5        m_attackIconID
-    uint32 attackSpeed;                                     // 6        m_combatRoundTime
-    uint32 modelID_A;                                       // 7        m_creatureDisplayID[4]
-    uint32 modelID_H;                                       // 8
-    //uint32 unk3;                                          // 9 unused always 0
-    //uint32 unk4;                                          // 10 unused always 0
-    uint32 spellId[8];                                      // 11-18    m_presetSpellID[8]
-    //uint32 unk5;                                          // 19 unused, !=0 for fligh forms
-};
+
 
 struct SpellDurationEntry
 {
