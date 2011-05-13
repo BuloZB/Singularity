@@ -1160,15 +1160,17 @@ struct ItemExtendedCostEntry
     uint32      reqitem[MAX_ITEM_EXTENDED_COST_REQUIREMENTS];       // 4-8 required item id
     uint32      reqitemcount[MAX_ITEM_EXTENDED_COST_REQUIREMENTS];  // 9-14 required count of 1st item
     uint32      reqpersonalarenarating;                             // 15 required personal arena rating};
+    //uint32    someId[5];                                  // 16-20, may be currency id's
+    //uint32    someCount[5];                               // 21-25
+    //uint32    something[5];                               // 26-30
 };
 
 struct ItemLimitCategoryEntry
 {
     uint32      ID;                                         // 0 Id
-    //char*     name[16]                                    // 1-16     m_name_lang
-                                                            // 17 name flags
-    uint32      maxCount;                                   // 18, max allowed equipped as item or in gem slot
-    uint32      mode;                                       // 19, 0 = have, 1 = equip (enum ItemLimitCategoryMode)
+    //char*     name;                                       // 1        m_name_lang
+    uint32      maxCount;                                   // 2,       m_quantity max allowed equipped as item or in gem slot
+    uint32      mode;                                       // 3,       m_flags 0 = have, 1 = equip (enum ItemLimitCategoryMode)
 };
 
 #define MAX_ITEM_ENCHANTMENT_EFFECTS 3
@@ -1179,8 +1181,7 @@ struct ItemRandomPropertiesEntry
     //char*     internalName                                // 1        m_Name
     uint32    enchant_id[MAX_ITEM_ENCHANTMENT_EFFECTS];     // 2-4      m_Enchantment
                                                             // 5-6      unused
-    char*     nameSuffix[16];                               // 7-22     m_name_lang
-                                                            // 23 name flags
+    DBCString nameSuffix;                                   // 7        m_name_lang
 };
 
 struct ItemRandomSuffixEntry
