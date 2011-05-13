@@ -1583,18 +1583,6 @@ struct SpellClassOptionsEntry
     flag96    SpellFamilyFlags;                             // 2-4
     uint32    SpellFamilyName;                              // 5       m_spellClassSet
     //char*   Description;                                  // 6 4.0.0
-
-    // helpers
-    bool IsFitToFamilyMask(flag96 familyFlags) const
-    {
-        return (SpellFamilyFlags & familyFlags);
-    }
-
-    bool IsFitToFamily(SpellFamily family, flag96 familyFlags) const
-    {
-        return SpellFamily(SpellFamilyName) == family &&
-            (SpellFamilyFlags & familyFlags);
-    }
 };
 
 // SpellCooldowns.dbc
@@ -1744,8 +1732,8 @@ struct SpellTargetRestrictionsEntry
 struct SpellTotemsEntry
 {
     //uint32    Id;                                           // 0        m_ID
-    uint32    TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];    // 162-163  m_requiredTotemCategoryID
-    uint32    Totem[MAX_SPELL_TOTEMS];                      // 52-53    m_totem
+    uint32    TotemCategory[3];                               // 162-163  m_requiredTotemCategoryID
+    uint32    Totem[3];                                       // 52-53    m_totem
 };
 
 // Spell.dbc
