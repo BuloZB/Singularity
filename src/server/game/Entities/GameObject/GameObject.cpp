@@ -828,7 +828,7 @@ bool GameObject::IsDestructableBuilding() const
     GameObjectTemplate const * gInfo = GetGOInfo();
     if (!gInfo) 
         return false;
-    return gInfo->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING);
+    return gInfo->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING;
 }
 
 // is Dynamic transport = non-stop Transport

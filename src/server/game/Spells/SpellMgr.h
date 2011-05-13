@@ -258,17 +258,19 @@ inline bool IsSpellHaveAura(SpellEntry const *spellInfo, AuraType aura)
 
 inline bool IsSealSpell(SpellEntry const *spellInfo)
 {
+    SpellClassOptionsEntry const* SpellClass = spellInfo->GetSpellClassOptions();
     //Collection of all the seal family flags. No other paladin spell has any of those.
     return spellInfo->GetSpellFamilyName() == SPELLFAMILY_PALADIN &&
-        (spellInfo->SpellFamilyFlags[1] & 0x26000C00
-        || spellInfo->SpellFamilyFlags[0] & 0x0A000000);
+        (SpellClass->SpellFamilyFlags[1] & 0x26000C00
+        || SpellClass->SpellFamilyFlags[0] & 0x0A000000);
 }
 
 inline bool IsElementalShield(SpellEntry const *spellInfo)
 {
+    SpellClassOptionsEntry const* SpellClass = spellInfo->GetSpellClassOptions();
     // family flags 10 (Lightning), 42 (Earth), 37 (Water), proc shield from T2 8 pieces bonus
-    return (spellInfo->SpellFamilyFlags[1] & 0x420
-        || spellInfo->SpellFamilyFlags[0] & 0x00000400)
+    return (SpellClass->SpellFamilyFlags[1] & 0x420
+        || SpellClass->SpellFamilyFlags[0] & 0x00000400)
         || spellInfo->Id == 23552;
 }
 
