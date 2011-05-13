@@ -1593,7 +1593,7 @@ struct SpellClassOptionsEntry
     bool IsFitToFamily(SpellFamily family, flag96 familyFlags) const
     {
         return SpellFamily(SpellFamilyName) == family &&
-            ((SpellFamilyFlags & familyFlags);
+            (SpellFamilyFlags & familyFlags);
     }
 };
 
@@ -1788,7 +1788,7 @@ struct SpellEntry
     SpellCategoriesEntry const* GetSpellCategories() const;
     SpellClassOptionsEntry const* GetSpellClassOptions() const;
     SpellCooldownsEntry const* GetSpellCooldowns() const;
-    SpellEffectEntry const* GetSpellEffect(SpellEffectIndex eff) const;
+    SpellEffectEntry const* GetSpellEffect(SpellEffectEntry const* effect) const;
     SpellEquippedItemsEntry const* GetSpellEquippedItems() const;
     SpellInterruptsEntry const* GetSpellInterrupts() const;
     SpellLevelsEntry const* GetSpellLevels() const;
