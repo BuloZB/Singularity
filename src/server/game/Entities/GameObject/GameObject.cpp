@@ -828,6 +828,14 @@ bool GameObject::IsDynTransport() const
     // If something is marked as a transport, don't transmit an out of range packet for it.
     GameObjectTemplate const * gInfo = GetGOInfo();
     if (!gInfo) return false;
+    return gInfo->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING);
+}
+
+bool GameObject::IsDestructableBuilding() const
+{
+    // If something is marked as a transport, don't transmit an out of range packet for it.
+    GameObjectTemplate const * gInfo = GetGOInfo();
+    if (!gInfo) return false;
     return gInfo->type == GAMEOBJECT_TYPE_MO_TRANSPORT || (gInfo->type == GAMEOBJECT_TYPE_TRANSPORT && !gInfo->transport.pause);
 }
 
@@ -848,6 +856,9 @@ bool GameObject::isAlwaysVisibleFor(WorldObject const* seer) const
         return true;
 
     if (IsTransport())
+        return true;
+
+    if (IsDynTransport())
         return true;
 
     return false;
