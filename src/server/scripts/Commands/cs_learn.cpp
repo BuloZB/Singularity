@@ -159,7 +159,7 @@ public:
                 continue;
 
             // skip server-side/triggered spells
-            if (spellInfo->spellLevel == 0)
+            if (spellInfo->GetSpellLevel() == 0)
                 continue;
 
             // skip wrong class/race skills

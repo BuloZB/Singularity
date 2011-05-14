@@ -418,7 +418,7 @@ uint32 CalculatePowerCost(SpellEntry const * spellInfo, Unit const * caster, Spe
         modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_COST, powerCost);
 
     if (spellInfo->Attributes & SPELL_ATTR0_LEVEL_DAMAGE_CALCULATION)
-        powerCost = int32(powerCost/ (1.117f* spellInfo->spellLevel / caster->getLevel() -0.1327f));
+        powerCost = int32(powerCost/ (1.117f* spellInfo->GetSpellLevel() / caster->getLevel() -0.1327f));
 
     // PCT mod from user auras by school
     powerCost = int32(powerCost * (1.0f+caster->GetFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER+school)));
@@ -1818,7 +1818,7 @@ int32 SpellMgr::CalculateSpellEffectAmount(SpellEntry const * spellEntry, uint8 
             level = int32(spellEntry->GetMaxLevel());
         else if (level < int32(spellEntry->GetBaseLevel()))
             level = int32(spellEntry->GetBaseLevel());
-        level -= int32(spellEntry->spellLevel);
+        level -= int32(spellEntry->GetSpellLevel());
         basePoints += int32(level * basePointsPerLevel);
     }
 
@@ -1851,7 +1851,7 @@ int32 SpellMgr::CalculateSpellEffectAmount(SpellEntry const * spellEntry, uint8 
         value = caster->ApplyEffectModifiers(spellEntry, effIndex, value);
 
         // amount multiplication based on caster's level
-        if (!basePointsPerLevel && (spellEntry->Attributes & SPELL_ATTR0_LEVEL_DAMAGE_CALCULATION && spellEntry->spellLevel) &&
+        if (!basePointsPerLevel && (spellEntry->Attributes & SPELL_ATTR0_LEVEL_DAMAGE_CALCULATION && spellEntry->GetSpellLevel()) &&
                 spellEntry->GetSpellEffectIdByIndex(effIndex) != SPELL_EFFECT_WEAPON_PERCENT_DAMAGE &&
                 spellEntry->GetSpellEffectIdByIndex(effIndex) != SPELL_EFFECT_KNOCK_BACK &&
                 spellEntry->GetEffectApplyAuraNameByIndex(effIndex) != SPELL_AURA_MOD_SPEED_ALWAYS &&
@@ -1859,8 +1859,8 @@ int32 SpellMgr::CalculateSpellEffectAmount(SpellEntry const * spellEntry, uint8 
                 spellEntry->GetEffectApplyAuraNameByIndex(effIndex) != SPELL_AURA_MOD_INCREASE_SPEED &&
                 spellEntry->GetEffectApplyAuraNameByIndex(effIndex) != SPELL_AURA_MOD_DECREASE_SPEED)
                 //there are many more: slow speed, -healing pct
-            value *= 0.25f * exp(caster->getLevel() * (70 - spellEntry->spellLevel) / 1000.0f);
-            //value = int32(value * (int32)getLevel() / (int32)(spellProto->spellLevel ? spellProto->spellLevel : 1));
+            value *= 0.25f * exp(caster->getLevel() * (70 - spellEntry->GetSpellLevel()) / 1000.0f);
+            //value = int32(value * (int32)getLevel() / (int32)(spellProto->GetSpellLevel() ? spellProto->GetSpellLevel() : 1));
     }
 
     return int32(value);
@@ -1925,7 +1925,7 @@ SpellEntry const* SpellMgr::SelectAuraRankForPlayerLevel(SpellEntry const* spell
             break;
 
         // if found appropriate level
-        if (playerLevel + 10 >= nextSpellInfo->spellLevel)
+        if (playerLevel + 10 >= nextSpellInfo->GetSpellLevel())
             return nextSpellInfo;
 
         // one rank less then
@@ -2183,14 +2183,14 @@ void SpellMgr::LoadPetLevelupSpellMap()
                 if (!spell) // not exist or triggered or talent
                     continue;
 
-                if (!spell->spellLevel)
+                if (!spell->GetSpellLevel())
                     continue;
 
                 PetLevelupSpellSet& spellSet = mPetLevelupSpellMap[creatureFamily->ID];
                 if (spellSet.empty())
                     ++family_count;
 
-                spellSet.insert(PetLevelupSpellSet::value_type(spell->spellLevel, spell->Id));
+                spellSet.insert(PetLevelupSpellSet::value_type(spell->GetSpellLevel(), spell->Id));
                 ++count;
             }
         }

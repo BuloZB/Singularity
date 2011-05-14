@@ -8304,7 +8304,7 @@ void ObjectMgr::AddSpellToTrainer( uint32 entry, uint32 spell, uint32 spellCost,
     trainerSpell.reqLevel      = reqLevel;
 
     if (!trainerSpell.reqLevel)
-        trainerSpell.reqLevel = spellinfo->spellLevel;
+        trainerSpell.reqLevel = spellinfo->GetSpellLevel();
 
     // calculate learned spell for profession case when stored cast-spell
     trainerSpell.learnedSpell[0] = spell;

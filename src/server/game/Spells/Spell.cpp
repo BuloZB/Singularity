@@ -952,7 +952,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex)
             if (m_auraScaleMask && ihit->effectMask == m_auraScaleMask && m_caster != pVictim)
             {
                 SpellEntry const * auraSpell = sSpellStore.LookupEntry(sSpellMgr->GetFirstSpellInChain(m_spellInfo->Id));
-                if (uint32(pVictim->getLevel() + 10) >= auraSpell->spellLevel)
+                if (uint32(pVictim->getLevel() + 10) >= auraSpell->GetSpellLevel())
                     ihit->scaleAura = true;
             }
             return;
@@ -973,7 +973,7 @@ void Spell::AddUnitTarget(Unit* pVictim, uint32 effIndex)
     if (m_auraScaleMask && target.effectMask == m_auraScaleMask && m_caster != pVictim)
     {
         SpellEntry const * auraSpell = sSpellStore.LookupEntry(sSpellMgr->GetFirstSpellInChain(m_spellInfo->Id));
-        if (uint32(pVictim->getLevel() + 10) >= auraSpell->spellLevel)
+        if (uint32(pVictim->getLevel() + 10) >= auraSpell->GetSpellLevel())
             target.scaleAura = true;
     }
 
@@ -2879,7 +2879,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const * triggere
     }
 
     // Fill aura scaling information
-    if (m_caster->IsControlledByPlayer() && !IsPassiveSpell(m_spellInfo->Id) && m_spellInfo->spellLevel && !IsChanneledSpell(m_spellInfo) && !m_IsTriggeredSpell)
+    if (m_caster->IsControlledByPlayer() && !IsPassiveSpell(m_spellInfo->Id) && m_spellInfo->GetSpellLevel() && !IsChanneledSpell(m_spellInfo) && !m_IsTriggeredSpell)
     {
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
@@ -5095,7 +5095,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (!learn_spellproto)
                     return SPELL_FAILED_NOT_KNOWN;
 
-                if (m_spellInfo->spellLevel > pet->getLevel())
+                if (m_spellInfo->GetSpellLevel() > pet->getLevel())
                     return SPELL_FAILED_LOWLEVEL;
 
                 break;
@@ -5114,7 +5114,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if (!learn_spellproto)
                     return SPELL_FAILED_NOT_KNOWN;
 
-                if (m_spellInfo->spellLevel > pet->getLevel())
+                if (m_spellInfo->GetSpellLevel() > pet->getLevel())
                     return SPELL_FAILED_LOWLEVEL;
 
                 break;

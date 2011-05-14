@@ -2213,14 +2213,14 @@ uint32 Unit::CalculateDamage(WeaponAttackType attType, bool normalized, bool add
 
 float Unit::CalculateLevelPenalty(SpellEntry const* spellProto) const
 {
-    if (spellProto->spellLevel <= 0 || spellProto->spellLevel >= spellProto->GetMaxLevel())
+    if (spellProto->GetSpellLevel() <= 0 || spellProto->GetSpellLevel() >= spellProto->GetMaxLevel())
         return 1.0f;
 
     float LvlPenalty = 0.0f;
 
-    if (spellProto->spellLevel < 20)
-        LvlPenalty = 20.0f - spellProto->spellLevel * 3.75f;
-    float LvlFactor = (float(spellProto->spellLevel) + 6.0f) / float(getLevel());
+    if (spellProto->GetSpellLevel() < 20)
+        LvlPenalty = 20.0f - spellProto->GetSpellLevel() * 3.75f;
+    float LvlFactor = (float(spellProto->GetSpellLevel()) + 6.0f) / float(getLevel());
     if (LvlFactor > 1.0f)
         LvlFactor = 1.0f;
 

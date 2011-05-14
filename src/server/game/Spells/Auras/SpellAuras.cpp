@@ -334,7 +334,7 @@ Aura::Aura(SpellEntry const* spellproto, WorldObject * owner, Unit * caster, Ite
 m_spellProto(spellproto), m_casterGuid(casterGUID ? casterGUID : caster->GetGUID()),
 m_castItemGuid(castItem ? castItem->GetGUID() : 0), m_applyTime(time(NULL)),
 m_owner(owner), m_timeCla(0), m_updateTargetMapInterval(0),
-m_casterLevel(caster ? caster->getLevel() : m_spellProto->spellLevel), m_procCharges(0), m_stackAmount(1),
+m_casterLevel(caster ? caster->getLevel() : m_spellProto->GetSpellLevel()), m_procCharges(0), m_stackAmount(1),
 m_isRemoved(false), m_isSingleTarget(false)
 {
     if (m_spellProto->manaPerSecond || m_spellProto->manaPerSecondPerLevel)

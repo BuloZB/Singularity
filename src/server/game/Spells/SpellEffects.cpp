@@ -2637,7 +2637,7 @@ void Spell::EffectEnergize(SpellEffectEntry const* effect)
         for (std::set<uint32>::iterator itr = avalibleElixirs.begin(); itr != avalibleElixirs.end() ;)
         {
             SpellEntry const *spellInfo = sSpellStore.LookupEntry(*itr);
-            if (spellInfo->spellLevel < m_spellInfo->spellLevel || spellInfo->spellLevel > unitTarget->getLevel())
+            if (spellInfo->GetSpellLevel() < m_spellInfo->GetSpellLevel() || spellInfo->GetSpellLevel() > unitTarget->getLevel())
                 avalibleElixirs.erase(itr++);
             else if (sSpellMgr->IsSpellMemberOfSpellGroup(*itr, SPELL_GROUP_ELIXIR_SHATTRATH))
                 avalibleElixirs.erase(itr++);
