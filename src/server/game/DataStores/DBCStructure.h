@@ -1412,15 +1412,23 @@ struct ScalingStatValuesEntry
     {
         if (mask & 0x00F001E0)
         {
-            if (mask & 0x00000020) return armorMod[0];
-            if (mask & 0x00000040) return armorMod[1];
-            if (mask & 0x00000080) return armorMod[2];
-            if (mask & 0x00000100) return armorMod[3];
+            if (mask & 0x00000020)
+                return armorMod[0];
+            if (mask & 0x00000040)
+                return armorMod[1];
+            if (mask & 0x00000080)
+                return armorMod[2];
+            if (mask & 0x00000100)
+                return armorMod[3];
 
-            if (mask & 0x00100000) return armorMod2[0];      // cloth
-            if (mask & 0x00200000) return armorMod2[1];      // leather
-            if (mask & 0x00400000) return armorMod2[2];      // mail
-            if (mask & 0x00800000) return armorMod2[3];      // plate
+            if (mask & 0x00100000)
+                return armorMod2[0];      // cloth
+            if (mask & 0x00200000)
+                return armorMod2[1];      // leather
+            if (mask & 0x00400000)
+                return armorMod2[2];      // mail
+            if (mask & 0x00800000)
+                return armorMod2[3];      // plate
         }
         return 0;
     }
@@ -1428,23 +1436,31 @@ struct ScalingStatValuesEntry
     {
         if (mask&0x7E00)
         {
-            if (mask & 0x00000200) return dpsMod[0];
-            if (mask & 0x00000400) return dpsMod[1];
-            if (mask & 0x00000800) return dpsMod[2];
-            if (mask & 0x00001000) return dpsMod[3];
-            if (mask & 0x00002000) return dpsMod[4];
-            if (mask & 0x00004000) return dpsMod[5];         // not used?
+            if (mask & 0x00000200)
+                return dpsMod[0];
+            if (mask & 0x00000400)
+                return dpsMod[1];
+            if (mask & 0x00000800)
+                return dpsMod[2];
+            if (mask & 0x00001000)
+                return dpsMod[3];
+            if (mask & 0x00002000)
+                return dpsMod[4];
+            if (mask & 0x00004000)
+                return dpsMod[5];         // not used?
         }
         return 0;
     }
     uint32 getSpellBonus(uint32 mask) const
     {
-        if (mask & 0x00008000) return spellBonus;
+        if (mask & 0x00008000)
+            return spellBonus;
         return 0;
     }
     uint32 getFeralBonus(uint32 mask) const                 // removed in 3.2.x?
     {
-        if (mask & 0x00010000) return 0;                    // not used?
+        if (mask & 0x00010000)
+            return 0;                    // not used?
         return 0;
     }
 };
@@ -1624,6 +1640,7 @@ struct SpellEffectEntry
 
     // helpers
     int32 CalculateSimpleValue() const { return EffectBasePoints; }
+    uint32 GetEffectItemType() const { return EffectItemType(); }
 };
 
 // SpellEquippedItems.dbc
@@ -1785,6 +1802,10 @@ struct SpellEntry
     uint32 SpellTargetRestrictionsId;                       // 44       SpellTargetRestrictions.dbc
     uint32 SpellTotemsId;                                   // 45       SpellTotems.dbc
     //uint32 ResearchProject;                               // 46       ResearchProject.dbc
+
+    int32 CalculateSimpleValue(uint32 eff) const;
+    uint32 SpellEntry::GetEffectItemType(uint32 eff) const;
+    uint32 const* GetEffectSpellClassMask(uint32 eff) const;
 
     // struct access functions
     SpellAuraOptionsEntry const* GetSpellAuraOptions() const;

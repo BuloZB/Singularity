@@ -27,6 +27,13 @@ int32 SpellEntry::CalculateSimpleValue(uint32 eff) const
     return 0;
 }
 
+uint32 SpellEntry::GetEffectItemType(uint32 eff) const
+{
+    if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectItemType();
+    return 0;
+}
+
 uint32 const* SpellEntry::GetEffectSpellClassMask(uint32 eff) const
 {
     if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
