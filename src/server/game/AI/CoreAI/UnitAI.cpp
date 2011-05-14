@@ -196,7 +196,7 @@ void UnitAI::FillAISpellInfo()
         {
             for (uint32 j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
-                uint32 targetType = spellInfo->EffectImplicitTargetA[j];
+                uint32 targetType = spellInfo->GetEffectImplicitTargetAByIndex(j);
 
                 if (targetType == TARGET_UNIT_TARGET_ENEMY
                     || targetType == TARGET_DST_TARGET_ENEMY)

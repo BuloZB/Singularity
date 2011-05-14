@@ -1640,7 +1640,7 @@ struct SpellEffectEntry
 
     // helpers
     int32 CalculateSimpleValue() const { return EffectBasePoints; }
-    uint32 GetEffectItemType() const { return EffectItemType(); }
+    uint32 GetEffectItemType() const { return EffectItemType; }
 };
 
 // SpellEquippedItems.dbc
