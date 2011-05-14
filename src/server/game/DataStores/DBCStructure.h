@@ -1793,7 +1793,7 @@ struct SpellEntry
     SpellCategoriesEntry const* GetSpellCategories() const;
     SpellClassOptionsEntry const* GetSpellClassOptions() const;
     SpellCooldownsEntry const* GetSpellCooldowns() const;
-    SpellEffectEntry const* GetSpellEffect(SpellEffectEntry const* effect) const;
+    SpellEffectEntry const* GetSpellEffect(uint32 eff) const;
     SpellEquippedItemsEntry const* GetSpellEquippedItems() const;
     SpellInterruptsEntry const* GetSpellInterrupts() const;
     SpellLevelsEntry const* GetSpellLevels() const;

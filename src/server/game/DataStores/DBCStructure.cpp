@@ -64,7 +64,7 @@ SpellCooldownsEntry const* SpellEntry::GetSpellCooldowns() const
     return SpellCooldownsId ? sSpellCooldownsStore.LookupEntry(SpellCooldownsId) : NULL;
 }
 
-SpellEffectEntry const* SpellEntry::GetSpellEffect(SpellEffectEntry eff) const
+SpellEffectEntry const* SpellEntry::GetSpellEffect(uint32 eff) const
 {
     return GetSpellEffectEntry(Id, eff);
 }
