@@ -328,7 +328,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
 
     if (unitTarget && unitTarget->isAlive())
     {
-        switch (m_spellInfo->SpellFamilyName)
+        switch (m_spellInfo->GetSpellFamilyName())
         {
             case SPELLFAMILY_GENERIC:
             {
@@ -502,7 +502,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     for (Unit::AuraEffectList::const_iterator i = mPeriodic.begin(); i != mPeriodic.end(); ++i)
                     {
                         // for caster applied auras only
-                        if ((*i)->GetSpellProto()->SpellFamilyName != SPELLFAMILY_WARLOCK ||
+                        if ((*i)->GetSpellProto()->GetSpellFamilyName() != SPELLFAMILY_WARLOCK ||
                             (*i)->GetCasterGUID() != m_caster->GetGUID())
                             continue;
 
@@ -585,7 +585,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     Unit::AuraEffectList const& ImprMindBlast = m_caster->GetAuraEffectsByType(SPELL_AURA_ADD_FLAT_MODIFIER);
                     for (Unit::AuraEffectList::const_iterator i = ImprMindBlast.begin(); i != ImprMindBlast.end(); ++i)
                     {
-                        if ((*i)->GetSpellProto()->SpellFamilyName == SPELLFAMILY_PRIEST &&
+                        if ((*i)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_PRIEST &&
                             ((*i)->GetSpellProto()->SpellIconID == 95))
                         {
                             int chance = SpellMgr::CalculateSpellEffectAmount((*i)->GetSpellProto(), 1, m_caster);
@@ -641,7 +641,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                             Unit::AuraEffectList const& auraList = m_caster->ToPlayer()->GetAuraEffectsByType(SPELL_AURA_MOD_AURA_DURATION_BY_DISPEL_NOT_STACK);
                             for (Unit::AuraEffectList::const_iterator iter = auraList.begin(); iter != auraList.end(); ++iter)
                             {
-                                if ((*iter)->GetSpellProto()->SpellFamilyName == SPELLFAMILY_ROGUE && (*iter)->GetSpellProto()->SpellIconID == 1960)
+                                if ((*iter)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_ROGUE && (*iter)->GetSpellProto()->SpellIconID == 1960)
                                 {
                                     uint32 chance = SpellMgr::CalculateSpellEffectAmount((*iter)->GetSpellProto(), 2, m_caster);
 
@@ -772,7 +772,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
     SpellCastTargets targets;
 
     // selection by spell family
-    switch (m_spellInfo->SpellFamilyName)
+    switch (m_spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
         {
@@ -2229,7 +2229,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
             AuraEffect *targetAura = NULL;
             for (Unit::AuraEffectList::const_iterator i = RejorRegr.begin(); i != RejorRegr.end(); ++i)
             {
-                if ((*i)->GetSpellProto()->SpellFamilyName == SPELLFAMILY_DRUID
+                if ((*i)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_DRUID
                     && (*i)->GetSpellProto()->SpellFamilyFlags[0] & 0x50)
                 {
                     if (!targetAura || (*i)->GetBase()->GetDuration() < targetAura->GetBase()->GetDuration())
@@ -2267,7 +2267,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
             //addhealth = caster->SpellHealingBonus(m_spellInfo, addhealth, HEAL, unitTarget);
         }
         // Glyph of Nourish
-        else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x2000000)
+        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x2000000)
         {
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL);
 
@@ -2285,7 +2285,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
         else if (m_spellInfo->Id == 33778)
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL, m_spellValue->EffectBasePoints[1]);
         // Riptide - increase healing done by Chain Heal
-        else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & 0x100)
+        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & 0x100)
         {
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL);
             if (AuraEffect * aurEff = unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_SHAMAN, 0, 0, 0x10, m_originalCasterGUID))
@@ -2296,7 +2296,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
             }
         }
         // Death Pact - return pct of max health to caster
-        else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] & 0x00080000)
+        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] & 0x00080000)
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, int32(caster->CountPctFromMaxHealth(damage)), HEAL);
         else
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL);
@@ -3289,7 +3289,7 @@ void Spell::EffectDispel(SpellEffectEntry const* effect)
 
     // On success dispel
     // Devour Magic
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->Category == SPELLCATEGORY_DEVOUR_MAGIC)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->Category == SPELLCATEGORY_DEVOUR_MAGIC)
     {
         int32 heal_amount = SpellMgr::CalculateSpellEffectAmount(m_spellInfo, 1);
         m_caster->CastCustomSpell(m_caster, 19658, &heal_amount, NULL, NULL, true);
@@ -3584,7 +3584,7 @@ void Spell::EffectEnchantItemTmp(SpellEffectEntry const* effect)
     // Rockbiter Weapon apply to both weapon
     if (!itemTarget)
     return;
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & 0x400000)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & 0x400000)
     {
         uint32 spell_id = 0;
 
@@ -3658,10 +3658,10 @@ void Spell::EffectEnchantItemTmp(SpellEffectEntry const* effect)
     if (m_spellInfo->Id == 38615)
         duration = 1800;                                    // 30 mins
     // other rogue family enchantments always 1 hour (some have spell damage=0, but some have wrong data in EffBasePoints)
-    else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE)
+    else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE)
         duration = 3600;                                    // 1 hour
     // shaman family enchantments
-    else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN)
+    else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN)
         duration = 1800;                                    // 30 mins
     // other cases with this SpellVisual already selected
     else if (m_spellInfo->SpellVisual[0] == 215)
@@ -3925,7 +3925,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
     int32 fixed_bonus = 0;
     int32 spell_bonus = 0;                                  // bonus specific for spell
 
-    switch (m_spellInfo->SpellFamilyName)
+    switch (m_spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
         {
@@ -4205,7 +4205,7 @@ void Spell::EffectHealMaxHealth(SpellEffectEntry const* /*effect*/)
         return;
 
     int32 addhealth;
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN) // Lay on Hands
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_PALADIN) // Lay on Hands
     {
         if (m_caster->GetGUID() == unitTarget->GetGUID())
         {
@@ -4347,7 +4347,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
 {
     // TODO: we must implement hunter pet summon at login there (spell 6962)
 
-    switch(m_spellInfo->SpellFamilyName)
+    switch(m_spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
         {
@@ -5381,7 +5381,7 @@ void Spell::EffectSanctuary(SpellEffectEntry const* /*effect*/)
 
     // Vanish allows to remove all threat and cast regular stealth so other spells can be used
     if (m_caster->GetTypeId() == TYPEID_PLAYER
-        && m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE
+        && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE
         && (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_VANISH))
     {
         m_caster->ToPlayer()->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
@@ -6040,7 +6040,7 @@ void Spell::EffectKnockBack(SpellEffectEntry const* effect)
             return;
 
     // Typhoon
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x01000000)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x01000000)
     {
         // Glyph of Typhoon
         if (m_caster->HasAura(62135))
@@ -6048,7 +6048,7 @@ void Spell::EffectKnockBack(SpellEffectEntry const* effect)
     }
 
     // Thunderstorm
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[1] & 0x00002000)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[1] & 0x00002000)
     {
         // Glyph of Thunderstorm
         if (m_caster->HasAura(62132))

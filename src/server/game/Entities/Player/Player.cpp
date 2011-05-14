@@ -21490,7 +21490,7 @@ void Player::resetSpells(bool myClassOnly)
                 continue;
 
             // skip other spell families
-            if (spellInfo->SpellFamilyName != family)
+            if (spellInfo->GetSpellFamilyName() != family)
                 continue;
 
             // skip spells with first rank learned as talent (and all talents then also)

@@ -884,7 +884,7 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const * /*triggeredByAura*/)
     m_procEx= PROC_EX_NONE;
 
     // Hunter trap spells - activation proc for Lock and Load, Entrapment and Misdirection
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_HUNTER &&
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_HUNTER &&
         (m_spellInfo->SpellFamilyFlags[0] & 0x18 ||     // Freezing and Frost Trap, Freezing Arrow
         m_spellInfo->Id == 57879 ||                     // Snake Trap - done this way to avoid double proc
         m_spellInfo->SpellFamilyFlags[2] & 0x00024000)) // Explosive and Immolation Trap
@@ -897,7 +897,7 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const * /*triggeredByAura*/)
     */
 
     // Hellfire Effect - trigger as DOT
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[0] & 0x00000040)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[0] & 0x00000040)
     {
         m_procAttacker = PROC_FLAG_DONE_PERIODIC;
         m_procVictim   = PROC_FLAG_TAKEN_PERIODIC;
@@ -1306,7 +1306,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         caster->DealSpellDamage(&damageInfo, true);
 
         // Haunt
-        if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] & 0x40000 && m_spellAura && m_spellAura->GetEffect(1))
+        if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] & 0x40000 && m_spellAura && m_spellAura->GetEffect(1))
         {
             AuraEffect * aurEff = m_spellAura->GetEffect(1);
             aurEff->SetAmount(CalculatePctU(aurEff->GetAmount(), damageInfo.damage));
@@ -2658,7 +2658,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
             // Special target selection for smart heals and energizes
             uint32 maxSize = 0;
             int32 power = -1;
-            switch (m_spellInfo->SpellFamilyName)
+            switch (m_spellInfo->GetSpellFamilyName())
             {
                 case SPELLFAMILY_GENERIC:
                     switch (m_spellInfo->Id)
@@ -3177,7 +3177,7 @@ void Spell::cast(bool skipCheck)
         return;
     }
 
-    if (m_spellInfo->SpellFamilyName)
+    if (m_spellInfo->GetSpellFamilyName())
     {
         if (m_spellInfo->excludeCasterAuraSpell && !IsPositiveSpell(m_spellInfo->excludeCasterAuraSpell))
             m_preCastSpell = m_spellInfo->excludeCasterAuraSpell;
@@ -3185,7 +3185,7 @@ void Spell::cast(bool skipCheck)
             m_preCastSpell = m_spellInfo->excludeTargetAuraSpell;
     }
 
-    switch (m_spellInfo->SpellFamilyName)
+    switch (m_spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
         {
@@ -4868,7 +4868,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                         return SPELL_FAILED_BAD_TARGETS;
                 }
                 // Lay on Hands - cannot be self-cast on paladin with Forbearance or after using Avenging Wrath
-                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] & 0x0008000)
+                if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] & 0x0008000)
                     if (target->HasAura(61988)) // Immunity shield marker
                         return SPELL_FAILED_TARGET_AURASTATE;
             }
@@ -4934,11 +4934,11 @@ SpellCastResult Spell::CheckCast(bool strict)
         //Must be behind the target.
         if (m_spellInfo->AttributesEx2 == SPELL_ATTR2_UNK20 && m_spellInfo->AttributesEx & SPELL_ATTR1_UNK9 && target->HasInArc(static_cast<float>(M_PI), m_caster)
             //Exclusion for Pounce: Facing Limitation was removed in 2.0.1, but it still uses the same, old Ex-Flags
-            && (!(m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags.IsEqual(0x20000, 0, 0)))
+            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags.IsEqual(0x20000, 0, 0)))
             //Mutilate no longer requires you be behind the target as of patch 3.0.3
-            && (!(m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[1] & 0x200000))
+            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[1] & 0x200000))
             //Exclusion for Throw: Facing limitation was added in 3.2.x, but that shouldn't be
-            && (!(m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] & 0x00000001)))
+            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] & 0x00000001)))
         {
             SendInterrupted(2);
             return SPELL_FAILED_NOT_BEHIND;
@@ -5043,12 +5043,12 @@ SpellCastResult Spell::CheckCast(bool strict)
                     if (m_targets.getUnitTarget() && !m_caster->IsFriendlyTo(m_targets.getUnitTarget()) && !m_caster->HasInArc(static_cast<float>(M_PI), m_targets.getUnitTarget()))
                         return SPELL_FAILED_UNIT_NOT_INFRONT;
                 }
-                else if (m_spellInfo->SpellIconID == 33 && m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_FIRE_NOVA)
+                else if (m_spellInfo->SpellIconID == 33 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_FIRE_NOVA)
                 {
                     if (!m_caster->m_SummonSlot[1])
                         return SPELL_FAILED_SUCCESS;
                 }
-                else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] == 0x2000) // Death Coil (DeathKnight)
+                else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] == 0x2000) // Death Coil (DeathKnight)
                 {
                     Unit* target = m_targets.getUnitTarget();
                     if (!target || (target->IsFriendlyTo(m_caster) && target->GetCreatureType() != CREATURE_TYPE_UNDEAD))
@@ -5164,7 +5164,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
             case SPELL_EFFECT_CHARGE:
             {
-                if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARRIOR)
+                if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARRIOR)
                 {
                     // Warbringer - can't be handled in proc system - should be done before checkcast root check and charge effect process
                     if (strict && m_caster->IsScriptOverriden(m_spellInfo, 6953))
@@ -5676,7 +5676,7 @@ SpellCastResult Spell::CheckCasterAuras() const
     }
 
     // Glyph of Pain Suppression
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_PRIEST && m_spellInfo->SpellIconID == 2178)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_PRIEST && m_spellInfo->SpellIconID == 2178)
         if (m_caster->HasAuraEffect(63248, 0))      // no SpellFamilyFlags or SpellIconID to identify this
             mechanic_immune = 1 << MECHANIC_STUN;   // "immune" to stun only for this cast
 
@@ -6105,7 +6105,7 @@ SpellCastResult Spell::CheckItems()
                         }
                         else
                         {
-                            if (!(m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && (m_spellInfo->SpellFamilyFlags[0] & 0x40000000)))
+                            if (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->SpellFamilyFlags[0] & 0x40000000)))
                                 return SPELL_FAILED_TOO_MANY_OF_ITEM;
                             else if (!(p_caster->HasItemCount(m_spellInfo->EffectItemType[i], 1)))
                                 return SPELL_FAILED_TOO_MANY_OF_ITEM;
@@ -6496,7 +6496,7 @@ bool Spell::CheckTargetCreatureType(Unit* target) const
     uint32 spellCreatureTargetMask = m_spellInfo->TargetCreatureType;
 
     // Curse of Doom & Exorcism: not find another way to fix spell target check :/
-    if (m_spellInfo->SpellFamilyName == SPELLFAMILY_WARLOCK && m_spellInfo->Category == 1179)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->Category == 1179)
     {
         // not allow cast at player
         if (target->GetTypeId() == TYPEID_PLAYER)
@@ -6510,7 +6510,7 @@ bool Spell::CheckTargetCreatureType(Unit* target) const
         spellCreatureTargetMask =  0;
 
     // Polymorph and Grounding Totem
-    if (target->GetEntry() == 5925 && m_spellInfo->SpellFamilyName == SPELLFAMILY_MAGE && (m_spellInfo->SpellFamilyFlags[0] & 0x1000000) && m_spellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOD_CONFUSE)
+    if (target->GetEntry() == 5925 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->SpellFamilyFlags[0] & 0x1000000) && m_spellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOD_CONFUSE)
         return true;
 
     if (spellCreatureTargetMask)

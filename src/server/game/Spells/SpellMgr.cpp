@@ -753,7 +753,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
     if (spellproto->Attributes & SPELL_ATTR0_NEGATIVE_1)
         return false;
 
-    switch (spellproto->SpellFamilyName)
+    switch (spellproto->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
             switch (spellId)
@@ -1039,7 +1039,7 @@ bool IsSingleTargetSpells(SpellEntry const *spellInfo1, SpellEntry const *spellI
 {
     // TODO - need better check
     // Equal icon and spellfamily
-    if (spellInfo1->SpellFamilyName == spellInfo2->SpellFamilyName &&
+    if (spellInfo1->GetSpellFamilyName() == spellInfo2->GetSpellFamilyName() &&
         spellInfo1->SpellIconID == spellInfo2->SpellIconID)
         return true;
 
@@ -1243,7 +1243,7 @@ bool SpellMgr::IsAffectedByMod(SpellEntry const *spellInfo, SpellModifier *mod) 
 
     SpellEntry const *affect_spell = sSpellStore.LookupEntry(mod->spellId);
     // False if affect_spell == NULL or spellFamily not equal
-    if (!affect_spell || affect_spell->SpellFamilyName != spellInfo->GetSpellFamilyName())
+    if (!affect_spell || affect_spell->GetSpellFamilyName() != spellInfo->GetSpellFamilyName())
         return false;
 
     // true
@@ -1262,7 +1262,7 @@ void SpellMgr::LoadSpellProcEvents()
     uint32 count = 0;
 
     //                                                0      1           2                3                 4                 5                 6          7       8        9             10
-    QueryResult result = WorldDatabase.Query("SELECT entry, SchoolMask, SpellFamilyName, SpellFamilyMask0, SpellFamilyMask1, SpellFamilyMask2, procFlags, procEx, ppmRate, CustomChance, Cooldown FROM spell_proc_event");
+    QueryResult result = WorldDatabase.Query("SELECT entry, SchoolMask, GetSpellFamilyName(), SpellFamilyMask0, SpellFamilyMask1, SpellFamilyMask2, procFlags, procEx, ppmRate, CustomChance, Cooldown FROM spell_proc_event");
     if (!result)
     {
         sLog->outString(">> Loaded %u spell proc event conditions", count);
@@ -1436,7 +1436,7 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const* spellPr
                 return false;
 
             // Check (if set) for spellFamilyName
-            if (spellProcEvent->spellFamilyName && (spellProcEvent->spellFamilyName != procSpell->SpellFamilyName))
+            if (spellProcEvent->spellFamilyName && (spellProcEvent->spellFamilyName != procSpell->GetSpellFamilyName()))
                 return false;
 
             // spellFamilyName is Ok need check for spellFamilyMask if present
@@ -2785,7 +2785,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
         return DIMINISHING_NONE;
 
     // Explicit Diminishing Groups
-    switch (spellproto->SpellFamilyName)
+    switch (spellproto->GetSpellFamilyName())
     {
         // Event spells
         case SPELLFAMILY_UNK1:
@@ -2946,7 +2946,7 @@ int32 GetDiminishingReturnsLimitDuration(DiminishingGroup group, SpellEntry cons
         return 0;
 
     // Explicit diminishing duration
-    switch(spellproto->SpellFamilyName)
+    switch(spellproto->GetSpellFamilyName())
     {
         case SPELLFAMILY_HUNTER:
         {
@@ -3135,7 +3135,7 @@ bool SpellMgr::CanAurasStack(Aura const *aura1, Aura const *aura2, bool sameCast
             return false;
     }
 
-    if (spellInfo_1->SpellFamilyName != spellInfo_2->SpellFamilyName)
+    if (spellInfo_1->GetSpellFamilyName() != spellInfo_2->GetSpellFamilyName())
         return true;
 
     if (!sameCaster)

@@ -7722,7 +7722,7 @@ bool Unit::HandleObsModEnergyAuraProc(Unit *pVictim, uint32 /*damage*/, AuraEffe
     Unit* target = pVictim;
     int32 basepoints0 = 0;
 
-    switch(dummySpell->SpellFamilyName)
+    switch(dummySpell->GetSpellFamilyName())
     {
         case SPELLFAMILY_HUNTER:
         {
@@ -7779,7 +7779,7 @@ bool Unit::HandleModDamagePctTakenAuraProc(Unit *pVictim, uint32 /*damage*/, Aur
     Unit* target = pVictim;
     int32 basepoints0 = 0;
 
-    switch(dummySpell->SpellFamilyName)
+    switch(dummySpell->GetSpellFamilyName())
     {
         case SPELLFAMILY_PALADIN:
         {
@@ -7832,7 +7832,7 @@ bool Unit::HandleAuraProc(Unit * pVictim, uint32 damage, Aura * triggeredByAura,
 {
     SpellEntry const *dummySpell = triggeredByAura->GetSpellProto();
 
-    switch(dummySpell->SpellFamilyName)
+    switch(dummySpell->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
             switch (dummySpell->Id)
@@ -8063,7 +8063,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
     // Try handle unknown trigger spells
     if (sSpellStore.LookupEntry(trigger_spell_id) == NULL)
     {
-        switch (auraSpellInfo->SpellFamilyName)
+        switch (auraSpellInfo->GetSpellFamilyName())
         {
             case SPELLFAMILY_GENERIC:
                 switch (auraSpellInfo->Id)
@@ -8630,7 +8630,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
     }
 
     // Sword Specialization
-    if (auraSpellInfo->SpellFamilyName == SPELLFAMILY_GENERIC && auraSpellInfo->SpellIconID == 1462 && procSpell)
+    if (auraSpellInfo->GetSpellFamilyName() == SPELLFAMILY_GENERIC && auraSpellInfo->SpellIconID == 1462 && procSpell)
     {
         if (Player* plr = ToPlayer())
         {
@@ -8649,7 +8649,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
     }
 
     // Blade Barrier
-    if (auraSpellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && auraSpellInfo->SpellIconID == 85)
+    if (auraSpellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && auraSpellInfo->SpellIconID == 85)
     {
         Player * plr = this->ToPlayer();
         if (this->GetTypeId() != TYPEID_PLAYER || !plr || plr->getClass() != CLASS_DEATH_KNIGHT)
@@ -8660,7 +8660,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
     }
 
     // Rime
-    else if (auraSpellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && auraSpellInfo->SpellIconID == 56)
+    else if (auraSpellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && auraSpellInfo->SpellIconID == 56)
     {
         if (GetTypeId() != TYPEID_PLAYER)
             return false;
@@ -8812,7 +8812,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
         case 58679:
         {
             // Proc only from healing part of Death Coil. Check is essential as all Death Coil spells have 0x2000 mask in SpellFamilyFlags
-            if (!procSpell || !(procSpell->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && procSpell->SpellFamilyFlags[0] == 0x80002000))
+            if (!procSpell || !(procSpell->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && procSpell->SpellFamilyFlags[0] == 0x80002000))
                 return false;
             break;
         }
@@ -10271,7 +10271,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                 {
                     Aura const * aura = itr->second->GetBase();
                     SpellEntry const *m_spell = aura->GetSpellProto();
-                    if (m_spell->SpellFamilyName != SPELLFAMILY_WARLOCK || !(m_spell->SpellFamilyFlags[1] & 0x0004071B || m_spell->SpellFamilyFlags[0] & 0x8044C402))
+                    if (m_spell->GetSpellFamilyName() != SPELLFAMILY_WARLOCK || !(m_spell->SpellFamilyFlags[1] & 0x0004071B || m_spell->SpellFamilyFlags[0] & 0x8044C402))
                         continue;
                     modPercent += stepPercent * aura->GetStackAmount();
                     if (modPercent >= maxPercent)
@@ -10359,7 +10359,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     }
 
     // Custom scripted damage
-    switch(spellProto->SpellFamilyName)
+    switch(spellProto->GetSpellFamilyName())
     {
         case SPELLFAMILY_MAGE:
             // Ice Lance
@@ -10656,7 +10656,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         }
 
         float coeff2 = CalculateLevelPenalty(spellProto) * stack;
-        if (spellProto->SpellFamilyName) //TODO: fix this
+        if (spellProto->GetSpellFamilyName()) //TODO: fix this
             TakenTotal+= int32(TakenAdvertisedBenefit * coeff * coeff2);
         if (Player* modOwner = GetSpellModOwner())
         {
@@ -10820,7 +10820,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                     }
                 }
                 // Custom crit by class
-                switch (spellProto->SpellFamilyName)
+                switch (spellProto->GetSpellFamilyName())
                 {
                     case SPELLFAMILY_DRUID:
                         // Improved Faerie Fire
@@ -10881,7 +10881,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
             if (pVictim)
             {
                 // Custom crit by class
-                switch(spellProto->SpellFamilyName)
+                switch(spellProto->GetSpellFamilyName())
                 {
                     case SPELLFAMILY_DRUID:
                         // Rend and Tear - bonus crit chance for Ferocious Bite on bleeding targets
@@ -10999,7 +10999,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
             return owner->SpellHealingBonus(pVictim, spellProto, healamount, damagetype, stack);
 
     // no bonus for heal potions/bandages
-    if (spellProto->SpellFamilyName == SPELLFAMILY_POTION)
+    if (spellProto->GetSpellFamilyName() == SPELLFAMILY_POTION)
         return healamount;
 
     // Healing Done
@@ -11056,7 +11056,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
                     if (aura->GetCasterGUID() != GetGUID())
                         continue;
                     SpellEntry const* m_spell = aura->GetSpellProto();
-                    if (m_spell->SpellFamilyName != SPELLFAMILY_DRUID ||
+                    if (m_spell->GetSpellFamilyName() != SPELLFAMILY_DRUID ||
                         !(m_spell->SpellFamilyFlags[1] & 0x00000010 || m_spell->SpellFamilyFlags[0] & 0x50))
                         continue;
                     modPercent += stepPercent * aura->GetStackAmount();
@@ -11129,7 +11129,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
                 DoneTotal += int32(DoneAdvertisedBenefit * 0.377f); //37.7% of BH per tick
         }
         // Earthliving - 0.45% of normal hot coeff
-        else if (spellProto->SpellFamilyName == SPELLFAMILY_SHAMAN && spellProto->SpellFamilyFlags[1] & 0x80000)
+        else if (spellProto->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && spellProto->SpellFamilyFlags[1] & 0x80000)
             factorMod *= 0.45f;
         // Already set to scripted? so not uses healing bonus coefficient
         // No heal coeff for SPELL_DAMAGE_CLASS_NONE class spells by default
@@ -11212,7 +11212,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, heal);
 
     // Nourish cast
-    if (spellProto->SpellFamilyName == SPELLFAMILY_DRUID && spellProto->SpellFamilyFlags[1] & 0x2000000)
+    if (spellProto->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellProto->SpellFamilyFlags[1] & 0x2000000)
     {
         // Rejuvenation, Regrowth, Lifebloom, or Wild Growth
         if (pVictim->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_DRUID, 0x50, 0x4000010, 0))
@@ -11435,7 +11435,7 @@ bool Unit::IsDamageToThreatSpell(SpellEntry const * spellInfo) const
     if (!spellInfo)
         return false;
 
-    switch(spellInfo->SpellFamilyName)
+    switch(spellInfo->GetSpellFamilyName())
     {
         case SPELLFAMILY_WARLOCK:
             if (spellInfo->SpellFamilyFlags[0] == 0x100) // Searing Pain
@@ -11638,7 +11638,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage, WeaponAttackType att
 
     // Custom scripted damage
     if (spellProto)
-        switch(spellProto->SpellFamilyName)
+        switch(spellProto->GetSpellFamilyName())
         {
             case SPELLFAMILY_DEATHKNIGHT:
                 // Glacier Rot
@@ -11668,7 +11668,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage, WeaponAttackType att
         uint32 mechanicMask = GetAllSpellMechanicMask(spellProto);
 
         // Shred, Maul - "Effects which increase Bleed damage also increase Shred damage"
-        if (spellProto->SpellFamilyName == SPELLFAMILY_DRUID && spellProto->SpellFamilyFlags[0] & 0x00008800)
+        if (spellProto->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellProto->SpellFamilyFlags[0] & 0x00008800)
             mechanicMask |= (1<<MECHANIC_BLEED);
 
         if (mechanicMask)
@@ -11701,7 +11701,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage, WeaponAttackType att
             case 19:
             case 1804:
             {
-                if ((*i)->GetSpellProto()->SpellFamilyName != SPELLFAMILY_PALADIN)
+                if ((*i)->GetSpellProto()->GetSpellFamilyName() != SPELLFAMILY_PALADIN)
                     continue;
 
                 if ((*i)->GetMiscValue() & (spellProto ? GetSpellSchoolMask(spellProto) : 0))
@@ -12916,7 +12916,7 @@ int32 Unit::ModSpellDuration(SpellEntry const* spellProto, Unit const* target, i
         // Mixology - duration boost
         if (target->GetTypeId() == TYPEID_PLAYER)
         {
-            if (spellProto->SpellFamilyName == SPELLFAMILY_POTION && (
+            if (spellProto->GetSpellFamilyName() == SPELLFAMILY_POTION && (
                 sSpellMgr->IsSpellMemberOfSpellGroup(spellProto->Id, SPELL_GROUP_ELIXIR_BATTLE) ||
                 sSpellMgr->IsSpellMemberOfSpellGroup(spellProto->Id, SPELL_GROUP_ELIXIR_GUARDIAN)))
             {
@@ -12929,7 +12929,7 @@ int32 Unit::ModSpellDuration(SpellEntry const* spellProto, Unit const* target, i
     // Glyphs which increase duration of selfcasted buffs
     if (target == this)
     {
-        switch (spellProto->SpellFamilyName)
+        switch (spellProto->GetSpellFamilyName())
         {
             case SPELLFAMILY_DRUID:
                 if (spellProto->SpellFamilyFlags[0] & 0x100)
@@ -12966,7 +12966,7 @@ void Unit::ModSpellCastTime(SpellEntry const* spellProto, int32 & castTime, Spel
     if (Player* modOwner = GetSpellModOwner())
         modOwner->ApplySpellMod(spellProto->Id, SPELLMOD_CASTING_TIME, castTime, spell);
 
-    if (!(spellProto->Attributes & (SPELL_ATTR0_UNK4|SPELL_ATTR0_TRADESPELL)) && spellProto->SpellFamilyName)
+    if (!(spellProto->Attributes & (SPELL_ATTR0_UNK4|SPELL_ATTR0_TRADESPELL)) && spellProto->GetSpellFamilyName())
         castTime = int32(float(castTime) * GetFloatValue(UNIT_MOD_CAST_SPEED));
     else if (spellProto->Attributes & SPELL_ATTR0_REQ_AMMO && !(spellProto->AttributesEx2 & SPELL_ATTR2_AUTOREPEAT_FLAG))
         castTime = int32(float(castTime) * m_modAttackSpeedPct[RANGED_ATTACK]);
@@ -15002,7 +15002,7 @@ bool Unit::HandleAuraRaidProcFromChargeWithValue(AuraEffect *triggeredByAura)
     uint64 caster_guid = triggeredByAura->GetCasterGUID();
 
     //Currently only Prayer of Mending
-    if (!(spellProto->SpellFamilyName == SPELLFAMILY_PRIEST && spellProto->SpellFamilyFlags[1] & 0x20))
+    if (!(spellProto->GetSpellFamilyName() == SPELLFAMILY_PRIEST && spellProto->SpellFamilyFlags[1] & 0x20))
     {
         sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Unit::HandleAuraRaidProcFromChargeWithValue, received not handled spell: %u", spellProto->Id);
         return false;

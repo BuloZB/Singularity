@@ -171,7 +171,7 @@ class spell_rog_preparation : public SpellScriptLoader
                 {
                     SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
 
-                    if (spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE)
+                    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE)
                     {
                         if (spellInfo->SpellFamilyFlags[1] & SPELLFAMILYFLAG1_ROGUE_COLDB_SHADOWSTEP ||      // Cold Blood, Shadowstep
                             spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_VAN_EVAS_SPRINT)           // Vanish, Evasion, Sprint

@@ -932,7 +932,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                         caster->AddAura(*itr, target);
                 }
         }
-        switch (GetSpellProto()->SpellFamilyName)
+        switch (GetSpellProto()->GetSpellFamilyName())
         {
             case SPELLFAMILY_GENERIC:
                 switch(GetId())
@@ -1165,7 +1165,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 }
             }
         }
-        switch(GetSpellProto()->SpellFamilyName)
+        switch(GetSpellProto()->GetSpellFamilyName())
         {
             case SPELLFAMILY_GENERIC:
                 switch(GetId())
@@ -1424,7 +1424,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
     }
 
     // mods at aura apply or remove
-    switch (GetSpellProto()->SpellFamilyName)
+    switch (GetSpellProto()->GetSpellFamilyName())
     {
         case SPELLFAMILY_GENERIC:
             switch (GetId())
