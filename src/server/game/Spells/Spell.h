@@ -243,7 +243,7 @@ struct SpellValue
     {
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             EffectBasePoints[i] = proto->GetSpellEffectBasePoints(i);
-        MaxAffectedTargets = proto->MaxAffectedTargets;
+        MaxAffectedTargets = proto->GetMaxAffectedTargets();
         RadiusMod = 1.0f;
     }
     int32     EffectBasePoints[3];
@@ -496,6 +496,7 @@ class Spell
         void HandleThreatSpells(uint32 spellId);
 
         const SpellEntry * const m_spellInfo;
+        SpellInterruptsEntry const* m_spellInterrupts;
         Item* m_CastItem;
         uint64 m_castItemGUID;
         uint8 m_cast_count;
@@ -517,7 +518,7 @@ class Spell
         }
         bool IsTriggered() const {return m_IsTriggeredSpell;};
         bool IsChannelActive() const { return m_caster->GetUInt32Value(UNIT_CHANNEL_SPELL) != 0; }
-        bool IsAutoActionResetSpell() const { return !m_IsTriggeredSpell && (m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_AUTOATTACK);  }
+        bool IsAutoActionResetSpell() const { return !m_IsTriggeredSpell && (m_spellInterrupts->InterruptFlags & SPELL_INTERRUPT_FLAG_AUTOATTACK);  }
 
         bool IsDeletable() const { return !m_referencedFromCurrentSpell && !m_executedCurrently; }
         void SetReferencedFromCurrent(bool yes) { m_referencedFromCurrentSpell = yes; }

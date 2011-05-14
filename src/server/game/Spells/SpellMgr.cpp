@@ -379,24 +379,24 @@ uint32 CalculatePowerCost(SpellEntry const * spellInfo, Unit const * caster, Spe
     }
 
     // Base powerCost
-    int32 powerCost = spellInfo->manaCost;
+    int32 powerCost = spellInfo->GetManaCost();
     // PCT cost from total amount
-    if (spellInfo->ManaCostPercentage)
+    if (spellInfo->GetManaCostPercentage())
     {
         switch (spellInfo->powerType)
         {
             // health as power used
             case POWER_HEALTH:
-                powerCost += int32(CalculatePctU(caster->GetCreateHealth(), spellInfo->ManaCostPercentage));
+                powerCost += int32(CalculatePctU(caster->GetCreateHealth(), spellInfo->GetManaCostPercentage()));
                 break;
             case POWER_MANA:
-                powerCost += int32(CalculatePctU(caster->GetCreateMana(), spellInfo->ManaCostPercentage));
+                powerCost += int32(CalculatePctU(caster->GetCreateMana(), spellInfo->GetManaCostPercentage()));
                 break;
             case POWER_RAGE:
             case POWER_FOCUS:
             case POWER_ENERGY:
             case POWER_HAPPINESS:
-                powerCost += int32(CalculatePctU(caster->GetMaxPower(Powers(spellInfo->powerType)), spellInfo->ManaCostPercentage));
+                powerCost += int32(CalculatePctU(caster->GetMaxPower(Powers(spellInfo->powerType)), spellInfo->GetManaCostPercentage()));
                 break;
             case POWER_RUNE:
             case POWER_RUNIC_POWER:
