@@ -462,7 +462,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                 if (m_spellInfo->SpellFamilyFlags[1] & 0x400)
                     ApplyPctF(damage, m_caster->GetTotalAttackPowerValue(BASE_ATTACK));
                 // Shield Slam
-                else if (m_spellInfo->SpellFamilyFlags[1] & 0x200 && m_spellInfo->Category == 1209)
+                else if (m_spellInfo->SpellFamilyFlags[1] & 0x200 && m_spellInfo->GetCategory() == 1209)
                     damage += int32(m_caster->ApplyEffectModifiers(m_spellInfo, effect, float(m_caster->GetShieldBlockValue())));
                 // Victory Rush
                 else if (m_spellInfo->SpellFamilyFlags[1] & 0x100)
@@ -494,7 +494,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     }
                 }
                 // Conflagrate - consumes Immolate or Shadowflame
-                else if (m_spellInfo->TargetAuraState == AURA_STATE_CONFLAGRATE)
+                else if (m_spellInfo->GetTargetAuraState() == AURA_STATE_CONFLAGRATE)
                 {
                     AuraEffect const* aura = NULL;                // found req. aura for damage calculation
 
@@ -694,7 +694,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     Unit::AuraEffectList const& decSpeedList = unitTarget->GetAuraEffectsByType(SPELL_AURA_MOD_DECREASE_SPEED);
                     for (Unit::AuraEffectList::const_iterator iter = decSpeedList.begin(); iter != decSpeedList.end(); ++iter)
                     {
-                        if ((*iter)->GetSpellProto()->SpellIconID == 15 && (*iter)->GetSpellProto()->Dispel == 0)
+                        if ((*iter)->GetSpellProto()->SpellIconID == 15 && (*iter)->GetSpellProto()->GetDispel() == 0)
                         {
                             found = true;
                             break;
@@ -1317,7 +1317,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                     case 27222:
                     case 57946: spFactor = 0.5f; break;
                 }
-                int32 damage = int32(SpellMgr::CalculateSpellEffectAmount(m_spellInfo, 0) + (6.3875 * m_spellInfo->baseLevel));
+                int32 damage = int32(SpellMgr::CalculateSpellEffectAmount(m_spellInfo, 0) + (6.3875 * m_spellInfo->GetBaseLevel()));
                 int32 mana = int32(damage + (m_caster->ToPlayer()->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS+SPELL_SCHOOL_SHADOW) * spFactor));
 
                 if (unitTarget && (int32(unitTarget->GetHealth()) > damage))
@@ -1724,7 +1724,7 @@ void Spell::EffectTriggerSpell(SpellEffectEntry const* effect)
             if (!spell)
                 return;
 
-            for (uint32 j = 0; j < spell->StackAmount; ++j)
+            for (uint32 j = 0; j < spell->GetStackAmount(); ++j)
                 m_caster->CastSpell(unitTarget, spell->Id, true);
             return;
         }
@@ -1736,7 +1736,7 @@ void Spell::EffectTriggerSpell(SpellEffectEntry const* effect)
             if (!spell)
                 return;
 
-            for (uint32 j = 0; j < spell->StackAmount; ++j)
+            for (uint32 j = 0; j < spell->GetStackAmount(); ++j)
                 m_caster->CastSpell(unitTarget, spell->Id, true);
             return;
         }
@@ -1755,8 +1755,8 @@ void Spell::EffectTriggerSpell(SpellEffectEntry const* effect)
             {
                 // remove all harmful spells on you...
                 SpellEntry const* spell = iter->second->GetBase()->GetSpellProto();
-                if ((spell->DmgClass == SPELL_DAMAGE_CLASS_MAGIC // only affect magic spells
-                    || ((1<<spell->Dispel) & dispelMask))
+                if ((spell->GetDmgClass() == SPELL_DAMAGE_CLASS_MAGIC // only affect magic spells
+                    || ((1<<spell->GetDispel()) & dispelMask))
                     // ignore positive and passive auras
                     && !iter->second->IsPositive() && !iter->second->GetBase()->IsPassive())
                 {
@@ -1796,8 +1796,8 @@ void Spell::EffectTriggerSpell(SpellEffectEntry const* effect)
 
     // Remove spell cooldown (not category) if spell triggering spell with cooldown and same category
     // Needed by freezing arrow and few other spells
-    if (m_caster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->CategoryRecoveryTime && spellInfo->CategoryRecoveryTime
-        && m_spellInfo->Category == spellInfo->Category)
+    if (m_caster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->GetCategoryRecoveryTime() && spellInfo->GetCategoryRecoveryTime()
+        && m_spellInfo->GetCategory() == spellInfo->GetCategory())
         m_caster->ToPlayer()->RemoveSpellCooldown(spellInfo->Id);
 
     // Note: not exist spells with weapon req. and IsSpellHaveCasterSourceTargets == true
@@ -1826,8 +1826,8 @@ void Spell::EffectTriggerMissileSpell(SpellEffectEntry const* effect)
 
     // Remove spell cooldown (not category) if spell triggering spell with cooldown and same category
     // Needed by freezing arrow and few other spells
-    if (m_caster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->CategoryRecoveryTime && spellInfo->CategoryRecoveryTime
-        && m_spellInfo->Category == spellInfo->Category)
+    if (m_caster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->GetCategoryRecoveryTime() && spellInfo->GetCategoryRecoveryTime()
+        && m_spellInfo->GetCategory() == spellInfo->GetCategory())
         m_caster->ToPlayer()->RemoveSpellCooldown(spellInfo->Id);
 
     float x, y, z;

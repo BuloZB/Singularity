@@ -3295,7 +3295,7 @@ void Player::SendInitialSpells()
         data << uint32(itr->first);
 
         data << uint16(itr->second.itemid);                 // cast item id
-        data << uint16(sEntry->Category);                   // spell category
+        data << uint16(sEntry->GetCategory());                   // spell category
 
         // send infinity cooldown in special format
         if (itr->second.end >= infTime)
@@ -3307,7 +3307,7 @@ void Player::SendInitialSpells()
 
         time_t cooldown = itr->second.end > curTime ? (itr->second.end-curTime)*IN_MILLISECONDS : 0;
 
-        if (sEntry->Category)                                // may be wrong, but anyway better than nothing...
+        if (sEntry->GetCategory())                                // may be wrong, but anyway better than nothing...
         {
             data << uint32(0);                              // cooldown
             data << uint32(cooldown);                       // category cooldown
@@ -3757,7 +3757,7 @@ bool Player::addSpell(uint32 spell_id, bool active, bool learning, bool dependen
 
             if (!Has310Flyer(false) && pSkill->id == SKILL_MOUNTS)
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
+                    if (spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
                         SpellMgr::CalculateSpellEffectAmount(spellInfo, i) == 310)
                         SetHas310Flyer(true);
 
@@ -3849,11 +3849,11 @@ bool Player::IsNeedCastPassiveSpellAtLearn(SpellEntry const* spellInfo) const
     // note: form passives activated with shapeshift spells be implemented by HandleShapeshiftBoosts instead of spell_learn_spell
     // talent dependent passives activated at form apply have proper stance data
     ShapeshiftForm form = GetShapeshiftForm();
-    bool need_cast = (!spellInfo->Stances || (form && (spellInfo->Stances & (1 << (form - 1)))) ||
+    bool need_cast = (!spellInfo->GetStances() || (form && (spellInfo->GetStances() & (1 << (form - 1)))) ||
         (!form && (spellInfo->AttributesEx2 & SPELL_ATTR2_NOT_NEED_SHAPESHIFT)));
 
     //Check CasterAuraStates
-    return need_cast && (!spellInfo->CasterAuraState || HasAuraState(AuraState(spellInfo->CasterAuraState)));
+    return need_cast && (!spellInfo->GetCasterAuraState() || HasAuraState(AuraState(spellInfo->GetCasterAuraState())));
 }
 
 void Player::learnSpell(uint32 spell_id, bool dependent)
@@ -4033,7 +4033,7 @@ void Player::removeSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
             {
                 SpellEntry const *pSpellInfo = sSpellStore.LookupEntry(spell_id);
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    if (pSpellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
+                    if (pSpellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
                         SpellMgr::CalculateSpellEffectAmount(pSpellInfo, i) == 310)
                         Has310Flyer(true, spell_id);    // with true as first argument its also used to set/remove the flag
             }
@@ -4129,7 +4129,7 @@ bool Player::Has310Flyer(bool checkAllSpells, uint32 excludeSpellId)
 
                 pSpellInfo = sSpellStore.LookupEntry(itr->first);
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    if (pSpellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
+                    if (pSpellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
                         SpellMgr::CalculateSpellEffectAmount(pSpellInfo, i) == 310)
                     {
                         SetHas310Flyer(true);
@@ -4187,8 +4187,8 @@ void Player::RemoveArenaSpellCooldowns(bool removeActivePetCooldowns)
         SpellEntry const * entry = sSpellStore.LookupEntry(itr->first);
         // check if spellentry is present and if the cooldown is less or equal to 10 min
         if (entry &&
-            entry->RecoveryTime <= 10 * MINUTE * IN_MILLISECONDS &&
-            entry->CategoryRecoveryTime <= 10 * MINUTE * IN_MILLISECONDS)
+            entry->GetRecoveryTime() <= 10 * MINUTE * IN_MILLISECONDS &&
+            entry->GetCategoryRecoveryTime() <= 10 * MINUTE * IN_MILLISECONDS)
         {
             // remove & notify
             RemoveSpellCooldown(itr->first, true);
@@ -6062,7 +6062,7 @@ bool Player::UpdateCraftSkill(uint32 spellid)
 
             // Alchemy Discoveries here
             SpellEntry const* spellEntry = sSpellStore.LookupEntry(spellid);
-            if (spellEntry && spellEntry->Mechanic == MECHANIC_DISCOVERY)
+            if (spellEntry && spellEntry->GetMechanic() == MECHANIC_DISCOVERY)
             {
                 if (uint32 discoveredSpell = GetSkillDiscoverySpell(_spell_idx->second->skillId, spellid, this))
                     learnSpell(discoveredSpell, false);
@@ -8217,7 +8217,7 @@ void Player::CastItemCombatSpell(Unit *target, WeaponAttackType attType, uint32 
             if (m_extraAttacks && IsSpellHaveEffect(spellInfo, SPELL_EFFECT_ADD_EXTRA_ATTACKS))
                 return;
 
-            float chance = (float)spellInfo->procChance;
+            float chance = (float)spellInfo->GetProcChance();
 
             if (spellData.SpellPPMRate)
             {
@@ -12067,7 +12067,7 @@ Item* Player::EquipItem(uint16 pos, Item *pItem, bool update)
                     sLog->outError("Weapon switch cooldown spell %u couldn't be found in Spell.dbc", cooldownSpell);
                 else
                 {
-                    m_weaponChangeTimer = spellProto->StartRecoveryTime;
+                    m_weaponChangeTimer = spellProto->GetStartRecoveryTime();
 
                     AddGlobalCooldown(spellProto, NULL);    // NULL spell is safe (needed for serverside GCD
 
@@ -17112,10 +17112,10 @@ void Player::_LoadAuras(PreparedQueryResult result, uint32 timediff)
             }
 
             // prevent wrong values of remaincharges
-            if (spellproto->procCharges)
+            if (spellproto->GetProcCharges())
             {
-                if (remaincharges <= 0 || remaincharges > spellproto->procCharges)
-                    remaincharges = spellproto->procCharges;
+                if (remaincharges <= 0 || remaincharges > spellproto->GetProcCharges())
+                    remaincharges = spellproto->GetProcCharges();
             }
             else
                 remaincharges = 0;
@@ -20061,7 +20061,7 @@ void Player::ProhibitSpellScholl(SpellSchoolMask idSchoolMask, uint32 unTimeMs)
         if (spellInfo->Attributes & SPELL_ATTR0_DISABLED_WHILE_ACTIVE)
             continue;
 
-        if (spellInfo->PreventionType != SPELL_PREVENTION_TYPE_SILENCE)
+        if (spellInfo->GetPreventionType() != SPELL_PREVENTION_TYPE_SILENCE)
             continue;
 
         if ((idSchoolMask & GetSpellSchoolMask(spellInfo)) && GetSpellCooldownDelay(unSpellId) < unTimeMs)
@@ -20491,9 +20491,9 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
     // if no cooldown found above then base at DBC data
     if (rec < 0 && catrec < 0)
     {
-        cat = spellInfo->Category;
-        rec = spellInfo->RecoveryTime;
-        catrec = spellInfo->CategoryRecoveryTime;
+        cat = spellInfo->GetCategory();
+        rec = spellInfo->GetRecoveryTime();
+        catrec = spellInfo->GetCategoryRecoveryTime();
     }
 
     time_t curTime = time(NULL);
@@ -22866,10 +22866,10 @@ void Player::UpdateCharmedAI()
 
 void Player::AddGlobalCooldown(SpellEntry const *spellInfo, Spell *spell)
 {
-    if (!spellInfo || !spellInfo->StartRecoveryTime)
+    if (!spellInfo || !spellInfo->GetStartRecoveryTime())
         return;
 
-    float cdTime = float(spellInfo->StartRecoveryTime);
+    float cdTime = float(spellInfo->GetStartRecoveryTime());
 
     if (!(spellInfo->Attributes & (SPELL_ATTR0_UNK4|SPELL_ATTR0_PASSIVE)))
         cdTime *= GetFloatValue(UNIT_MOD_CAST_SPEED);
@@ -22881,7 +22881,7 @@ void Player::AddGlobalCooldown(SpellEntry const *spellInfo, Spell *spell)
 
     ApplySpellMod(spellInfo->Id, SPELLMOD_GLOBAL_COOLDOWN, cdTime, spell);
     if (cdTime > 0)
-        m_globalCooldowns[spellInfo->StartRecoveryCategory] = uint32(cdTime);
+        m_globalCooldowns[spellInfo->GetStartRecoveryCategory()] = uint32(cdTime);
 }
 
 bool Player::HasGlobalCooldown(SpellEntry const *spellInfo) const
@@ -22889,16 +22889,16 @@ bool Player::HasGlobalCooldown(SpellEntry const *spellInfo) const
     if (!spellInfo)
         return false;
 
-    std::map<uint32, uint32>::const_iterator itr = m_globalCooldowns.find(spellInfo->StartRecoveryCategory);
+    std::map<uint32, uint32>::const_iterator itr = m_globalCooldowns.find(spellInfo->GetStartRecoveryCategory());
     return itr != m_globalCooldowns.end() && (itr->second > sWorld->GetUpdateTime());
 }
 
 void Player::RemoveGlobalCooldown(SpellEntry const *spellInfo)
 {
-    if (!spellInfo || !spellInfo->StartRecoveryTime)
+    if (!spellInfo || !spellInfo->GetStartRecoveryTime())
         return;
 
-    m_globalCooldowns[spellInfo->StartRecoveryCategory] = 0;
+    m_globalCooldowns[spellInfo->GetStartRecoveryCategory()] = 0;
 }
 
 uint32 Player::GetRuneBaseCooldown(uint8 index)

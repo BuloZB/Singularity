@@ -152,7 +152,7 @@ void UnitAI::DoCast(uint32 spellId)
 
             DefaultTargetSelector targetSelector(me, range, playerOnly, -(int32)spellId);
             if (!(spellInfo->Attributes & SPELL_ATTR0_BREAKABLE_BY_DAMAGE)
-                && !(spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_VICTIM)
+                && !(spellInfo->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_NOT_VICTIM)
                 && targetSelector(me->getVictim()))
                 target = me->getVictim();
             else
@@ -187,8 +187,8 @@ void UnitAI::FillAISpellInfo()
         else
             AIInfo->condition = AICOND_COMBAT;
 
-        if (AIInfo->cooldown < spellInfo->RecoveryTime)
-            AIInfo->cooldown = spellInfo->RecoveryTime;
+        if (AIInfo->cooldown < spellInfo->GetRecoveryTime())
+            AIInfo->cooldown = spellInfo->GetRecoveryTime();
 
         if (!GetSpellMaxRange(spellInfo, false))
             UPDATE_TARGET(AITARGET_SELF)
@@ -213,7 +213,7 @@ void UnitAI::FillAISpellInfo()
                 }
             }
         }
-        AIInfo->realCooldown = spellInfo->RecoveryTime + spellInfo->StartRecoveryTime;
+        AIInfo->realCooldown = spellInfo->GetRecoveryTime() + spellInfo->GetStartRecoveryTime();
         SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(spellInfo->rangeIndex);
         if (srange)
             AIInfo->maxRange = srange->maxRangeHostile * 3 / 4;

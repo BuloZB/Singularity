@@ -295,7 +295,7 @@ void WorldSession::HandlePetActionHelper(Unit *pet, uint64 guid1, uint16 spellid
                 return;
             }
 
-            if (spellInfo->StartRecoveryCategory > 0)
+            if (spellInfo->GetStartRecoveryCategory() > 0)
                 if (pet->GetCharmInfo() && pet->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
                     return;
 
@@ -757,7 +757,7 @@ void WorldSession::HandlePetCastSpellOpcode(WorldPacket& recvPacket)
         return;
     }
 
-    if (spellInfo->StartRecoveryCategory > 0) // Check if spell is affected by GCD
+    if (spellInfo->GetStartRecoveryCategory() > 0) // Check if spell is affected by GCD
         if (caster->GetTypeId() == TYPEID_UNIT && caster->GetCharmInfo() && caster->GetCharmInfo()->GetGlobalCooldownMgr().HasGlobalCooldown(spellInfo))
         {
             caster->SendPetCastFail(spellId, SPELL_FAILED_NOT_READY);

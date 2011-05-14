@@ -64,7 +64,7 @@ SpellCooldownsEntry const* SpellEntry::GetSpellCooldowns() const
     return SpellCooldownsId ? sSpellCooldownsStore.LookupEntry(SpellCooldownsId) : NULL;
 }
 
-SpellEffectEntry const* SpellEntry::GetSpellEffect(uint32 eff) const
+SpellEffectEntry const* SpellEntry::GetSpellEffect(SpellEffectEntry eff) const
 {
     return GetSpellEffectEntry(Id, eff);
 }
@@ -249,19 +249,19 @@ uint32 SpellEntry::GetRequiresSpellFocus() const
 uint32 SpellEntry::GetSpellEffectIdByIndex(uint32 index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->Effect : SPELL_EFFECT_NONE;
+    return effect ? effect->Effect : NULL;
 }
 
 uint32 SpellEntry::GetSpellEffectMechanic(uint32 index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->EffectMechanic : SPELL_EFFECT_NONE;
+    return effect ? effect->EffectMechanic : NULL;
 }
 
 uint32 SpellEntry::GetSpellEffectBasePoints(uint32 index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->EffectBasePoints : SPELL_EFFECT_NONE;
+    return effect ? effect->EffectBasePoints : NULL;
 }
 
 uint32 SpellEntry::GetAuraInterruptFlags() const
@@ -273,7 +273,7 @@ uint32 SpellEntry::GetAuraInterruptFlags() const
 uint32 SpellEntry::GetEffectImplicitTargetAByIndex(uint32 index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->EffectImplicitTargetA : TARGET_NONE;
+    return effect ? effect->EffectImplicitTargetA : NULL;
 }
 
 int32 SpellEntry::GetAreaGroupId() const
@@ -306,7 +306,7 @@ uint32 SpellEntry::GetTargetCreatureType() const
     return target ? target->TargetCreatureType : 0;
 }
 
-int32 SpellEntry::GetEffectMiscValue(SpellEffectIndex index) const
+int32 SpellEntry::GetEffectMiscValue(uint32 index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
     return effect ? effect->EffectMiscValue : 0;

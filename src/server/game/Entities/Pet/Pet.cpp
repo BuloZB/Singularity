@@ -1234,10 +1234,10 @@ void Pet::_LoadAuras(uint32 timediff)
             }
 
             // prevent wrong values of remaincharges
-            if (spellproto->procCharges)
+            if (spellproto->GetProcCharges())
             {
-                if (remaincharges <= 0 || remaincharges > spellproto->procCharges)
-                    remaincharges = spellproto->procCharges;
+                if (remaincharges <= 0 || remaincharges > spellproto->GetProcCharges())
+                    remaincharges = spellproto->GetProcCharges();
             }
             else
                 remaincharges = 0;
@@ -1401,7 +1401,7 @@ bool Pet::addSpell(uint32 spell_id, ActiveStates active /*= ACT_DECIDE*/, PetSpe
 
     m_spells[spell_id] = newspell;
 
-    if (IsPassiveSpell(spell_id) && (!spellInfo->CasterAuraState || HasAuraState(AuraState(spellInfo->CasterAuraState))))
+    if (IsPassiveSpell(spell_id) && (!spellInfo->GetCasterAuraState() || HasAuraState(AuraState(spellInfo->GetCasterAuraState()))))
         CastSpell(this, spell_id, true);
     else
         m_charmInfo->AddSpellToActionBar(spell_id);

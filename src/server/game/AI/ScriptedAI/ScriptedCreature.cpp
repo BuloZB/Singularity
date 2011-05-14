@@ -234,7 +234,7 @@ SpellEntry const* ScriptedAI::SelectSpell(Unit* target, uint32 school, uint32 me
             continue;
 
         //Check for spell mechanic if specified
-        if (mechanic && tempSpell->Mechanic != mechanic)
+        if (mechanic && tempSpell->GetMechanic() != mechanic)
             continue;
 
         //Make sure that the spell uses the requested amount of power

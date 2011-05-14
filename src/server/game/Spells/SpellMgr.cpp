@@ -477,7 +477,7 @@ AuraState GetSpellAuraState(SpellEntry const* spellInfo)
         return AURA_STATE_DEADLY_POISON;
 
     // Enrage aura state
-    if (spellInfo->Dispel == DISPEL_ENRAGE)
+    if (spellInfo->GetDispel() == DISPEL_ENRAGE)
         return AURA_STATE_ENRAGE;
 
     // Bleeding aura state
@@ -486,8 +486,8 @@ AuraState GetSpellAuraState(SpellEntry const* spellInfo)
 
     if (GetSpellSchoolMask(spellInfo) & SPELL_SCHOOL_MASK_FROST)
         for (uint8 i = 0; i<MAX_SPELL_EFFECTS; ++i)
-            if (spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_STUN
-                || spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_ROOT)
+            if (spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_STUN
+                || spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_ROOT)
                 return AURA_STATE_FROZEN;
 
     switch (spellInfo->Id)
@@ -508,13 +508,13 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
         case SPELLFAMILY_GENERIC:
         {
             // Food / Drinks (mostly)
-            if (spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED)
+            if (spellInfo->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_NOT_SEATED)
             {
                 bool food = false;
                 bool drink = false;
                 for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
                 {
-                    switch(spellInfo->EffectApplyAuraName[i])
+                    switch(spellInfo->GetEffectApplyAuraNameByIndex(i))
                     {
                         // Food
                         case SPELL_AURA_MOD_REGEN:
@@ -568,7 +568,7 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
             if (spellInfo->SpellFamilyFlags[0] & 0x400)
                 return SPELL_SPECIFIC_MAGE_ARCANE_BRILLANCE;
 
-            if ((spellInfo->SpellFamilyFlags[0] & 0x1000000) && spellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOD_CONFUSE)
+            if ((spellInfo->SpellFamilyFlags[0] & 0x1000000) && spellInfo->GetEffectApplyAuraNameByIndex(0) == SPELL_AURA_MOD_CONFUSE)
                 return SPELL_SPECIFIC_MAGE_POLYMORPH;
 
             break;
@@ -583,7 +583,7 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
         case SPELLFAMILY_WARLOCK:
         {
             // only warlock curses have this
-            if (spellInfo->Dispel == DISPEL_CURSE)
+            if (spellInfo->GetDispel() == DISPEL_CURSE)
                 return SPELL_SPECIFIC_CURSE;
 
             // Warlock (Demon Armor | Demon Skin | Fel Armor)
@@ -606,7 +606,7 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
         case SPELLFAMILY_HUNTER:
         {
             // only hunter stings have this
-            if (spellInfo->Dispel == DISPEL_POISON)
+            if (spellInfo->GetDispel() == DISPEL_POISON)
                 return SPELL_SPECIFIC_STING;
 
             // only hunter aspects have this (but not all aspects in hunter family)
@@ -652,7 +652,7 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
     {
         if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA)
         {
-            switch(spellInfo->EffectApplyAuraName[i])
+            switch(spellInfo->GetEffectApplyAuraNameByIndex(i))
             {
                 case SPELL_AURA_MOD_CHARM:
                 case SPELL_AURA_MOD_POSSESS_PET:
@@ -811,7 +811,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
     // Special case: effects which determine positivity of whole spell
     for (uint8 i = 0; i<MAX_SPELL_EFFECTS; ++i)
     {
-        if (spellproto->EffectApplyAuraName[i] == SPELL_AURA_MOD_STEALTH)
+        if (spellproto->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_STEALTH)
             return true;
     }
 
@@ -838,7 +838,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
         case SPELL_EFFECT_APPLY_AURA:
         case SPELL_EFFECT_APPLY_AREA_AURA_FRIEND:
         {
-            switch(spellproto->EffectApplyAuraName[effIndex])
+            switch(spellproto->GetEffectApplyAuraNameByIndex(effIndex))
             {
                 case SPELL_AURA_MOD_DAMAGE_DONE:            // dependent from bas point sign (negative -> negative)
                 case SPELL_AURA_MOD_STAT:
@@ -976,7 +976,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
         return false;
 
     if (!deep && spellproto->EffectTriggerSpell[effIndex]
-        && !spellproto->EffectApplyAuraName[effIndex]
+        && !spellproto->GetEffectApplyAuraNameByIndex(effIndex)
         && IsPositiveTarget(spellproto->EffectImplicitTargetA[effIndex], spellproto->EffectImplicitTargetB[effIndex])
         && !_isPositiveSpell(spellproto->EffectTriggerSpell[effIndex], true))
         return false;
@@ -1108,7 +1108,7 @@ SpellCastResult GetErrorAtShapeshiftedCast (SpellEntry const *spellInfo, uint32 
     // TODO: Find a way to disable use of these spells clientside
     if (shapeInfo && shapeInfo->flags1 & 0x400)
     {
-        if (!(stanceMask & spellInfo->Stances))
+        if (!(stanceMask & spellInfo->GetStances()))
             return SPELL_FAILED_ONLY_SHAPESHIFT;
     }
 
@@ -1299,7 +1299,7 @@ void SpellMgr::LoadSpellProcEvents()
 
         mSpellProcEventMap[entry] = spe;
 
-        if (spell->procFlags == 0)
+        if (spell->GetProcFlags() == 0)
         {
             if (spe.procFlags == 0)
             {
@@ -1697,13 +1697,13 @@ bool SpellMgr::canStackSpellRanks(SpellEntry const *spellInfo)
             case SPELLFAMILY_DRUID:
                 // Druid form Spell
                 if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA &&
-                    spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_SHAPESHIFT)
+                    spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_SHAPESHIFT)
                     return false;
                 break;
             case SPELLFAMILY_ROGUE:
                 // Rogue Stealth
                 if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA &&
-                    spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_SHAPESHIFT)
+                    spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_SHAPESHIFT)
                     return false;
         }
     }
@@ -1807,17 +1807,17 @@ bool SpellMgr::IsSkillTypeSpell(uint32 spellId, SkillType type) const
 int32 SpellMgr::CalculateSpellEffectAmount(SpellEntry const * spellEntry, uint8 effIndex, Unit const * caster, int32 const * effBasePoints, Unit const * /*target*/)
 {
     float basePointsPerLevel = spellEntry->EffectRealPointsPerLevel[effIndex];
-    int32 basePoints = effBasePoints ? *effBasePoints : spellEntry->EffectBasePoints[effIndex];
+    int32 basePoints = effBasePoints ? *effBasePoints : spellEntry->GetSpellEffectBasePoints(effIndex);
     int32 randomPoints = int32(spellEntry->EffectDieSides[effIndex]);
 
     // base amount modification based on spell lvl vs caster lvl
     if (caster)
     {
         int32 level = int32(caster->getLevel());
-        if (level > int32(spellEntry->maxLevel) && spellEntry->maxLevel > 0)
-            level = int32(spellEntry->maxLevel);
-        else if (level < int32(spellEntry->baseLevel))
-            level = int32(spellEntry->baseLevel);
+        if (level > int32(spellEntry->GetMaxLevel()) && spellEntry->GetMaxLevel() > 0)
+            level = int32(spellEntry->GetMaxLevel());
+        else if (level < int32(spellEntry->GetBaseLevel()))
+            level = int32(spellEntry->GetBaseLevel());
         level -= int32(spellEntry->spellLevel);
         basePoints += int32(level * basePointsPerLevel);
     }
@@ -1852,12 +1852,12 @@ int32 SpellMgr::CalculateSpellEffectAmount(SpellEntry const * spellEntry, uint8 
 
         // amount multiplication based on caster's level
         if (!basePointsPerLevel && (spellEntry->Attributes & SPELL_ATTR0_LEVEL_DAMAGE_CALCULATION && spellEntry->spellLevel) &&
-                spellEntry->Effect[effIndex] != SPELL_EFFECT_WEAPON_PERCENT_DAMAGE &&
-                spellEntry->Effect[effIndex] != SPELL_EFFECT_KNOCK_BACK &&
-                spellEntry->EffectApplyAuraName[effIndex] != SPELL_AURA_MOD_SPEED_ALWAYS &&
-                spellEntry->EffectApplyAuraName[effIndex] != SPELL_AURA_MOD_SPEED_NOT_STACK &&
-                spellEntry->EffectApplyAuraName[effIndex] != SPELL_AURA_MOD_INCREASE_SPEED &&
-                spellEntry->EffectApplyAuraName[effIndex] != SPELL_AURA_MOD_DECREASE_SPEED)
+                spellEntry->GetSpellEffectIdByIndex(effIndex) != SPELL_EFFECT_WEAPON_PERCENT_DAMAGE &&
+                spellEntry->GetSpellEffectIdByIndex(effIndex) != SPELL_EFFECT_KNOCK_BACK &&
+                spellEntry->GetEffectApplyAuraNameByIndex(effIndex) != SPELL_AURA_MOD_SPEED_ALWAYS &&
+                spellEntry->GetEffectApplyAuraNameByIndex(effIndex) != SPELL_AURA_MOD_SPEED_NOT_STACK &&
+                spellEntry->GetEffectApplyAuraNameByIndex(effIndex) != SPELL_AURA_MOD_INCREASE_SPEED &&
+                spellEntry->GetEffectApplyAuraNameByIndex(effIndex) != SPELL_AURA_MOD_DECREASE_SPEED)
                 //there are many more: slow speed, -healing pct
             value *= 0.25f * exp(caster->getLevel() * (70 - spellEntry->spellLevel) / 1000.0f);
             //value = int32(value * (int32)getLevel() / (int32)(spellProto->spellLevel ? spellProto->spellLevel : 1));
@@ -1904,9 +1904,9 @@ SpellEntry const* SpellMgr::SelectAuraRankForPlayerLevel(SpellEntry const* spell
     for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (IsPositiveEffect(spellInfo->Id, i) && (
-            spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA ||
-            spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AREA_AURA_PARTY ||
-            spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AREA_AURA_RAID
+            spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA ||
+            spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AREA_AURA_PARTY ||
+            spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AREA_AURA_RAID
 ))
         {
             needRankSelection = true;
@@ -1952,7 +1952,7 @@ void SpellMgr::LoadSpellLearnSkills()
 
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (entry->Effect[i] == SPELL_EFFECT_SKILL)
+            if (entry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
             {
                 SpellLearnSkillNode dbc_node;
                 dbc_node.skill = entry->EffectMiscValue[i];
@@ -2037,7 +2037,7 @@ void SpellMgr::LoadSpellLearnSpells()
 
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (entry->Effect[i] == SPELL_EFFECT_LEARN_SPELL)
+            if (entry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL)
             {
                 SpellLearnSpellNode dbc_node;
                 dbc_node.spell = entry->EffectTriggerSpell[i];
@@ -2116,9 +2116,9 @@ void SpellMgr::LoadSpellPetAuras()
                 sLog->outErrorDb("Spell %u listed in `spell_pet_auras` does not exist", spell);
                 continue;
             }
-            if (spellInfo->Effect[eff] != SPELL_EFFECT_DUMMY &&
-               (spellInfo->Effect[eff] != SPELL_EFFECT_APPLY_AURA ||
-                spellInfo->EffectApplyAuraName[eff] != SPELL_AURA_DUMMY))
+            if (spellInfo->GetSpellEffectIdByIndex(eff) != SPELL_EFFECT_DUMMY &&
+               (spellInfo->GetSpellEffectIdByIndex(eff) != SPELL_EFFECT_APPLY_AURA ||
+               spellInfo->GetEffectApplyAuraNameByIndex(eff) != SPELL_AURA_DUMMY))
             {
                 sLog->outError("Spell %u listed in `spell_pet_auras` does not have dummy aura or dummy effect", spell);
                 continue;

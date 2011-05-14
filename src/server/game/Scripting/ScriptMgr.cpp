@@ -283,7 +283,7 @@ void ScriptMgr::FillSpellSummary()
             if (pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEAL ||
                 pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEAL_MAX_HEALTH ||
                 pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEAL_MECHANICAL ||
-                (pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA  && pTempSpell->EffectApplyAuraName[j] == 8))
+                (pTempSpell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA  && pTempSpell->GetEffectApplyAuraNameByIndex(j) == 8))
                 SpellSummary[i].Effects |= 1 << (SELECT_EFFECT_HEALING-1);
 
             //Make sure that this spell applies an aura
@@ -614,7 +614,7 @@ InstanceScript* ScriptMgr::CreateInstanceData(InstanceMap* map)
     return tmpscript->GetInstanceScript(map);
 }
 
-bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Item* target)
+bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex const* effIndex, Item* target)
 {
     ASSERT(caster);
     ASSERT(target);
@@ -652,7 +652,7 @@ bool ScriptMgr::OnItemExpire(Player* player, ItemTemplate const* proto)
     return tmpscript->OnExpire(player, proto);
 }
 
-bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Creature* target)
+bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex const* effIndex, Creature* target)
 {
     ASSERT(caster);
     ASSERT(target);
@@ -847,7 +847,7 @@ void ScriptMgr::OnGameObjectUpdate(GameObject* go, uint32 diff)
     tmpscript->OnUpdate(go, diff);
 }
 
-bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, GameObject* target)
+bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex const* effIndex, GameObject* target)
 {
     ASSERT(caster);
     ASSERT(target);

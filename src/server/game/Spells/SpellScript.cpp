@@ -126,11 +126,11 @@ std::string _SpellScript::EffectNameCheck::ToString()
 
 bool _SpellScript::EffectAuraNameCheck::Check(SpellEntry const* spellEntry, uint8 effIndex)
 {
-    if (!spellEntry->EffectApplyAuraName[effIndex] && !effAurName)
+    if (!spellEntry->GetEffectApplyAuraNameByIndex(effIndex) && !effAurName)
         return true;
-    if (!spellEntry->EffectApplyAuraName[effIndex])
+    if (!spellEntry->GetEffectApplyAuraNameByIndex(effIndex))
         return false;
-    return (effAurName == SPELL_EFFECT_ANY) || (spellEntry->EffectApplyAuraName[effIndex] == effAurName);
+    return (effAurName == SPELL_EFFECT_ANY) || (spellEntry->GetEffectApplyAuraNameByIndex(effIndex) == effAurName);
 }
 
 std::string _SpellScript::EffectAuraNameCheck::ToString()

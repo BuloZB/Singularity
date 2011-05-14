@@ -63,7 +63,7 @@ bool IsQuestTameSpell(uint32 spellId)
     if (!spellproto) return false;
 
     return spellproto->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_THREAT
-        && spellproto->GetSpellEffectIdByIndex(1) == SPELL_EFFECT_APPLY_AURA && spellproto->EffectApplyAuraName[1] == SPELL_AURA_DUMMY;
+        && spellproto->GetEffectApplyAuraNameByIndex(1) == SPELL_EFFECT_APPLY_AURA && spellproto->GetEffectApplyAuraNameByIndex(1) == SPELL_AURA_DUMMY;
 }
 
 SpellCastTargets::SpellCastTargets() : m_elevation(0), m_speed(0)
@@ -440,7 +440,7 @@ m_caster(Caster), m_spellValue(new SpellValue(m_spellInfo))
     m_auraScaleMask = 0;
 
     // Get data for type of attack
-    switch (m_spellInfo->DmgClass)
+    switch (m_spellInfo->GetDmgClass())
     {
         case SPELL_DAMAGE_CLASS_MELEE:
             if (m_spellInfo->AttributesEx3 & SPELL_ATTR3_REQ_OFFHAND)
@@ -513,7 +513,7 @@ m_caster(Caster), m_spellValue(new SpellValue(m_spellInfo))
     // determine reflection
     m_canReflect = false;
 
-    if (m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC && !IsAreaOfEffectSpell(m_spellInfo) && !(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CANT_REFLECTED))
+    if (m_spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_MAGIC && !IsAreaOfEffectSpell(m_spellInfo) && !(m_spellInfo->AttributesEx2 & SPELL_ATTR2_CANT_REFLECTED))
     {
         for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
@@ -748,7 +748,7 @@ void Spell::SelectSpellTargets()
                         AddItemTarget(m_targets.getItemTarget(), i);
                     break;*/
                 case SPELL_EFFECT_APPLY_AURA:
-                    switch(m_spellInfo->EffectApplyAuraName[i])
+                    switch(m_spellInfo->GetEffectApplyAuraNameByIndex(i))
                     {
                         case SPELL_AURA_ADD_FLAT_MODIFIER:  // some spell mods auras have 0 target modes instead expected TARGET_UNIT_CASTER(1) (and present for other ranks for same spell for example)
                         case SPELL_AURA_ADD_PCT_MODIFIER:
@@ -847,7 +847,7 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const * /*triggeredByAura*/)
 
     m_procVictim = m_procAttacker = 0;
     // Get data for type of attack and fill base info for trigger
-    switch (m_spellInfo->DmgClass)
+    switch (m_spellInfo->GetDmgClass())
     {
         case SPELL_DAMAGE_CLASS_MELEE:
             m_procAttacker = PROC_FLAG_DONE_SPELL_MELEE_DMG_CLASS;
@@ -1227,7 +1227,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
                     break;
                 }
         }
-        switch(m_spellInfo->DmgClass)
+        switch(m_spellInfo->GetDmgClass())
         {
             case SPELL_DAMAGE_CLASS_MAGIC:
                 if (positive)
@@ -1299,7 +1299,7 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         {
             caster->ProcDamageAndSpell(unitTarget, procAttacker, procVictim, procEx, damageInfo.damage, m_attackType, m_spellInfo, m_triggeredByAuraSpell);
             if (caster->GetTypeId() == TYPEID_PLAYER && (m_spellInfo->Attributes & SPELL_ATTR0_STOP_ATTACK_TARGET) == 0 &&
-               (m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MELEE || m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_RANGED))
+               (m_spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_MELEE || m_spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_RANGED))
                 caster->ToPlayer()->CastItemCombatSpell(unitTarget, m_attackType, procVictim, procEx);
         }
 
@@ -1468,7 +1468,7 @@ SpellMissInfo Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask, bool 
             ASSERT(aurSpellInfo);
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
-                basePoints[i] = aurSpellInfo->EffectBasePoints[i];
+                basePoints[i] = aurSpellInfo->GetSpellEffectBasePoints(i);
                 if (m_spellInfo->GetSpellEffectIdByIndex(i) != aurSpellInfo->GetSpellEffectIdByIndex(i))
                 {
                     aurSpellInfo = m_spellInfo;
@@ -1751,7 +1751,7 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
     }*/
 
     //FIXME: This very like horrible hack and wrong for most spells
-    if (m_spellInfo->DmgClass != SPELL_DAMAGE_CLASS_MELEE)
+    if (m_spellInfo->GetDmgClass() != SPELL_DAMAGE_CLASS_MELEE)
         max_range += num * CHAIN_SPELL_JUMP_RADIUS;
 
     std::list<Unit*> tempUnitMap;
@@ -1797,7 +1797,7 @@ void Spell::SearchChainTarget(std::list<Unit*> &TagUnitMap, float max_range, uin
 
             // Check if (*next) is a valid chain target. If not, don't add to TagUnitMap, and repeat loop.
             // If you want to add any conditions to exclude a target from TagUnitMap, add condition in this while() loop.
-            while ((m_spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MELEE
+            while ((m_spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_MELEE
                 && !m_caster->isInFrontInMap(*next, max_range))
                 || !m_caster->canSeeOrDetect(*next)
                 || !cur->IsWithinLOSInMap(*next)
@@ -2289,9 +2289,9 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     if (SpellTargetPosition const* st = sSpellMgr->GetSpellTargetPosition(m_spellInfo->Id))
                     {
                         //TODO: fix this check
-                        if (m_spellInfo->Effect[0] == SPELL_EFFECT_TELEPORT_UNITS
-                            || m_spellInfo->Effect[1] == SPELL_EFFECT_TELEPORT_UNITS
-                            || m_spellInfo->Effect[2] == SPELL_EFFECT_TELEPORT_UNITS)
+                        if (m_spellInfo->GetSpellEffectIdByIndex(0) == SPELL_EFFECT_TELEPORT_UNITS
+                            || m_spellInfo->GetSpellEffectIdByIndex(1) == SPELL_EFFECT_TELEPORT_UNITS
+                            || m_spellInfo->GetSpellEffectIdByIndex(2) == SPELL_EFFECT_TELEPORT_UNITS)
                             m_targets.setDst(st->target_X, st->target_Y, st->target_Z, st->target_Orientation, (int32)st->target_mapId);
                         else if (st->target_mapId == m_caster->GetMapId())
                             m_targets.setDst(st->target_X, st->target_Y, st->target_Z, st->target_Orientation);
@@ -2435,7 +2435,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
     else if (pushType)
     {
         // Dummy, just for client
-        if (EffectTargetType[m_spellInfo->Effect[i]] != SPELL_REQUIRE_UNIT)
+        if (EffectTargetType[m_spellInfo->GetSpellEffectIdByIndex(i)] != SPELL_REQUIRE_UNIT)
             return;
 
         float radius;
@@ -2569,7 +2569,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                         default:
                             sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell (ID: %u) (caster Entry: %u) does not have type CONDITION_SOURCE_TYPE_SPELL_SCRIPT_TARGET record in `conditions` table.", m_spellInfo->Id, m_caster->GetEntry());
 
-                            if (m_spellInfo->Effect[i] == SPELL_EFFECT_TELEPORT_UNITS)
+                            if (m_spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_TELEPORT_UNITS)
                                 SearchAreaTarget(unitList, radius, pushType, SPELL_TARGETS_ENTRY, 0);
                             else if (IsPositiveEffect(m_spellInfo->Id, i))
                                 SearchAreaTarget(unitList, radius, pushType, SPELL_TARGETS_ALLY);
@@ -2596,7 +2596,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                 }
                 else
                 {
-                    if (m_spellInfo->Effect[i] == SPELL_EFFECT_ACTIVATE_OBJECT)
+                    if (m_spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_ACTIVATE_OBJECT)
                         sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell (ID: %u) (caster Entry: %u) with SPELL_EFFECT_ACTIVATE_OBJECT does not have type CONDITION_SOURCE_TYPE_SPELL_SCRIPT_TARGET record in `conditions` table.", m_spellInfo->Id, m_caster->GetEntry());
                     SearchGOAreaTarget(gobjectList, radius, pushType, SPELL_TARGETS_GO);
                 }
@@ -2883,13 +2883,13 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const * triggere
     {
         for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA)
+            if (m_spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_APPLY_AURA)
             {
                 // Change aura with ranks only if basepoints are taken from spellInfo and aura is positive
                 if (IsPositiveEffect(m_spellInfo->Id, i))
                 {
                     m_auraScaleMask |= (1<<i);
-                    if (m_spellValue->EffectBasePoints[i] != m_spellInfo->EffectBasePoints[i])
+                    if (m_spellValue->EffectBasePoints[i] != m_spellInfo->GetSpellEffectBasePoints(i))
                     {
                         m_auraScaleMask = 0;
                         break;
@@ -2990,7 +2990,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const * triggere
             m_caster->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_CAST);
             for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
-                if (EffectTargetType[m_spellInfo->Effect[i]] == SPELL_REQUIRE_UNIT)
+                if (EffectTargetType[m_spellInfo->GetSpellEffectIdByIndex(i)] == SPELL_REQUIRE_UNIT)
                 {
                     m_caster->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_SPELL_ATTACK);
                     break;
@@ -3257,7 +3257,7 @@ void Spell::cast(bool skipCheck)
 
     for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        switch(m_spellInfo->Effect[i])
+        switch(m_spellInfo->GetSpellEffectIdByIndex(i))
         {
             case SPELL_EFFECT_CHARGE:
             case SPELL_EFFECT_CHARGE_DEST:
@@ -3437,11 +3437,11 @@ void Spell::_handle_immediate_phase()
 
     for (uint32 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
-        if (m_spellInfo->Effect[j] == 0)
+        if (m_spellInfo->GetSpellEffectIdByIndex(j) == 0)
             continue;
 
         // apply Send Event effect to ground in case empty target lists
-        if (m_spellInfo->Effect[j] == SPELL_EFFECT_SEND_EVENT && !HaveTargetsForEffect(j))
+        if (m_spellInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_SEND_EVENT && !HaveTargetsForEffect(j))
         {
             HandleEffects(NULL, NULL, NULL, j);
             continue;
@@ -3462,17 +3462,17 @@ void Spell::_handle_immediate_phase()
     // process ground
     for (uint32 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
-        if (m_spellInfo->Effect[j] == 0)
+        if (m_spellInfo->GetSpellEffectIdByIndex(j) == 0)
             continue;
 
-        if (EffectTargetType[m_spellInfo->Effect[j]] == SPELL_REQUIRE_DEST)
+        if (EffectTargetType[m_spellInfo->GetSpellEffectIdByIndex(j)] == SPELL_REQUIRE_DEST)
         {
             if (!m_targets.HasDst()) // FIXME: this will ignore dest set in effect
                 m_targets.setDst(*m_caster);
             HandleEffects(m_originalCaster, NULL, NULL, j);
             m_effectMask |= (1<<j);
         }
-        else if (EffectTargetType[m_spellInfo->Effect[j]] == SPELL_REQUIRE_NONE)
+        else if (EffectTargetType[m_spellInfo->GetSpellEffectIdByIndex(j)] == SPELL_REQUIRE_NONE)
         {
             HandleEffects(m_originalCaster, NULL, NULL, j);
             m_effectMask |= (1<<j);
@@ -3563,7 +3563,7 @@ void Spell::update(uint32 difftime)
     // check if the player caster has moved before the spell finished
     if ((m_caster->GetTypeId() == TYPEID_PLAYER && m_timer != 0) &&
         m_caster->isMoving() && (m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT) &&
-        (m_spellInfo->Effect[0] != SPELL_EFFECT_STUCK || !m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING)))
+        (m_spellInfo->GetSpellEffectIdByIndex(0) != SPELL_EFFECT_STUCK || !m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING)))
     {
         // don't cancel for melee, autorepeat, triggered and instant spells
         if (!IsNextMeleeSwingSpell() && !IsAutoRepeat() && !m_IsTriggeredSpell)
@@ -4117,7 +4117,7 @@ void Spell::SendLogExecute()
         if (!m_effectExecuteData[i])
             continue;
 
-        data << uint32(m_spellInfo->Effect[i]);             // spell effect
+        data << uint32(m_spellInfo->GetSpellEffectIdByIndex(i));             // spell effect
 
         data.append(*m_effectExecuteData[i]);
 
@@ -4652,7 +4652,7 @@ void Spell::HandleEffects(Unit *pUnitTarget, Item *pItemTarget, GameObject *pGOT
     itemTarget = pItemTarget;
     gameObjTarget = pGOTarget;
 
-    uint8 eff = m_spellInfo->Effect[i];
+    uint8 eff = m_spellInfo->GetSpellEffectIdByIndex(i);
 
     sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell: %u Effect : %u", m_spellInfo->Id, eff);
 
@@ -4776,7 +4776,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (m_caster->GetTypeId() == TYPEID_PLAYER && m_caster->ToPlayer()->isMoving())
     {
         // skip stuck spell to allow use it in falling case and apply spell limitations at movement
-        if ((!m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || m_spellInfo->Effect[0] != SPELL_EFFECT_STUCK) &&
+        if ((!m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || m_spellInfo->GetSpellEffectIdByIndex(0) != SPELL_EFFECT_STUCK) &&
             (IsAutoRepeat() || (m_spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED) != 0))
             return SPELL_FAILED_MOVING;
     }

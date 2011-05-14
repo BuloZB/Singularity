@@ -373,7 +373,7 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
 
 AuraEffect::AuraEffect(Aura * base, uint8 effIndex, int32 *baseAmount, Unit * caster):
 m_base(base), m_spellProto(base->GetSpellProto()), m_effIndex(effIndex),
-m_baseAmount(baseAmount ? *baseAmount : m_spellProto->EffectBasePoints[m_effIndex]),
+m_baseAmount(baseAmount ? *baseAmount : m_spellProto->GetSpellEffectBasePoints(m_effIndex)),
 m_canBeRecalculated(true), m_spellmod(NULL), m_isPeriodic(false),
 m_periodicTimer(0), m_tickNumber(0)
 {
@@ -458,7 +458,7 @@ int32 AuraEffect::CalculateAmount(Unit * caster)
         case SPELL_AURA_MOD_ROOT:
         case SPELL_AURA_TRANSFORM:
             m_canBeRecalculated = false;
-            if (!m_spellProto->procFlags)
+            if (!m_spellProto->GetProcFlags())
                 break;
             amount = int32(GetBase()->GetUnitOwner()->CountPctFromMaxHealth(10));
             if (caster)
@@ -1265,7 +1265,7 @@ void AuraEffect::PeriodicTick(AuraApplication * aurApp, Unit * caster) const
             }
 
             // Consecrate ticks can miss and will not show up in the combat log
-            if (GetSpellProto()->Effect[GetEffIndex()] == SPELL_EFFECT_PERSISTENT_AREA_AURA &&
+            if (GetSpellProto()->GetSpellEffectIdByIndex(GetEffIndex()) == SPELL_EFFECT_PERSISTENT_AREA_AURA &&
                 caster->SpellHitResult(target, GetSpellProto(), false) != SPELL_MISS_NONE)
                 break;
 
@@ -1292,7 +1292,7 @@ void AuraEffect::PeriodicTick(AuraApplication * aurApp, Unit * caster) const
                     case 38772: // Grievous Wound
                     {
                         uint32 percent =
-                            GetEffIndex() < 2 && GetSpellProto()->Effect[GetEffIndex()] == SPELL_EFFECT_DUMMY ?
+                            GetEffIndex() < 2 && GetSpellProto()->GetSpellEffectIdByIndex(GetEffIndex()) == SPELL_EFFECT_DUMMY ?
                             caster->CalculateSpellDamage(target, GetSpellProto(), GetEffIndex()+1) :
                             100;
                             if (!target->HealthBelowPct(percent))
@@ -1421,7 +1421,7 @@ void AuraEffect::PeriodicTick(AuraApplication * aurApp, Unit * caster) const
                 return;
             }
 
-            if (GetSpellProto()->Effect[GetEffIndex()] == SPELL_EFFECT_PERSISTENT_AREA_AURA &&
+            if (GetSpellProto()->GetSpellEffectIdByIndex(GetEffIndex()) == SPELL_EFFECT_PERSISTENT_AREA_AURA &&
                 caster->SpellHitResult(target, GetSpellProto(), false) != SPELL_MISS_NONE)
                 return;
 
@@ -1655,7 +1655,7 @@ void AuraEffect::PeriodicTick(AuraApplication * aurApp, Unit * caster) const
             if (!caster || !caster->isAlive())
                 break;
 
-            if (GetSpellProto()->Effect[GetEffIndex()] == SPELL_EFFECT_PERSISTENT_AREA_AURA &&
+            if (GetSpellProto()->GetSpellEffectIdByIndex(GetEffIndex()) == SPELL_EFFECT_PERSISTENT_AREA_AURA &&
                 caster->SpellHitResult(target, GetSpellProto(), false) != SPELL_MISS_NONE)
                 break;
 
@@ -3893,7 +3893,7 @@ void AuraEffect::HandleAuraMounted(AuraApplication const * aurApp, uint8 mode, b
 
         //some spell has one aura of mount and one of vehicle
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            if (GetSpellProto()->Effect[i] == SPELL_EFFECT_SUMMON
+            if (GetSpellProto()->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SUMMON
                 && GetSpellProto()->EffectMiscValue[i] == GetMiscValue())
                 displayID = 0;
 
