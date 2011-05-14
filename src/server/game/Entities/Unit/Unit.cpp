@@ -5619,7 +5619,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     return false;
 
                 // mana cost save
-                int32 cost = int32(procSpell->manaCost + CalculatePctU(GetCreateMana(), procSpell->GetManaCostPercentage()));
+                int32 cost = int32(procSpell->GetManaCost() + CalculatePctU(GetCreateMana(), procSpell->GetManaCostPercentage()));
                 basepoints0 = CalculatePctN(cost, triggerAmount);
                 if (basepoints0 <= 0)
                     return false;
@@ -5674,7 +5674,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 if (!procSpell)
                     return false;
 
-                int32 cost = int32(procSpell->manaCost + CalculatePctU(GetCreateMana(), procSpell->GetManaCostPercentage()));
+                int32 cost = int32(procSpell->GetManaCost() + CalculatePctU(GetCreateMana(), procSpell->GetManaCostPercentage()));
                 basepoints0 = CalculatePctN(cost, triggerAmount);
                 if (basepoints0 <= 0)
                     return false;
@@ -6258,7 +6258,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 case 28719:
                 {
                     // mana back
-                    basepoints0 = int32(CalculatePctN(procSpell->manaCost, 30));
+                    basepoints0 = int32(CalculatePctN(procSpell->GetManaCost(), 30));
                     target = this;
                     triggered_spell_id = 28742;
                     break;
@@ -6456,7 +6456,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     return false;
 
                 // energy cost save
-                basepoints0 = CalculatePctN(int32(procSpell->manaCost), triggerAmount);
+                basepoints0 = CalculatePctN(int32(procSpell->GetManaCost()), triggerAmount);
                 if (basepoints0 <= 0)
                     return false;
 
@@ -8397,7 +8397,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
                                 return false;
                             }
                             // percent stored in effect 1 (class scripts) base points
-                            int32 cost = int32(originalSpell->manaCost + CalculatePctU(GetCreateMana(), originalSpell->ManaCostPercentage));
+                            int32 cost = int32(originalSpell->GetManaCost() + CalculatePctU(GetCreateMana(), originalSpell->ManaCostPercentage));
                             basepoints0 = CalculatePctN(cost, SpellMgr::CalculateSpellEffectAmount(auraSpellInfo, 1));
                             trigger_spell_id = 20272;
                             target = this;
@@ -8428,7 +8428,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
                     {
                         if (!procSpell)
                             return false;
-                        basepoints0 = int32(CalculatePctN(procSpell->manaCost, 35));
+                        basepoints0 = int32(CalculatePctN(procSpell->GetManaCost(), 35));
                         trigger_spell_id = 23571;
                         target = this;
                         break;
@@ -8734,7 +8734,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
         // Enlightenment (trigger only from mana cost spells)
         case 35095:
         {
-            if (!procSpell || procSpell->powerType != POWER_MANA || (procSpell->manaCost == 0 && procSpell->ManaCostPercentage == 0 && procSpell->manaCostPerlevel == 0))
+            if (!procSpell || procSpell->powerType != POWER_MANA || (procSpell->GetManaCost() == 0 && procSpell->ManaCostPercentage == 0 && procSpell->manaCostPerlevel == 0))
                 return false;
             break;
         }
@@ -14254,7 +14254,7 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit * pTarget, uint32 procFlag,
                 case SPELL_AURA_MOD_POWER_COST_SCHOOL:
                     // Skip melee hits and spells ws wrong school or zero cost
                     if (procSpell &&
-                        (procSpell->manaCost != 0 || procSpell->ManaCostPercentage != 0) && // Cost check
+                        (procSpell->GetManaCost() != 0 || procSpell->ManaCostPercentage != 0) && // Cost check
                         (triggeredByAura->GetMiscValue() & procSpell->SchoolMask))          // School check
                         takeCharges = true;
                     break;

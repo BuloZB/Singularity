@@ -6241,7 +6241,7 @@ void Spell::EffectDestroyAllTotems(SpellEffectEntry const* /*effect*/)
             SpellEntry const* spellInfo = sSpellStore.LookupEntry(spell_id);
             if (spellInfo)
             {
-                mana += spellInfo->manaCost;
+                mana += spellInfo->GetManaCost();
                 mana += int32(CalculatePctU(m_caster->GetCreateMana(), spellInfo->ManaCostPercentage));
             }
             totem->ToTotem()->UnSummon();
