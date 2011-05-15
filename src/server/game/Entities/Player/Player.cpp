@@ -19115,10 +19115,10 @@ void Player::RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent)
         {
             for (uint32 i = 0; i < MAX_SPELL_REAGENTS; ++i)
             {
-                if (spellInfo->Reagent[i] > 0)
+                if (spellInfo->GetSpellReagents()->Reagent[i] > 0)
                 {
                     ItemPosCountVec dest;                   //for succubus, voidwalker, felhunter and felguard credit soulshard when despawn reason other than death (out of range, logout)
-                    InventoryResult msg = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, spellInfo->Reagent[i], spellInfo->ReagentCount[i]);
+                    InventoryResult msg = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, spellInfo->GetSpellReagents()->Reagent[i], spellInfo->GetSpellReagents()->ReagentCount[i]);
                     if (msg == EQUIP_ERR_OK)
                     {
                         Item* item = StoreNewItem(dest, spellInfo->Reagent[i], true);

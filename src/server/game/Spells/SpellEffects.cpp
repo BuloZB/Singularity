@@ -1894,8 +1894,8 @@ void Spell::EffectJumpDest(SpellEffectEntry const* effect)
 
 void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & speedZ)
 {
-    if (m_spellInfo->EffectMiscValue[i])
-        speedZ = float(m_spellInfo->EffectMiscValue[i])/10;
+    if (m_spellInfo->GetEffectMiscValue(i))
+        speedZ = float(m_spellInfo->GetEffectMiscValue(i))/10;
     else if (m_spellInfo->EffectMiscValueB[i])
         speedZ = float(m_spellInfo->EffectMiscValueB[i])/10;
     else
@@ -3187,9 +3187,9 @@ void Spell::EffectDispel(SpellEffectEntry const* effect)
         if (aura->IsPassive())
             continue;
 
-        if ((1<<aura->GetSpellProto()->Dispel) & dispelMask)
+        if ((1<<aura->GetSpellProto()->GetDispel()) & dispelMask)
         {
-            if (aura->GetSpellProto()->Dispel == DISPEL_MAGIC)
+            if (aura->GetSpellProto()->GetDispel() == DISPEL_MAGIC)
             {
                 bool positive = aurApp->IsPositive() ? (!(aura->GetSpellProto()->AttributesEx & SPELL_ATTR1_NEGATIVE)) : false;
 
@@ -3449,7 +3449,7 @@ void Spell::EffectTradeSkill(SpellEffectEntry const* /*effect*/)
 {
     if (unitTarget->GetTypeId() != TYPEID_PLAYER)
         return;
-    // uint32 skillid =  m_spellInfo->EffectMiscValue[i];
+    // uint32 skillid =  m_spellInfo->GetEffectMiscValue(i);
     // uint16 skillmax = unitTarget->ToPlayer()->(skillid);
     // unitTarget->ToPlayer()->SetSkill(skillid, skillval?skillval:1, skillmax+75);
 }

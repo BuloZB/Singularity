@@ -917,7 +917,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                 case SPELL_AURA_MECHANIC_IMMUNITY:
                 {
                     // non-positive immunities
-                    switch(spellproto->EffectMiscValue[effIndex])
+                    switch(spellproto->GetEffectMiscValue(effIndex))
                     {
                         case MECHANIC_BANDAGE:
                         case MECHANIC_SHIELD:
@@ -932,7 +932,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                 case SPELL_AURA_ADD_PCT_MODIFIER:
                 {
                     // non-positive mods
-                    switch(spellproto->EffectMiscValue[effIndex])
+                    switch(spellproto->GetEffectMiscValue(effIndex))
                     {
                         case SPELLMOD_COST:                 // dependent from bas point sign (negative -> positive)
                             if (SpellMgr::CalculateSpellEffectAmount(spellproto, effIndex) > 0)
@@ -1172,12 +1172,12 @@ void SpellMgr::LoadSpellTargetPositions()
             if (spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DST_DB || spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DST_DB)
             {
                 // additional requirements
-                if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_BIND && spellInfo->EffectMiscValue[i])
+                if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_BIND && spellInfo->GetEffectMiscValue(i))
                 {
                     uint32 area_id = sMapMgr->GetAreaId(st.target_mapId, st.target_X, st.target_Y, st.target_Z);
-                    if (area_id != uint32(spellInfo->EffectMiscValue[i]))
+                    if (area_id != uint32(spellInfo->GetEffectMiscValue(i)))
                     {
-                        sLog->outErrorDb("Spell (Id: %u) listed in `spell_target_position` expected point to zone %u bit point to zone %u.", Spell_ID, spellInfo->EffectMiscValue[i], area_id);
+                        sLog->outErrorDb("Spell (Id: %u) listed in `spell_target_position` expected point to zone %u bit point to zone %u.", Spell_ID, spellInfo->GetEffectMiscValue(i), area_id);
                         break;
                     }
                 }
@@ -1720,7 +1720,7 @@ bool SpellMgr::IsProfessionOrRidingSpell(uint32 spellId)
     {
         if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
         {
-            uint32 skill = spellInfo->EffectMiscValue[i];
+            uint32 skill = spellInfo->GetEffectMiscValue(i);
 
             bool found = IsProfessionOrRidingSkill(skill);
             if (found)
@@ -1740,7 +1740,7 @@ bool SpellMgr::IsProfessionSpell(uint32 spellId)
     {
         if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
         {
-            uint32 skill = spellInfo->EffectMiscValue[i];
+            uint32 skill = spellInfo->GetEffectMiscValue(i);
 
             bool found = IsProfessionSkill(skill);
             if (found)
@@ -1760,7 +1760,7 @@ bool SpellMgr::IsPrimaryProfessionSpell(uint32 spellId)
     {
         if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
         {
-            uint32 skill = spellInfo->EffectMiscValue[i];
+            uint32 skill = spellInfo->GetEffectMiscValue(i);
 
             bool found = IsPrimaryProfessionSkill(skill);
             if (found)
@@ -2406,14 +2406,14 @@ bool SpellMgr::IsSpellValid(SpellEntry const *spellInfo, Player *pl, bool msg)
     {
         for (uint8 j = 0; j < MAX_SPELL_REAGENTS; ++j)
         {
-            if (spellInfo->Reagent[j] > 0 && !sObjectMgr->GetItemTemplate(spellInfo->Reagent[j]))
+            if (spellInfo->GetSpellReagents()->Reagent[j] > 0 && !sObjectMgr->GetItemTemplate(spellInfo->GetSpellReagents()->Reagent[j]))
             {
                 if (msg)
                 {
                     if (pl)
-                        ChatHandler(pl).PSendSysMessage("Craft spell %u have not-exist reagent in DB item (Entry: %u) and then...", spellInfo->Id, spellInfo->Reagent[j]);
+                        ChatHandler(pl).PSendSysMessage("Craft spell %u have not-exist reagent in DB item (Entry: %u) and then...", spellInfo->Id, spellInfo->GetSpellReagents()->Reagent[j]);
                     else
-                        sLog->outErrorDb("Craft spell %u have not-exist reagent in DB item (Entry: %u) and then...", spellInfo->Id, spellInfo->Reagent[j]);
+                        sLog->outErrorDb("Craft spell %u have not-exist reagent in DB item (Entry: %u) and then...", spellInfo->Id, spellInfo->GetSpellReagents()->Reagent[j]);
                 }
                 return false;
             }
@@ -3513,7 +3513,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     break;
                 case SPELL_EFFECT_TRIGGER_SPELL:
                     if (IsPositionTarget(spellInfo->GetEffectImplicitTargetAByIndex(j)) ||
-                        spellInfo->Targets & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
+                        spellInfo->GetTargets() & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
                         spellInfo->GetSpellEffect(j) = SPELL_EFFECT_TRIGGER_MISSILE;
                     ++count;
                     break;
@@ -3553,7 +3553,7 @@ void SpellMgr::LoadSpellCustomAttr()
             {
                 case TARGET_TYPE_UNIT_TARGET:
                 case TARGET_TYPE_DEST_TARGET:
-                    spellInfo->Targets |= TARGET_FLAG_UNIT;
+                    spellInfo->GetTargets() |= TARGET_FLAG_UNIT;
                     ++count;
                     break;
                 default:
@@ -3786,11 +3786,11 @@ void SpellMgr::LoadSpellCustomAttr()
         case 39805: // Lightning Overload
         case 64823: // Item - Druid T8 Balance 4P Bonus
         case 44401:
-            spellInfo->procCharges = 1;
+            spellInfo->GetSpellAuraOptions()->procCharges = 1;
             ++count;
             break;
         case 53390: // Tidal Wave
-            spellInfo->procCharges = 2;
+            spellInfo->GetSpellAuraOptions()->procCharges = 2;
             ++count;
             break;
         case 44544: // Fingers of Frost
@@ -3798,12 +3798,12 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 74396: // Fingers of Frost visual buff
-            spellInfo->procCharges = 2;
+            spellInfo->GetSpellAuraOptions()->procCharges = 2;
             spellInfo->GetStackAmount() = 0;
             ++count;
             break;
         case 28200: // Ascendance (Talisman of Ascendance trinket)
-            spellInfo->procCharges = 6;
+            spellInfo->GetSpellAuraOptions()->procCharges = 6;
             ++count;
             break;
         case 47201: // Everlasting Affliction
@@ -3856,7 +3856,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         // some dummy spell only has dest, should push caster in this case
         case 62324: // Throw Passenger
-            spellInfo->Targets |= TARGET_FLAG_UNIT_CASTER;
+            spellInfo->GetTargets() |= TARGET_FLAG_UNIT_CASTER;
             ++count;
             break;
         case 16834: // Natural shapeshifter
@@ -3982,7 +3982,7 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 61719: // Easter Lay Noblegarden Egg Aura - Interrupt flags copied from aura which this aura is linked with
-            spellInfo->AuraInterruptFlags = AURA_INTERRUPT_FLAG_HITBYSPELL | AURA_INTERRUPT_FLAG_TAKE_DAMAGE;
+            spellInfo->GetAuraInterruptFlags() = AURA_INTERRUPT_FLAG_HITBYSPELL | AURA_INTERRUPT_FLAG_TAKE_DAMAGE;
             ++count;
             break;
         // ULDUAR SPELLS

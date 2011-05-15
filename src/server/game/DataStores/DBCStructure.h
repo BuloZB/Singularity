@@ -1850,8 +1850,7 @@ struct SpellEntry
     uint32 GetRequiresSpellFocus() const;
     uint32 GetSpellEffectIdByIndex(uint32 index) const;
     uint32 GetSpellEffectMechanic(uint32 index) const;
-    uint32 GetSpellEffectBasePoints(uint32 index) const;
-    uint32 GetSpellFamilyFlags(uint32 index) const;
+    uint32 GetSpellEffectBasePoints(uint32 index) const;    
     uint32 GetAuraInterruptFlags() const;
     uint32 GetEffectImplicitTargetAByIndex(uint32 index) const;
     int32 GetAreaGroupId() const;

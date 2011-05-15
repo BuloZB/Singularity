@@ -2825,7 +2825,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const * triggere
 
     m_targets = *targets;
 
-    if (!m_targets.getUnitTargetGUID() && m_spellInfo->Targets & TARGET_FLAG_UNIT)
+    if (!m_targets.getUnitTargetGUID() && m_spellInfo->GetTargets() & TARGET_FLAG_UNIT)
     {
         Unit *target = NULL;
         if (m_caster->GetTypeId() == TYPEID_UNIT)
@@ -2857,10 +2857,10 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const * triggere
             }
         }
     }
-    if (!m_targets.HasSrc() && m_spellInfo->Targets & TARGET_FLAG_SOURCE_LOCATION)
+    if (!m_targets.HasSrc() && m_spellInfo->GetTargets() & TARGET_FLAG_SOURCE_LOCATION)
         m_targets.setSrc(*m_caster);
 
-    if (!m_targets.HasDst() && m_spellInfo->Targets & TARGET_FLAG_DEST_LOCATION)
+    if (!m_targets.HasDst() && m_spellInfo->GetTargets() & TARGET_FLAG_DEST_LOCATION)
     {
         Unit *target = m_targets.getUnitTarget();
         if (!target)
@@ -4592,11 +4592,11 @@ void Spell::TakeReagents()
 
     for (uint32 x = 0; x < MAX_SPELL_REAGENTS; ++x)
     {
-        if (m_spellInfo->Reagent[x] <= 0)
+        if (m_spellInfo->GetSpellReagents()->Reagent[x] <= 0)
             continue;
 
-        uint32 itemid = m_spellInfo->Reagent[x];
-        uint32 itemcount = m_spellInfo->ReagentCount[x];
+        uint32 itemid = m_spellInfo->GetSpellReagents()->Reagent[x];
+        uint32 itemcount = m_spellInfo->GetSpellReagents()->ReagentCount[x];
 
         // if CastItem is also spell reagent
         if (m_CastItem)
@@ -5124,7 +5124,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
             case SPELL_EFFECT_APPLY_GLYPH:
             {
-                uint32 glyphId = m_spellInfo->EffectMiscValue[i];
+                uint32 glyphId = m_spellInfo->GetEffectMiscValue(i);
                 if (GlyphPropertiesEntry const *gp = sGlyphPropertiesStore.LookupEntry(glyphId))
                     if (m_caster->HasAura(gp->SpellId))
                         return SPELL_FAILED_UNIQUE_GLYPH;
@@ -5161,7 +5161,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 // Can be area effect, Check only for players and not check if target - caster (spell can have multiply drain/burn effects)
                 if (m_caster->GetTypeId() == TYPEID_PLAYER)
                     if (Unit* target = m_targets.getUnitTarget())
-                        if (target != m_caster && target->getPowerType() != Powers(m_spellInfo->EffectMiscValue[i]))
+                        if (target != m_caster && target->getPowerType() != Powers(m_spellInfo->GetEffectMiscValue(i)))
                             return SPELL_FAILED_BAD_TARGETS;
                 break;
             }
@@ -5667,11 +5667,11 @@ SpellCastResult Spell::CheckCasterAuras() const
         for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
             if (m_spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_SCHOOL_IMMUNITY)
-                school_immune |= uint32(m_spellInfo->EffectMiscValue[i]);
+                school_immune |= uint32(m_spellInfo->GetEffectMiscValue(i));
             else if (m_spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MECHANIC_IMMUNITY)
-                mechanic_immune |= 1 << uint32(m_spellInfo->EffectMiscValue[i]);
+                mechanic_immune |= 1 << uint32(m_spellInfo->GetEffectMiscValue(i));
             else if (m_spellInfo->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_DISPEL_IMMUNITY)
-                dispel_immune |= GetDispellMask(DispelType(m_spellInfo->EffectMiscValue[i]));
+                dispel_immune |= GetDispellMask(DispelType(m_spellInfo->GetEffectMiscValue(i)));
         }
         // immune movement impairment and loss of control
         if (m_spellInfo->Id == 42292 || m_spellInfo->Id == 59752)
@@ -5693,9 +5693,9 @@ SpellCastResult Spell::CheckCasterAuras() const
         prevented_reason = SPELL_FAILED_CONFUSED;
     else if (unitflag & UNIT_FLAG_FLEEING && !(m_spellInfo->AttributesEx5 & SPELL_ATTR5_USABLE_WHILE_FEARED))
         prevented_reason = SPELL_FAILED_FLEEING;
-    else if (unitflag & UNIT_FLAG_SILENCED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+    else if (unitflag & UNIT_FLAG_SILENCED && m_spellInfo->GetPreventionType() == SPELL_PREVENTION_TYPE_SILENCE)
         prevented_reason = SPELL_FAILED_SILENCED;
-    else if (unitflag & UNIT_FLAG_PACIFIED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_PACIFY)
+    else if (unitflag & UNIT_FLAG_PACIFIED && m_spellInfo->GetPreventionType() == SPELL_PREVENTION_TYPE_PACIFY)
         prevented_reason = SPELL_FAILED_PACIFIED;
 
     // Attr must make flag drop spell totally immune from all effects
@@ -5712,7 +5712,7 @@ SpellCastResult Spell::CheckCasterAuras() const
                     continue;
                 if (GetSpellSchoolMask(aura->GetSpellProto()) & school_immune)
                     continue;
-                if ((1<<(aura->GetSpellProto()->Dispel)) & dispel_immune)
+                if ((1<<(aura->GetSpellProto()->GetDispel())) & dispel_immune)
                     continue;
 
                 //Make a second check for spell failed so the right SPELL_FAILED message is returned.
@@ -5738,9 +5738,9 @@ SpellCastResult Spell::CheckCasterAuras() const
                             case SPELL_AURA_MOD_SILENCE:
                             case SPELL_AURA_MOD_PACIFY:
                             case SPELL_AURA_MOD_PACIFY_SILENCE:
-                                if (m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_PACIFY)
+                                if (m_spellInfo->GetPreventionType() == SPELL_PREVENTION_TYPE_PACIFY)
                                     return SPELL_FAILED_PACIFIED;
-                                else if (m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+                                else if (m_spellInfo->GetPreventionType() == SPELL_PREVENTION_TYPE_SILENCE)
                                     return SPELL_FAILED_SILENCED;
                                 break;
                             default: break;
@@ -5942,13 +5942,13 @@ SpellCastResult Spell::CheckItems()
                 // Mana Potion, Rage Potion, Thistle Tea(Rogue), ...
                 if (m_spellInfo->GetSpellEffect(i) == SPELL_EFFECT_ENERGIZE)
                 {
-                    if (m_spellInfo->EffectMiscValue[i] < 0 || m_spellInfo->EffectMiscValue[i] >= int8(MAX_POWERS))
+                    if (m_spellInfo->GetEffectMiscValue(i) < 0 || m_spellInfo->GetEffectMiscValue(i) >= int8(MAX_POWERS))
                     {
                         failReason = SPELL_FAILED_ALREADY_AT_FULL_POWER;
                         continue;
                     }
 
-                    Powers power = Powers(m_spellInfo->EffectMiscValue[i]);
+                    Powers power = Powers(m_spellInfo->GetEffectMiscValue(i));
                     if (m_targets.getUnitTarget()->GetPower(power) == m_targets.getUnitTarget()->GetMaxPower(power))
                     {
                         failReason = SPELL_FAILED_ALREADY_AT_FULL_POWER;
@@ -6021,11 +6021,11 @@ SpellCastResult Spell::CheckItems()
         {
             for (uint32 i = 0; i < MAX_SPELL_REAGENTS; i++)
             {
-                if (m_spellInfo->Reagent[i] <= 0)
+                if (m_spellInfo->GetSpellReagents()->Reagent[i] <= 0)
                     continue;
 
-                uint32 itemid    = m_spellInfo->Reagent[i];
-                uint32 itemcount = m_spellInfo->ReagentCount[i];
+                uint32 itemid    = m_spellInfo->GetSpellReagents()->Reagent[i];
+                uint32 itemcount = m_spellInfo->GetSpellReagents()->ReagentCount[i];
 
                 // if CastItem is also spell reagent
                 if (m_CastItem && m_CastItem->GetEntry() == itemid)
@@ -6160,7 +6160,7 @@ SpellCastResult Spell::CheckItems()
                     }
                 }
 
-                SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(m_spellInfo->EffectMiscValue[i]);
+                SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(m_spellInfo->GetEffectMiscValue(i));
                 // do not allow adding usable enchantments to items that have use effect already
                 if (pEnchant && isItemUsable)
                     for (uint8 s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
@@ -6185,7 +6185,7 @@ SpellCastResult Spell::CheckItems()
                 // Not allow enchant in trade slot for some enchant type
                 if (item->GetOwner() != m_caster)
                 {
-                    uint32 enchant_id = m_spellInfo->EffectMiscValue[i];
+                    uint32 enchant_id = m_spellInfo->GetEffectMiscValue(i);
                     SpellItemEnchantmentEntry const *pEnchant = sSpellItemEnchantmentStore.LookupEntry(enchant_id);
                     if (!pEnchant)
                         return SPELL_FAILED_ERROR;
