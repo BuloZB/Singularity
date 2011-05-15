@@ -22038,7 +22038,7 @@ bool Player::CanNoReagentCast(SpellEntry const* spellInfo) const
     noReagentMask[0] = GetUInt32Value(PLAYER_NO_REAGENT_COST_1);
     noReagentMask[1] = GetUInt32Value(PLAYER_NO_REAGENT_COST_1+1);
     noReagentMask[2] = GetUInt32Value(PLAYER_NO_REAGENT_COST_1+2);
-    if (spellInfo->SpellFamilyFlags  & noReagentMask)
+    if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags  & noReagentMask)
         return true;
 
     return false;

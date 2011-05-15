@@ -959,7 +959,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 if (!caster)
                     break;
                 // Rejuvenation
-                if (GetSpellProto()->SpellFamilyFlags[0] & 0x10 && GetEffect(EFFECT_0))
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x10 && GetEffect(EFFECT_0))
                 {
                     // Druid T8 Restoration 4P Bonus
                     if (AuraEffect const* aurEff = caster->GetAuraEffect(64760, EFFECT_0))
@@ -972,20 +972,20 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
             case SPELLFAMILY_MAGE:
                 if (!caster)
                     break;
-                if (GetSpellProto()->SpellFamilyFlags[0] & 0x00000001 && GetSpellProto()->SpellFamilyFlags[2] & 0x00000008)
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000001 && GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x00000008)
                 {
                     // Glyph of Fireball
                     if (caster->HasAura(56368))
                         SetDuration(0);
                 }
-                else if (GetSpellProto()->SpellFamilyFlags[0] & 0x00000020 && GetSpellProto()->SpellVisual[0] == 13)
+                else if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000020 && GetSpellProto()->SpellVisual[0] == 13)
                 {
                     // Glyph of Frostbolt
                     if (caster->HasAura(56370))
                         SetDuration(0);
                 }
                 // Todo: This should be moved to similar function in spell::hit
-                else if (GetSpellProto()->SpellFamilyFlags[0] & 0x01000000)
+                else if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x01000000)
                 {
                     // Polymorph Sound - Sheep && Penguin
                     if (GetSpellProto()->SpellIconID == 82 && GetSpellProto()->SpellVisual[0] == 12978)
@@ -1050,7 +1050,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 if (!caster)
                     break;
                 // Devouring Plague
-                if (GetSpellProto()->SpellFamilyFlags[0] & 0x02000000 && GetEffect(0))
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x02000000 && GetEffect(0))
                 {
                     // Improved Devouring Plague
                     if (AuraEffect const * aurEff = caster->GetDummyAuraEffect(SPELLFAMILY_PRIEST, 3790, 1))
@@ -1060,7 +1060,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                     }
                 }
                 // Renew
-                else if (GetSpellProto()->SpellFamilyFlags[0] & 0x00000040 && GetEffect(0))
+                else if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000040 && GetEffect(0))
                 {
                     // Empowered Renew
                     if (AuraEffect const * aurEff = caster->GetDummyAuraEffect(SPELLFAMILY_PRIEST, 3021, 1))
@@ -1070,7 +1070,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                     }
                 }
                 // Power Word: Shield
-                else if (m_spellProto->SpellFamilyFlags[0] & 0x1 && m_spellProto->SpellFamilyFlags[2] & 0x400 && GetEffect(0))
+                else if (m_spellProto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x1 && m_spellProto->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x400 && GetEffect(0))
                 {
                     // Glyph of Power Word: Shield
                     if (AuraEffect* glyph = caster->GetAuraEffect(55672, 0))
@@ -1083,7 +1083,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 break;
             case SPELLFAMILY_ROGUE:
                 // Sprint (skip non player casted spells by category)
-                if (GetSpellProto()->SpellFamilyFlags[0] & 0x40 && GetSpellProto()->GetCategory() == 44)
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x40 && GetSpellProto()->GetCategory() == 44)
                     // in official maybe there is only one icon?
                     if (target->HasAura(58039)) // Glyph of Blurred Speed
                         target->CastSpell(target, 61922, true); // Sprint (waterwalk)
@@ -1092,7 +1092,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 if (!caster)
                     break;
                 // Frost Fever and Blood Plague
-                if (GetSpellProto()->SpellFamilyFlags[2] & 0x2)
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x2)
                 {
                     // Can't proc on self
                     if (GetCasterGUID() == target->GetGUID())
@@ -1215,7 +1215,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 if (!caster)
                     break;
                 // Ice barrier - dispel/absorb remove
-                if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL && GetSpellProto()->SpellFamilyFlags[1] & 0x1)
+                if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL && GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x1)
                 {
                     // Shattered Barrier
                     if (caster->GetDummyAuraEffect(SPELLFAMILY_MAGE, 2945, 0))
@@ -1226,7 +1226,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 if (!caster)
                     break;
                 // Spell Reflection
-                if (GetSpellProto()->SpellFamilyFlags[1] & 0x2)
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x2)
                 {
                     if (removeMode != AURA_REMOVE_BY_DEFAULT)
                     {
@@ -1249,7 +1249,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 if (!caster)
                     break;
                 // Curse of Doom
-                if (GetSpellProto()->SpellFamilyFlags[1] & 0x02)
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x02)
                 {
                     if (removeMode == AURA_REMOVE_BY_DEATH)
                     {
@@ -1258,7 +1258,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                     }
                 }
                 // Improved Fear
-                else if (GetSpellProto()->SpellFamilyFlags[1] & 0x00000400)
+                else if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x00000400)
                 {
                     if (AuraEffect* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_WARLOCK, 98, 0))
                     {
@@ -1290,7 +1290,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 if (!caster)
                     break;
                 // Shadow word: Pain // Vampiric Touch
-                if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL && (GetSpellProto()->SpellFamilyFlags[0] & 0x00008000 || GetSpellProto()->SpellFamilyFlags[1] & 0x00000400))
+                if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL && (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00008000 || GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x00000400))
                 {
                     // Shadow Affinity
                     if (AuraEffect const * aurEff = caster->GetDummyAuraEffect(SPELLFAMILY_PRIEST, 178, 1))
@@ -1300,7 +1300,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                     }
                 }
                 // Power word: shield
-                else if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL && GetSpellProto()->SpellFamilyFlags[0] & 0x00000001)
+                else if (removeMode == AURA_REMOVE_BY_ENEMY_SPELL && GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000001)
                 {
                     // Rapture
                     if (Aura const * aura = caster->GetAuraOfRankedSpell(47535))
@@ -1416,7 +1416,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 break;
             case SPELLFAMILY_HUNTER:
                 // Glyph of Freezing Trap
-                if (GetSpellProto()->SpellFamilyFlags[0] & 0x00000008)
+                if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000008)
                     if (caster && caster->HasAura(56845))
                         target->CastSpell(target, 61394, true);
                 break;
@@ -1439,7 +1439,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
             break;
         case SPELLFAMILY_ROGUE:
             // Stealth
-            if (GetSpellProto()->SpellFamilyFlags[0] & 0x00400000)
+            if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00400000)
             {
                 // Master of subtlety
                 if (AuraEffect const * aurEff = target->GetAuraEffectOfRankedSpell(31221, 0))
@@ -1608,7 +1608,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
             break;
         case SPELLFAMILY_WARLOCK:
             // Drain Soul - If the target is at or below 25% health, Drain Soul causes four times the normal damage
-            if (GetSpellProto()->SpellFamilyFlags[0] & 0x00004000)
+            if (GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00004000)
             {
                 if (!caster)
                     break;

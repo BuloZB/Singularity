@@ -459,13 +459,13 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
             case SPELLFAMILY_WARRIOR:
             {
                 // Bloodthirst
-                if (m_spellInfo->SpellFamilyFlags[1] & 0x400)
+                if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x400)
                     ApplyPctF(damage, m_caster->GetTotalAttackPowerValue(BASE_ATTACK));
                 // Shield Slam
-                else if (m_spellInfo->SpellFamilyFlags[1] & 0x200 && m_spellInfo->GetCategory() == 1209)
+                else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x200 && m_spellInfo->GetCategory() == 1209)
                     damage += int32(m_caster->ApplyEffectModifiers(m_spellInfo, effect, float(m_caster->GetShieldBlockValue())));
                 // Victory Rush
-                else if (m_spellInfo->SpellFamilyFlags[1] & 0x100)
+                else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x100)
                 {
                     ApplyPctF(damage, m_caster->GetTotalAttackPowerValue(BASE_ATTACK));
                     m_caster->ModifyAuraState(AURA_STATE_WARRIOR_VICTORY_RUSH, false);
@@ -483,7 +483,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
             case SPELLFAMILY_WARLOCK:
             {
                 // Incinerate Rank 1 & 2
-                if ((m_spellInfo->SpellFamilyFlags[1] & 0x000040) && m_spellInfo->SpellIconID == 2128)
+                if ((m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x000040) && m_spellInfo->SpellIconID == 2128)
                 {
                     // Incinerate does more dmg (dmg*0.25) if the target have Immolate debuff.
                     // Check aura state for speed but aura state set not only for Immolate spell
@@ -507,14 +507,14 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                             continue;
 
                         // Immolate
-                        if ((*i)->GetSpellProto()->SpellFamilyFlags[0] & 0x4)
+                        if ((*i)->GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x4)
                         {
                             aura = *i;                      // it selected always if exist
                             break;
                         }
 
                         // Shadowflame
-                        if ((*i)->GetSpellProto()->SpellFamilyFlags[2] & 0x00000002)
+                        if ((*i)->GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x00000002)
                             aura = *i;                      // remember but wait possible Immolate as primary priority
                     }
 
@@ -539,7 +539,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     }
                 }
                 // Shadow Bite
-                else if (m_spellInfo->SpellFamilyFlags[1] & 0x400000)
+                else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x400000)
                 {
                     if (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->ToCreature()->isPet())
                     {
@@ -558,7 +558,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
             case SPELLFAMILY_PRIEST:
             {
                 // Shadow Word: Death - deals damage equal to damage done to caster
-                if ((m_spellInfo->SpellFamilyFlags[1] & 0x2))
+                if ((m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x2))
                 {
                     int32 back_damage = m_caster->SpellDamageBonus(unitTarget, m_spellInfo, (uint32)damage, SPELL_DIRECT_DAMAGE);
                     // Pain and Suffering reduces damage
@@ -569,7 +569,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                         m_caster->CastCustomSpell(m_caster, 32409, &back_damage, 0, 0, true);
                 }
                 // Mind Blast - applies Mind Trauma if:
-                else if (m_spellInfo->SpellFamilyFlags[2] & 0x00002000)
+                else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x00002000)
                 {
                     // We are in Shadow Form
                     if (m_caster->GetShapeshiftForm() == FORM_SHADOW)
@@ -580,7 +580,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                                 m_caster->CastSpell(unitTarget, 48301, true);
                 }
                 // Improved Mind Blast (Mind Blast in shadow form bonus)
-                else if (m_caster->GetShapeshiftForm() == FORM_SHADOW && (m_spellInfo->SpellFamilyFlags[0] & 0x00002000))
+                else if (m_caster->GetShapeshiftForm() == FORM_SHADOW && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00002000))
                 {
                     Unit::AuraEffectList const& ImprMindBlast = m_caster->GetAuraEffectsByType(SPELL_AURA_ADD_FLAT_MODIFIER);
                     for (Unit::AuraEffectList::const_iterator i = ImprMindBlast.begin(); i != ImprMindBlast.end(); ++i)
@@ -601,7 +601,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
             case SPELLFAMILY_DRUID:
             {
                 // Ferocious Bite
-                if (m_caster->GetTypeId() == TYPEID_PLAYER && (m_spellInfo->SpellFamilyFlags[0] & 0x000800000) && m_spellInfo->SpellVisual[0] == 6587)
+                if (m_caster->GetTypeId() == TYPEID_PLAYER && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x000800000) && m_spellInfo->SpellVisual[0] == 6587)
                 {
                     // converts each extra point of energy into ($f1+$AP/410) additional damage
                     float ap = m_caster->GetTotalAttackPowerValue(BASE_ATTACK);
@@ -611,7 +611,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     damage += int32(CalculatePctN(m_caster->ToPlayer()->GetComboPoints() * ap, 7));
                 }
                 // Wrath
-                else if (m_spellInfo->SpellFamilyFlags[0] & 0x00000001)
+                else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000001)
                 {
                     // Improved Insect Swarm
                     if (AuraEffect const * aurEff = m_caster->GetDummyAuraEffect(SPELLFAMILY_DRUID, 1771, 0))
@@ -623,7 +623,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
             case SPELLFAMILY_ROGUE:
             {
                 // Envenom
-                if (m_caster->GetTypeId() == TYPEID_PLAYER && (m_spellInfo->SpellFamilyFlags[1] & 0x8))
+                if (m_caster->GetTypeId() == TYPEID_PLAYER && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x8))
                 {
                     // consume from stack dozes not more that have combo-points
                     if (uint32 combo = m_caster->ToPlayer()->GetComboPoints())
@@ -664,7 +664,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     }
                 }
                 // Eviscerate
-                else if ((m_spellInfo->SpellFamilyFlags[0] & 0x00020000) && m_caster->GetTypeId() == TYPEID_PLAYER)
+                else if ((m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00020000) && m_caster->GetTypeId() == TYPEID_PLAYER)
                 {
                     if (uint32 combo = ((Player*)m_caster)->GetComboPoints())
                     {
@@ -687,7 +687,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                         damage *= 2;
                 }
                 // Steady Shot
-                else if (m_spellInfo->SpellFamilyFlags[1] & 0x1)
+                else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x1)
                 {
                     bool found = false;
                     // check dazed affect
@@ -726,7 +726,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
             case SPELLFAMILY_PALADIN:
             {
                 // Hammer of the Righteous
-                if (m_spellInfo->SpellFamilyFlags[1]&0x00040000)
+                if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1]&0x00040000)
                 {
                     // Add main hand dps * effect[2] amount
                     float average = (m_caster->GetFloatValue(UNIT_FIELD_MINDAMAGE) + m_caster->GetFloatValue(UNIT_FIELD_MAXDAMAGE)) / 2;
@@ -735,7 +735,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
                     break;
                 }
                 // Shield of Righteousness
-                if (m_spellInfo->SpellFamilyFlags[EFFECT_1] & 0x100000)
+                if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[EFFECT_1] & 0x100000)
                 {
                     damage += CalculatePctN(m_caster->GetShieldBlockValue(), SpellMgr::CalculateSpellEffectAmount(m_spellInfo, EFFECT_1));
                     break;
@@ -745,7 +745,7 @@ void Spell::SpellDamageSchoolDmg(SpellEffectEntry const* effect)
             case SPELLFAMILY_DEATHKNIGHT:
             {
                 // Blood Boil - bonus for diseased targets
-                if (m_spellInfo->SpellFamilyFlags[0] & 0x00040000 && unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DEATHKNIGHT, 0, 0, 0x00000002, m_caster->GetGUID()))
+                if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00040000 && unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DEATHKNIGHT, 0, 0, 0x00000002, m_caster->GetGUID()))
                 {
                     damage += m_damage / 2;
                     damage += int32(m_caster->GetTotalAttackPowerValue(RANGED_ATTACK)* 0.035f);
@@ -1246,7 +1246,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
         }
         case SPELLFAMILY_WARRIOR:
             // Charge
-            if (m_spellInfo->SpellFamilyFlags & SPELLFAMILYFLAG_WARRIOR_CHARGE && m_spellInfo->SpellVisual[0] == 867)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags & SPELLFAMILYFLAG_WARRIOR_CHARGE && m_spellInfo->SpellVisual[0] == 867)
             {
                 int32 chargeBasePoints0 = damage;
                 m_caster->CastCustomSpell(m_caster, 34846, &chargeBasePoints0, NULL, NULL, true);
@@ -1257,14 +1257,14 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 return;
             }
             //Slam
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_WARRIOR_SLAM && m_spellInfo->SpellIconID == 559)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_WARRIOR_SLAM && m_spellInfo->SpellIconID == 559)
             {
                 int32 bp0 = damage;
                 m_caster->CastCustomSpell(unitTarget, 50783, &bp0, NULL, NULL, true, 0);
                 return;
             }
             // Execute
-            if (m_spellInfo->SpellFamilyFlags[EFFECT_0] & SPELLFAMILYFLAG_WARRIOR_EXECUTE)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[EFFECT_0] & SPELLFAMILYFLAG_WARRIOR_EXECUTE)
             {
                 if (!unitTarget)
                     return;
@@ -1291,7 +1291,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 break;
             }
             // Concussion Blow
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_WARRIOR_CONCUSSION_BLOW)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_WARRIOR_CONCUSSION_BLOW)
             {
                 m_damage += CalculatePctF(damage, m_caster->GetTotalAttackPowerValue(BASE_ATTACK));
                 return;
@@ -1308,7 +1308,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
             break;
         case SPELLFAMILY_WARLOCK:
             // Life Tap
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_WARLOCK_LIFETAP)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_WARLOCK_LIFETAP)
             {
                 float spFactor = 0.0f;
                 switch (m_spellInfo->Id)
@@ -1349,7 +1349,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
             break;
         case SPELLFAMILY_DRUID:
             // Starfall
-            if (m_spellInfo->SpellFamilyFlags[2] & SPELLFAMILYFLAG2_DRUID_STARFALL)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & SPELLFAMILYFLAG2_DRUID_STARFALL)
             {
                 //Shapeshifting into an animal form or mounting cancels the effect.
                 if (m_caster->GetCreatureType() == CREATURE_TYPE_BEAST || m_caster->IsMounted())
@@ -1369,7 +1369,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
             break;
         case SPELLFAMILY_PALADIN:
             // Divine Storm
-            if (m_spellInfo->SpellFamilyFlags[1] & SPELLFAMILYFLAG1_PALADIN_DIVINESTORM && effect == 1)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & SPELLFAMILYFLAG1_PALADIN_DIVINESTORM && effect == 1)
             {
                 int32 dmg = CalculatePctN(m_damage, damage);
                 if (!unitTarget)
@@ -1405,7 +1405,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
             break;
         case SPELLFAMILY_SHAMAN:
             // Cleansing Totem Pulse
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_TOTEM_EFFECTS && m_spellInfo->SpellIconID == 1673)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_TOTEM_EFFECTS && m_spellInfo->SpellIconID == 1673)
             {
                 int32 bp1 = 1;
                 // Cleansing Totem Effect
@@ -1414,7 +1414,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 return;
             }
             // Healing Stream Totem
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_HEALING_STREAM)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_HEALING_STREAM)
             {
                 if (!unitTarget)
                     return;
@@ -1427,7 +1427,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 return;
             }
             // Mana Spring Totem
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_MANA_SPRING)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_MANA_SPRING)
             {
                 if (!unitTarget || unitTarget->getPowerType() != POWER_MANA)
                     return;
@@ -1435,7 +1435,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 return;
             }
             // Lava Lash
-            if (m_spellInfo->SpellFamilyFlags[2] & SPELLFAMILYFLAG2_SHAMAN_LAVA_LASH)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & SPELLFAMILYFLAG2_SHAMAN_LAVA_LASH)
             {
                 if (m_caster->GetTypeId() != TYPEID_PLAYER)
                     return;
@@ -1451,7 +1451,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
             break;
         case SPELLFAMILY_DEATHKNIGHT:
             // Death strike
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_DK_DEATH_STRIKE)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_DK_DEATH_STRIKE)
             {
                 uint32 count = unitTarget->GetDiseasesByCaster(m_caster->GetGUID());
                 int32 bp = int32(count * m_caster->CountPctFromMaxHealth(int32(m_spellInfo->EffectDamageMultiplier[0])));
@@ -1462,7 +1462,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 return;
             }
             // Death Coil
-            if (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_DK_DEATH_COIL)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_DK_DEATH_COIL)
             {
                 if (m_caster->IsFriendlyTo(unitTarget))
                 {
@@ -2230,7 +2230,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
             for (Unit::AuraEffectList::const_iterator i = RejorRegr.begin(); i != RejorRegr.end(); ++i)
             {
                 if ((*i)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_DRUID
-                    && (*i)->GetSpellProto()->SpellFamilyFlags[0] & 0x50)
+                    && (*i)->GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x50)
                 {
                     if (!targetAura || (*i)->GetBase()->GetDuration() < targetAura->GetBase()->GetDuration())
                         targetAura = *i;
@@ -2251,10 +2251,10 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
 
             int32 tickcount = 0;
             // Rejuvenation
-            if (targetAura->GetSpellProto()->SpellFamilyFlags[0] & 0x10)
+            if (targetAura->GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x10)
                 tickcount = 4;
             // Regrowth
-            else // if (targetAura->GetSpellProto()->SpellFamilyFlags[0] & 0x40)
+            else // if (targetAura->GetSpellProto()->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x40)
                 tickcount = 6;
 
             addhealth += tickheal * tickcount;
@@ -2267,7 +2267,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
             //addhealth = caster->SpellHealingBonus(m_spellInfo, addhealth, HEAL, unitTarget);
         }
         // Glyph of Nourish
-        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x2000000)
+        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x2000000)
         {
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL);
 
@@ -2285,7 +2285,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
         else if (m_spellInfo->Id == 33778)
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL, m_spellValue->EffectBasePoints[1]);
         // Riptide - increase healing done by Chain Heal
-        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & 0x100)
+        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x100)
         {
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL);
             if (AuraEffect * aurEff = unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_SHAMAN, 0, 0, 0x10, m_originalCasterGUID))
@@ -2296,7 +2296,7 @@ void Spell::SpellDamageHeal(SpellEffectEntry const* /*effect*/)
             }
         }
         // Death Pact - return pct of max health to caster
-        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] & 0x00080000)
+        else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00080000)
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, int32(caster->CountPctFromMaxHealth(damage)), HEAL);
         else
             addhealth = caster->SpellHealingBonus(unitTarget, m_spellInfo, addhealth, HEAL);
@@ -3584,7 +3584,7 @@ void Spell::EffectEnchantItemTmp(SpellEffectEntry const* effect)
     // Rockbiter Weapon apply to both weapon
     if (!itemTarget)
     return;
-    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & 0x400000)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400000)
     {
         uint32 spell_id = 0;
 
@@ -3948,7 +3948,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
         case SPELLFAMILY_WARRIOR:
         {
             // Devastate (player ones)
-            if (m_spellInfo->SpellFamilyFlags[1] & 0x40)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x40)
             {
                 // Player can apply only 58567 Sunder Armor effect.
                 bool needCast = !unitTarget->HasAura(58567, m_caster->GetGUID());
@@ -3968,11 +3968,11 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
         case SPELLFAMILY_ROGUE:
         {
             // Fan of Knives, Hemorrhage, Ghostly Strike
-            if ((m_spellInfo->SpellFamilyFlags[1] & 0x40000)
-                || (m_spellInfo->SpellFamilyFlags[0] & 0x6000000))
+            if ((m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x40000)
+                || (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x6000000))
             {
                 // Hemorrhage
-                if (m_spellInfo->SpellFamilyFlags[0] & 0x2000000)
+                if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x2000000)
                 {
                     if (m_caster->GetTypeId() == TYPEID_PLAYER)
                         m_caster->ToPlayer()->AddComboPoints(unitTarget, 1, this);
@@ -3984,7 +3984,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
                             totalDamagePercentMod *= 1.5f;
             }
             // Mutilate (for each hand)
-            else if (m_spellInfo->SpellFamilyFlags[1] & 0x6)
+            else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x6)
             {
                 bool found = false;
                 // fast check
@@ -4030,13 +4030,13 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
         case SPELLFAMILY_DRUID:
         {
             // Mangle (Cat): CP
-            if (m_spellInfo->SpellFamilyFlags[1] & 0x400)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x400)
             {
                 if (m_caster->GetTypeId() == TYPEID_PLAYER)
                     m_caster->ToPlayer()->AddComboPoints(unitTarget, 1, this);
             }
             // Shred, Maul - Rend and Tear
-            else if (m_spellInfo->SpellFamilyFlags[0] & 0x00008800 && unitTarget->HasAuraState(AURA_STATE_BLEEDING))
+            else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00008800 && unitTarget->HasAuraState(AURA_STATE_BLEEDING))
             {
                 if (AuraEffect const* rendAndTear = m_caster->GetDummyAuraEffect(SPELLFAMILY_DRUID, 2859, 0))
                     AddPctN(totalDamagePercentMod, rendAndTear->GetAmount());
@@ -4046,14 +4046,14 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
         case SPELLFAMILY_HUNTER:
         {
             // Kill Shot - bonus damage from Ranged Attack Power
-            if (m_spellInfo->SpellFamilyFlags[1] & 0x800000)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x800000)
                 spell_bonus += int32(0.4f * m_caster->GetTotalAttackPowerValue(RANGED_ATTACK));
             break;
         }
         case SPELLFAMILY_DEATHKNIGHT:
         {
             // Plague Strike
-            if (m_spellInfo->SpellFamilyFlags[EFFECT_0] & 0x1)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[EFFECT_0] & 0x1)
             {
                 // Glyph of Plague Strike
                 if (AuraEffect const * aurEff = m_caster->GetAuraEffect(58657, EFFECT_0))
@@ -4061,7 +4061,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
                 break;
             }
             // Blood Strike
-            if (m_spellInfo->SpellFamilyFlags[EFFECT_0] & 0x400000)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[EFFECT_0] & 0x400000)
             {
                 AddPctF(totalDamagePercentMod, SpellMgr::CalculateSpellEffectAmount(m_spellInfo, EFFECT_2) * unitTarget->GetDiseasesByCaster(m_caster->GetGUID()) / 2.0f);
 
@@ -4072,7 +4072,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
                 break;
             }
             // Death Strike
-            if (m_spellInfo->SpellFamilyFlags[EFFECT_0] & 0x10)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[EFFECT_0] & 0x10)
             {
                 // Glyph of Death Strike
                 if (AuraEffect const * aurEff = m_caster->GetAuraEffect(59336, EFFECT_0))
@@ -4081,7 +4081,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
                 break;
             }
             // Obliterate (12.5% more damage per disease)
-            if (m_spellInfo->SpellFamilyFlags[EFFECT_1] & 0x20000)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[EFFECT_1] & 0x20000)
             {
                 bool consumeDiseases = true;
                 // Annihilation
@@ -4100,7 +4100,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
                 break;
             }
             // Heart Strike
-            if (m_spellInfo->SpellFamilyFlags[EFFECT_0] & 0x1000000)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[EFFECT_0] & 0x1000000)
             {
                 AddPctN(totalDamagePercentMod, SpellMgr::CalculateSpellEffectAmount(m_spellInfo, EFFECT_2) * unitTarget->GetDiseasesByCaster(m_caster->GetGUID()));
                 break;
@@ -5324,7 +5324,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
         case SPELLFAMILY_DEATHKNIGHT:
         {
             // Pestilence
-            if (m_spellInfo->SpellFamilyFlags[1]&0x10000)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1]&0x10000)
             {
                 // Get diseases on target of spell
                 if (m_targets.getUnitTarget() &&  // Glyph of Disease - cast on unit target too to refresh aura
@@ -5344,7 +5344,7 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
         case SPELLFAMILY_WARRIOR:
         {
             // Shattering Throw
-            if (m_spellInfo->SpellFamilyFlags[1] & 0x00400000)
+            if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x00400000)
             {
                 if (!unitTarget)
                     return;
@@ -5382,7 +5382,7 @@ void Spell::EffectSanctuary(SpellEffectEntry const* /*effect*/)
     // Vanish allows to remove all threat and cast regular stealth so other spells can be used
     if (m_caster->GetTypeId() == TYPEID_PLAYER
         && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE
-        && (m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_VANISH))
+        && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_VANISH))
     {
         m_caster->ToPlayer()->RemoveAurasByType(SPELL_AURA_MOD_ROOT);
         // Overkill
@@ -6040,7 +6040,7 @@ void Spell::EffectKnockBack(SpellEffectEntry const* effect)
             return;
 
     // Typhoon
-    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x01000000)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x01000000)
     {
         // Glyph of Typhoon
         if (m_caster->HasAura(62135))
@@ -6048,7 +6048,7 @@ void Spell::EffectKnockBack(SpellEffectEntry const* effect)
     }
 
     // Thunderstorm
-    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[1] & 0x00002000)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x00002000)
     {
         // Glyph of Thunderstorm
         if (m_caster->HasAura(62132))

@@ -451,13 +451,13 @@ AuraState GetSpellAuraState(SpellEntry const* spellInfo)
     // Conflagrate aura state on Immolate and Shadowflame
     if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK &&
         // Immolate
-        ((spellInfo->SpellFamilyFlags[0] & 4) ||
+        ((spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 4) ||
         // Shadowflame
-        (spellInfo->SpellFamilyFlags[2] & 2)))
+        (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & 2)))
         return AURA_STATE_CONFLAGRATE;
 
     // Faerie Fire (druid versions)
-    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x400)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400)
         return AURA_STATE_FAERIE_FIRE;
 
     // Sting (hunter's pet ability)
@@ -465,15 +465,15 @@ AuraState GetSpellAuraState(SpellEntry const* spellInfo)
         return AURA_STATE_FAERIE_FIRE;
 
     // Victorious
-    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARRIOR &&  spellInfo->SpellFamilyFlags[1] & 0x00040000)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARRIOR &&  spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x00040000)
         return AURA_STATE_WARRIOR_VICTORY_RUSH;
 
     // Swiftmend state on Regrowth & Rejuvenation
-    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellInfo->SpellFamilyFlags[0] & 0x50)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x50)
         return AURA_STATE_SWIFTMEND;
 
     // Deadly poison aura state
-    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && spellInfo->SpellFamilyFlags[0] & 0x10000)
+    if (spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x10000)
         return AURA_STATE_DEADLY_POISON;
 
     // Enrage aura state
@@ -561,14 +561,14 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
         case SPELLFAMILY_MAGE:
         {
             // family flags 18(Molten), 25(Frost/Ice), 28(Mage)
-            if (spellInfo->SpellFamilyFlags[0] & 0x12040000)
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x12040000)
                 return SPELL_SPECIFIC_MAGE_ARMOR;
 
             // Arcane brillance and Arcane intelect (normal check fails because of flags difference)
-            if (spellInfo->SpellFamilyFlags[0] & 0x400)
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400)
                 return SPELL_SPECIFIC_MAGE_ARCANE_BRILLANCE;
 
-            if ((spellInfo->SpellFamilyFlags[0] & 0x1000000) && spellInfo->GetEffectApplyAuraNameByIndex(0) == SPELL_AURA_MOD_CONFUSE)
+            if ((spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x1000000) && spellInfo->GetEffectApplyAuraNameByIndex(0) == SPELL_AURA_MOD_CONFUSE)
                 return SPELL_SPECIFIC_MAGE_POLYMORPH;
 
             break;
@@ -587,18 +587,18 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
                 return SPELL_SPECIFIC_CURSE;
 
             // Warlock (Demon Armor | Demon Skin | Fel Armor)
-            if (spellInfo->SpellFamilyFlags[1] & 0x20000020 || spellInfo->SpellFamilyFlags[2] & 0x00000010)
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x20000020 || spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x00000010)
                 return SPELL_SPECIFIC_WARLOCK_ARMOR;
 
             //seed of corruption and corruption
-            if (spellInfo->SpellFamilyFlags[1] & 0x10 || spellInfo->SpellFamilyFlags[0] & 0x2)
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x10 || spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x2)
                 return SPELL_SPECIFIC_WARLOCK_CORRUPTION;
             break;
         }
         case SPELLFAMILY_PRIEST:
         {
             // Divine Spirit and Prayer of Spirit
-            if (spellInfo->SpellFamilyFlags[0] & 0x20)
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x20)
                 return SPELL_SPECIFIC_PRIEST_DIVINE_SPIRIT;
 
             break;
@@ -610,7 +610,7 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
                 return SPELL_SPECIFIC_STING;
 
             // only hunter aspects have this (but not all aspects in hunter family)
-            if (spellInfo->SpellFamilyFlags.HasFlag(0x00380000, 0x00440000, 0x00001010))
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags.HasFlag(0x00380000, 0x00440000, 0x00001010))
                 return SPELL_SPECIFIC_ASPECT;
 
             break;
@@ -620,7 +620,7 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
             if (IsSealSpell(spellInfo))
                 return SPELL_SPECIFIC_SEAL;
 
-            if (spellInfo->SpellFamilyFlags[0] & 0x00002190)
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00002190)
                 return SPELL_SPECIFIC_HAND;
 
             // Judgement of Wisdom, Judgement of Light, Judgement of Justice
@@ -628,7 +628,7 @@ SpellSpecific GetSpellSpecific(SpellEntry const * spellInfo)
                 return SPELL_SPECIFIC_JUDGEMENT;
 
             // only paladin auras have this (for palaldin class family)
-            if (spellInfo->SpellFamilyFlags[2] & 0x00000020)
+            if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x00000020)
                 return SPELL_SPECIFIC_AURA;
 
             break;
@@ -770,7 +770,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
             break;
         case SPELLFAMILY_MAGE:
             // Amplify Magic, Dampen Magic
-            if (spellproto->SpellFamilyFlags[0] == 0x00002000)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] == 0x00002000)
                 return true;
             // Ignite
             if (spellproto->SpellIconID == 45)
@@ -1247,7 +1247,7 @@ bool SpellMgr::IsAffectedByMod(SpellEntry const *spellInfo, SpellModifier *mod) 
         return false;
 
     // true
-    if (mod->mask  & spellInfo->SpellFamilyFlags)
+    if (mod->mask  & spellInfo->GetSpellClassOptions()->SpellFamilyFlags)
         return true;
 
     return false;
@@ -1442,7 +1442,7 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const* spellPr
             // spellFamilyName is Ok need check for spellFamilyMask if present
             if (spellProcEvent->spellFamilyMask)
             {
-                if ((spellProcEvent->spellFamilyMask & procSpell->SpellFamilyFlags) == 0)
+                if ((spellProcEvent->spellFamilyMask & procSpell->GetSpellClassOptions()->SpellFamilyFlags) == 0)
                     return false;
                 hasFamilyMask = true;
                 // Some spells are not considered as active even with have spellfamilyflags
@@ -2807,7 +2807,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
         case SPELLFAMILY_MAGE:
         {
             // Frostbite
-            if (spellproto->SpellFamilyFlags[1] & 0x80000000)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x80000000)
                 return DIMINISHING_TRIGGER_ROOT;
             //Shattered Barrier: only flag SpellFamilyFlags[0] = 0x00080000 shared
             //by most frost spells, using id instead
@@ -2821,13 +2821,13 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
         case SPELLFAMILY_ROGUE:
         {
             // Sap 0x80 Gouge 0x8
-            if (spellproto->SpellFamilyFlags[0] & 0x88)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x88)
                 return DIMINISHING_POLYMORPH;
             // Blind
-            else if (spellproto->SpellFamilyFlags[0] & 0x1000000)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x1000000)
                 return DIMINISHING_FEAR_BLIND;
             // Cheap Shot
-            else if (spellproto->SpellFamilyFlags[0] & 0x400)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400)
                 return DIMINISHING_CHEAPSHOT_POUNCE;
             // Crippling poison - Limit to 10 seconds in PvP (No SpellFamilyFlags)
             else if (spellproto->SpellIconID == 163)
@@ -2837,52 +2837,52 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
         case SPELLFAMILY_WARLOCK:
         {
             // Death Coil
-            if (spellproto->SpellFamilyFlags[0] & 0x80000)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x80000)
                 return DIMINISHING_DEATHCOIL;
             // Curses/etc
-            else if (spellproto->SpellFamilyFlags[0] & 0x80000000)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x80000000)
                 return DIMINISHING_LIMITONLY;
             // Howl of Terror
-            else if (spellproto->SpellFamilyFlags[1] & 0x8)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x8)
                 return DIMINISHING_FEAR_BLIND;
             // Seduction
-            else if (spellproto->SpellFamilyFlags[1] & 0x10000000)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x10000000)
                 return DIMINISHING_FEAR_BLIND;
             break;
         }
         case SPELLFAMILY_DRUID:
         {
             // Pounce
-            if (spellproto->SpellFamilyFlags[0] & 0x20000)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x20000)
                 return DIMINISHING_CHEAPSHOT_POUNCE;
             // Cyclone
-            else if (spellproto->SpellFamilyFlags[1] & 0x20)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x20)
                 return DIMINISHING_CYCLONE;
             // Entangling Roots: to force natures grasp proc to be control root
-            else if (spellproto->SpellFamilyFlags[0] & 0x00000200)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000200)
                 return DIMINISHING_CONTROL_ROOT;
             // Faerie Fire
-            else if (spellproto->SpellFamilyFlags[0] & 0x400)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400)
                 return DIMINISHING_LIMITONLY;
             break;
         }
         case SPELLFAMILY_WARRIOR:
         {
             // Hamstring - limit duration to 10s in PvP
-            if (spellproto->SpellFamilyFlags[0] & 0x2)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x2)
                 return DIMINISHING_LIMITONLY;
             // Intimidating Shout
-            else if (spellproto->SpellFamilyFlags[0] & 0x40000)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x40000)
                 return DIMINISHING_FEAR_BLIND;
             // Charge Stun
-            else if (spellproto->SpellFamilyFlags[0] & 0x01000000)
+            else if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x01000000)
                 return DIMINISHING_NONE;
             break;
         }
         case SPELLFAMILY_PALADIN:
         {
             // Repentance
-            if (spellproto->SpellFamilyFlags[0] & 0x4)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x4)
                 return DIMINISHING_POLYMORPH;
             break;
         }
@@ -2892,7 +2892,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
             if (spellproto->SpellIconID == 2797)
                 return DIMINISHING_POLYMORPH;
             // Mark of Blood
-            else if ((spellproto->SpellFamilyFlags[0] & 0x10000000)
+            else if ((spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x10000000)
                 && spellproto->SpellIconID == 2285)
                 return DIMINISHING_LIMITONLY;
             break;
@@ -2900,10 +2900,10 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
         case SPELLFAMILY_HUNTER:
         {
             // Hunter's mark
-            if ((spellproto->SpellFamilyFlags[0] & 0x400) && spellproto->SpellIconID == 538)
+            if ((spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400) && spellproto->SpellIconID == 538)
                 return DIMINISHING_LIMITONLY;
             // Scatter Shot
-            if ((spellproto->SpellFamilyFlags[0] & 0x40000) && spellproto->SpellIconID == 132)
+            if ((spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x40000) && spellproto->SpellIconID == 132)
                 return DIMINISHING_NONE;
             break;
         }
@@ -2951,24 +2951,24 @@ int32 GetDiminishingReturnsLimitDuration(DiminishingGroup group, SpellEntry cons
         case SPELLFAMILY_HUNTER:
         {
             // Wyvern Sting
-            if (spellproto->SpellFamilyFlags[1] & 0x1000)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x1000)
                 return 6 * IN_MILLISECONDS;
             // Hunter's Mark
-            if (spellproto->SpellFamilyFlags[0] & 0x400)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400)
                 return 120 * IN_MILLISECONDS;
             break;
         }
         case SPELLFAMILY_PALADIN:
         {
             // Repentance - limit to 6 seconds in PvP
-            if (spellproto->SpellFamilyFlags[0] & 0x4)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x4)
                 return 6 * IN_MILLISECONDS;
             break;
         }
         case SPELLFAMILY_DRUID:
         {
             // Faerie Fire - limit to 40 seconds in PvP (3.1)
-            if (spellproto->SpellFamilyFlags[0] & 0x400)
+            if (spellproto->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x400)
                 return 40 * IN_MILLISECONDS;
             break;
         }
@@ -3799,7 +3799,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 74396: // Fingers of Frost visual buff
             spellInfo->procCharges = 2;
-            spellInfo->StackAmount = 0;
+            spellInfo->GetStackAmount() = 0;
             ++count;
             break;
         case 28200: // Ascendance (Talisman of Ascendance trinket)
@@ -3868,7 +3868,7 @@ void SpellMgr::LoadSpellCustomAttr()
         case 51734:
         case 51726:
             spellInfo->AttributesEx3 |= SPELL_ATTR3_STACK_FOR_DIFF_CASTERS;
-            spellInfo->SpellFamilyFlags[2] = 0x10;
+            spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] = 0x10;
             ++count;
             break;
         case 41013: // Parasitic Shadowfiend Passive
@@ -3933,7 +3933,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         // Strength of the Pack
         case 64381:
-            spellInfo->StackAmount = 4;
+            spellInfo->GetStackAmount() = 4;
             ++count;
             break;
         case 63675: // Improved Devouring Plague
@@ -4111,7 +4111,7 @@ void SpellMgr::LoadSpellCustomAttr()
         {
             case SPELLFAMILY_WARRIOR:
                 // Shout
-                if (spellInfo->SpellFamilyFlags[0] & 0x20000 || spellInfo->SpellFamilyFlags[1] & 0x20)
+                if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x20000 || spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x20)
                     mSpellCustomAttr[i] |= SPELL_ATTR0_CU_AURA_CC;
                 else
                     break;
@@ -4119,13 +4119,13 @@ void SpellMgr::LoadSpellCustomAttr()
                 break;
             case SPELLFAMILY_DRUID:
                 // Starfall Target Selection
-                if (spellInfo->SpellFamilyFlags[2] & 0x100)
+                if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x100)
                     spellInfo->MaxAffectedTargets = 2;
                 // Starfall AOE Damage
-                else if (spellInfo->SpellFamilyFlags[2] & 0x800000)
+                else if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] & 0x800000)
                     mSpellCustomAttr[i] |= SPELL_ATTR0_CU_EXCLUDE_SELF;
                 // Roar
-                else if (spellInfo->SpellFamilyFlags[0] & 0x8)
+                else if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x8)
                     mSpellCustomAttr[i] |= SPELL_ATTR0_CU_AURA_CC;
                 else
                     break;
@@ -4133,7 +4133,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 break;
                 // Do not allow Deadly throw and Slice and Dice to proc twice
             case SPELLFAMILY_ROGUE:
-                if (spellInfo->SpellFamilyFlags[1] & 0x1 || spellInfo->SpellFamilyFlags[0] & 0x40000)
+                if (spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x1 || spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x40000)
                     spellInfo->AttributesEx4 |= SPELL_ATTR4_CANT_PROC_FROM_SELFCAST;
                 else
                     break;
@@ -4141,8 +4141,8 @@ void SpellMgr::LoadSpellCustomAttr()
                 break;
             case SPELLFAMILY_DEATHKNIGHT:
                 // Icy Touch - extend FamilyFlags (unused value) for Sigil of the Frozen Conscience to use
-                if (spellInfo->SpellIconID == 2721 && spellInfo->SpellFamilyFlags[0] & 0x2)
-                    spellInfo->SpellFamilyFlags[0] |= 0x40;
+                if (spellInfo->SpellIconID == 2721 && spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x2)
+                    spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] |= 0x40;
                 ++count;
                 break;
         }

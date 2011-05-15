@@ -883,11 +883,12 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const * /*triggeredByAura*/)
     }
     m_procEx= PROC_EX_NONE;
 
+    SpellClassOptionsEntry const* flag = m_spellInfo->GetSpellClassOptions();
     // Hunter trap spells - activation proc for Lock and Load, Entrapment and Misdirection
     if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_HUNTER &&
-        (m_spellInfo->SpellFamilyFlags[0] & 0x18 ||     // Freezing and Frost Trap, Freezing Arrow
+        (flag->SpellFamilyFlags[0] & 0x18 ||     // Freezing and Frost Trap, Freezing Arrow
         m_spellInfo->Id == 57879 ||                     // Snake Trap - done this way to avoid double proc
-        m_spellInfo->SpellFamilyFlags[2] & 0x00024000)) // Explosive and Immolation Trap
+        flag->SpellFamilyFlags[2] & 0x00024000)) // Explosive and Immolation Trap
 
         m_procAttacker |= PROC_FLAG_DONE_TRAP_ACTIVATION;
 
@@ -897,7 +898,7 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const * /*triggeredByAura*/)
     */
 
     // Hellfire Effect - trigger as DOT
-    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[0] & 0x00000040)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && flag->SpellFamilyFlags[0] & 0x00000040)
     {
         m_procAttacker = PROC_FLAG_DONE_PERIODIC;
         m_procVictim   = PROC_FLAG_TAKEN_PERIODIC;
@@ -1306,7 +1307,8 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
         caster->DealSpellDamage(&damageInfo, true);
 
         // Haunt
-        if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->SpellFamilyFlags[1] & 0x40000 && m_spellAura && m_spellAura->GetEffect(1))
+        SpellClassOptionsEntry const* flag = m_spellInfo->GetSpellClassOptions();
+        if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && flag->SpellFamilyFlags[1] & 0x40000 && m_spellAura && m_spellAura->GetEffect(1))
         {
             AuraEffect * aurEff = m_spellAura->GetEffect(1);
             aurEff->SetAmount(CalculatePctU(aurEff->GetAmount(), damageInfo.damage));
@@ -2689,7 +2691,8 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     }
                     break;
                 case SPELLFAMILY_PRIEST:
-                    if (m_spellInfo->SpellFamilyFlags[0] == 0x10000000) // Circle of Healing
+                    SpellClassOptionsEntry const* flag = m_spellInfo->GetSpellClassOptions();
+                    if (flag->SpellFamilyFlags[0] == 0x10000000) // Circle of Healing
                     {
                         maxSize = m_caster->HasAura(55675) ? 6 : 5; // Glyph of Circle of Healing
                         power = POWER_HEALTH;
@@ -2717,12 +2720,12 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     }
                     break;
                 case SPELLFAMILY_DRUID:
-                    if (m_spellInfo->SpellFamilyFlags[1] == 0x04000000) // Wild Growth
+                    if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] == 0x04000000) // Wild Growth
                     {
                         maxSize = m_caster->HasAura(62970) ? 6 : 5; // Glyph of Wild Growth
                         power = POWER_HEALTH;
                     }
-                    else if (m_spellInfo->SpellFamilyFlags[2] == 0x0100) // Starfall
+                    else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] == 0x0100) // Starfall
                     {
                         // Remove targets not in LoS or in stealth
                         for (std::list<Unit*>::iterator itr = unitList.begin() ; itr != unitList.end();)
@@ -3196,7 +3199,7 @@ void Spell::cast(bool skipCheck)
         case SPELLFAMILY_MAGE:
         {
              // Permafrost
-             if (m_spellInfo->SpellFamilyFlags[1] & 0x00001000 ||  m_spellInfo->SpellFamilyFlags[0] & 0x00100220)
+             if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x00001000 ||  m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00100220)
               m_preCastSpell = 68391;
              break;
         }
@@ -4868,7 +4871,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                         return SPELL_FAILED_BAD_TARGETS;
                 }
                 // Lay on Hands - cannot be self-cast on paladin with Forbearance or after using Avenging Wrath
-                if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_PALADIN && m_spellInfo->SpellFamilyFlags[0] & 0x0008000)
+                if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_PALADIN && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x0008000)
                     if (target->HasAura(61988)) // Immunity shield marker
                         return SPELL_FAILED_TARGET_AURASTATE;
             }
@@ -4934,11 +4937,11 @@ SpellCastResult Spell::CheckCast(bool strict)
         //Must be behind the target.
         if (m_spellInfo->AttributesEx2 == SPELL_ATTR2_UNK20 && m_spellInfo->AttributesEx & SPELL_ATTR1_UNK9 && target->HasInArc(static_cast<float>(M_PI), m_caster)
             //Exclusion for Pounce: Facing Limitation was removed in 2.0.1, but it still uses the same, old Ex-Flags
-            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags.IsEqual(0x20000, 0, 0)))
+            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DRUID && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags.IsEqual(0x20000, 0, 0)))
             //Mutilate no longer requires you be behind the target as of patch 3.0.3
-            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[1] & 0x200000))
+            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] & 0x200000))
             //Exclusion for Throw: Facing limitation was added in 3.2.x, but that shouldn't be
-            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags[0] & 0x00000001)))
+            && (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_ROGUE && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x00000001)))
         {
             SendInterrupted(2);
             return SPELL_FAILED_NOT_BEHIND;
@@ -5043,12 +5046,12 @@ SpellCastResult Spell::CheckCast(bool strict)
                     if (m_targets.getUnitTarget() && !m_caster->IsFriendlyTo(m_targets.getUnitTarget()) && !m_caster->HasInArc(static_cast<float>(M_PI), m_targets.getUnitTarget()))
                         return SPELL_FAILED_UNIT_NOT_INFRONT;
                 }
-                else if (m_spellInfo->SpellIconID == 33 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_FIRE_NOVA)
+                else if (m_spellInfo->SpellIconID == 33 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_SHAMAN && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & SPELLFAMILYFLAG_SHAMAN_FIRE_NOVA)
                 {
                     if (!m_caster->m_SummonSlot[1])
                         return SPELL_FAILED_SUCCESS;
                 }
-                else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->SpellFamilyFlags[0] == 0x2000) // Death Coil (DeathKnight)
+                else if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_DEATHKNIGHT && m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] == 0x2000) // Death Coil (DeathKnight)
                 {
                     Unit* target = m_targets.getUnitTarget();
                     if (!target || (target->IsFriendlyTo(m_caster) && target->GetCreatureType() != CREATURE_TYPE_UNDEAD))
@@ -5761,7 +5764,7 @@ bool Spell::CanAutoCast(Unit* target)
     {
         if (m_spellInfo->Effect[j] == SPELL_EFFECT_APPLY_AURA)
         {
-            if (m_spellInfo->StackAmount <= 1)
+            if (m_spellInfo->GetStackAmount() <= 1)
             {
                 if (target->HasAuraEffect(m_spellInfo->Id, j))
                     return false;
@@ -5769,7 +5772,7 @@ bool Spell::CanAutoCast(Unit* target)
             else
             {
                 if (AuraEffect * aureff = target->GetAuraEffect(m_spellInfo->Id, j))
-                    if (aureff->GetBase()->GetStackAmount() >= m_spellInfo->StackAmount)
+                    if (aureff->GetBase()->GetStackAmount() >= m_spellInfo->GetStackAmount())
                         return false;
             }
         }
@@ -6105,7 +6108,7 @@ SpellCastResult Spell::CheckItems()
                         }
                         else
                         {
-                            if (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->SpellFamilyFlags[0] & 0x40000000)))
+                            if (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x40000000)))
                                 return SPELL_FAILED_TOO_MANY_OF_ITEM;
                             else if (!(p_caster->HasItemCount(m_spellInfo->EffectItemType[i], 1)))
                                 return SPELL_FAILED_TOO_MANY_OF_ITEM;
@@ -6510,7 +6513,7 @@ bool Spell::CheckTargetCreatureType(Unit* target) const
         spellCreatureTargetMask =  0;
 
     // Polymorph and Grounding Totem
-    if (target->GetEntry() == 5925 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->SpellFamilyFlags[0] & 0x1000000) && m_spellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOD_CONFUSE)
+    if (target->GetEntry() == 5925 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x1000000) && m_spellInfo->EffectApplyAuraName[0] == SPELL_AURA_MOD_CONFUSE)
         return true;
 
     if (spellCreatureTargetMask)
