@@ -262,7 +262,7 @@ bool SpellMgr::IsSrcTargetSpell(SpellEntry const *spellInfo) const
 {
     for (uint8 i = 0; i< MAX_SPELL_EFFECTS; ++i)
     {
-        if (SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_AREA_SRC || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_AREA_SRC)
+        if (SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_AREA_SRC || SpellTargetType[spellInfo->GetEffectImplicitTargetBByIndex(i)] == TARGET_TYPE_AREA_SRC)
             return true;
     }
     return false;
@@ -433,11 +433,11 @@ Unit* GetTriggeredSpellCaster(SpellEntry const * spellInfo, Unit * caster, Unit 
     for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS; ++i)
     {
         if (SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_UNIT_TARGET
-            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_UNIT_TARGET
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetBByIndex(i)] == TARGET_TYPE_UNIT_TARGET
             || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_CHANNEL
-            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_CHANNEL
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetBByIndex(i)] == TARGET_TYPE_CHANNEL
             || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_DEST_TARGET
-            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_DEST_TARGET)
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetBByIndex(i)] == TARGET_TYPE_DEST_TARGET)
             return caster;
     }
     return target;
@@ -878,7 +878,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                                     continue;
                                 // if non-positive trigger cast targeted to positive target this main cast is non-positive
                                 // this will place this spell auras as debuffs
-                                if (IsPositiveTarget(spellTriggeredProto->GetEffectImplicitTargetAByIndex(effIndex), spellTriggeredProto->GetEffectImplicitTargetAByIndex(effIndex)) && !_isPositiveEffect(spellTriggeredId, i, true))
+                                if (IsPositiveTarget(spellTriggeredProto->GetEffectImplicitTargetAByIndex(effIndex), spellTriggeredProto->GetEffectImplicitTargetBByIndex(effIndex)) && !_isPositiveEffect(spellTriggeredId, i, true))
                                     return false;
                             }
                         }
@@ -969,7 +969,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
     }
 
     // non-positive targets
-    if (!IsPositiveTarget(spellproto->GetEffectImplicitTargetAByIndex(effIndex), spellproto->GetEffectImplicitTargetAByIndex(effIndex)))
+    if (!IsPositiveTarget(spellproto->GetEffectImplicitTargetAByIndex(effIndex), spellproto->GetEffectImplicitTargetBByIndex(effIndex)))
         return false;
 
     // AttributesEx check
@@ -978,7 +978,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
 
     if (!deep && spellproto->EffectTriggerSpell[effIndex]
         && !spellproto->GetEffectApplyAuraNameByIndex(effIndex)
-        && IsPositiveTarget(spellproto->GetEffectImplicitTargetAByIndex(effIndex), spellproto->GetEffectImplicitTargetAByIndex(effIndex))
+        && IsPositiveTarget(spellproto->GetEffectImplicitTargetAByIndex(effIndex), spellproto->GetEffectImplicitTargetBByIndex(effIndex))
         && !_isPositiveSpell(spellproto->EffectTriggerSpell[effIndex], true))
         return false;
 
@@ -1170,7 +1170,7 @@ void SpellMgr::LoadSpellTargetPositions()
         bool found = false;
         for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DST_DB || spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DST_DB)
+            if (spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DST_DB || spellInfo->GetEffectImplicitTargetBByIndex(i) == TARGET_DST_DB)
             {
                 // additional requirements
                 if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_BIND && spellInfo->GetEffectMiscValue(i))
@@ -1216,7 +1216,7 @@ void SpellMgr::LoadSpellTargetPositions()
             }
             if (found)
                 break;
-            switch(spellInfo->GetEffectImplicitTargetAByIndex(j))
+            switch(spellInfo->GetEffectImplicitTargetBByIndex(j))
             {
                 case TARGET_DST_DB:
                     found = true;
@@ -2298,7 +2298,7 @@ void SpellMgr::LoadPetDefaultSpells()
 
         for (uint8 k = 0; k < MAX_SPELL_EFFECTS; ++k)
         {
-            if (spellEntry->GetSpellEffect(k) == SPELL_EFFECT_SUMMON || spellEntry->GetSpellEffect(k) == SPELL_EFFECT_SUMMON_PET)
+            if (spellEntry->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_SUMMON || spellEntry->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_SUMMON_PET)
             {
                 uint32 creature_id = spellEntry->EffectMiscValue[k];
                 CreatureTemplate const *cInfo = sObjectMgr->GetCreatureTemplate(creature_id);
@@ -2343,7 +2343,7 @@ bool SpellMgr::IsSpellValid(SpellEntry const *spellInfo, Player *pl, bool msg)
     // check effects
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        switch (spellInfo->GetSpellEffect(i))
+        switch (spellInfo->GetSpellEffectIdByIndex(i))
         {
             case 0:
                 continue;
@@ -3488,7 +3488,7 @@ void SpellMgr::LoadSpellCustomAttr()
 
         for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
-            switch (spellInfo->GetSpellEffect(j))
+            switch (spellInfo->GetSpellEffectIdByIndex(j))
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
                 case SPELL_EFFECT_WEAPON_DAMAGE:
@@ -3515,7 +3515,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 case SPELL_EFFECT_TRIGGER_SPELL:
                     if (IsPositionTarget(spellInfo->GetEffectImplicitTargetAByIndex(j)) ||
                         spellInfo->GetTargets() & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
-                        spellInfo->GetSpellEffect(j) = SPELL_EFFECT_TRIGGER_MISSILE;
+                        spellInfo->GetSpellEffectIdByIndex(j) = SPELL_EFFECT_TRIGGER_MISSILE;
                     ++count;
                     break;
                 case SPELL_EFFECT_ENCHANT_ITEM:
@@ -3634,11 +3634,11 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 32182: // Heroism
-            spellInfo->excludeCasterAuraSpell = 57723; // Exhaustion
+            spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell = 57723; // Exhaustion
             ++count;
             break;
         case 2825:  // Bloodlust
-            spellInfo->excludeCasterAuraSpell = 57724; // Sated
+            spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell = 57724; // Sated
             ++count;
             break;
         case 20335: // Heart of the Crusader
@@ -3652,7 +3652,7 @@ void SpellMgr::LoadSpellCustomAttr()
         case 16007: // Draco-Incarcinatrix 900
             // was 46, but effect is aura effect
             spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_NEARBY_ENTRY;
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DST_NEARBY_ENTRY;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = TARGET_DST_NEARBY_ENTRY;
             ++count;
             break;
         case 26029: // Dark Glare
@@ -3818,7 +3818,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 49305: // Teleport to Boss 1 DND
         case 64981: // Summon Random Vanquished Tentacle
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = TARGET_UNIT_CASTER;
             ++count;
             break;
         case 51852: // The Eye of Acherus (no spawn in phase 2 in db)
@@ -3840,7 +3840,7 @@ void SpellMgr::LoadSpellCustomAttr()
         // Master Shapeshifter: missing stance data for forms other than bear - bear version has correct data
         // To prevent aura staying on target after talent unlearned
         case 48420:
-            spellInfo->Stances = 1 << (FORM_CAT - 1);
+            spellInfo->GetStances() = 1 << (FORM_CAT - 1);
             ++count;
             break;
         case 48421:
@@ -3893,8 +3893,8 @@ void SpellMgr::LoadSpellCustomAttr()
         // this is the only known exception, probably just wrong data
         case 29214: // Wrath of the Plaguebringer
         case 54836: // Wrath of the Plaguebringer
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_AREA_ALLY_SRC;
-            spellInfo->GetEffectImplicitTargetAByIndex(1) = TARGET_UNIT_AREA_ALLY_SRC;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = TARGET_UNIT_AREA_ALLY_SRC;
+            spellInfo->GetEffectImplicitTargetBByIndex(1) = TARGET_UNIT_AREA_ALLY_SRC;
             ++count;
             break;
         case 31687: // Summon Water Elemental
@@ -3956,12 +3956,12 @@ void SpellMgr::LoadSpellCustomAttr()
         case 70728: // Exploit Weakness
         case 70840: // Devious Minds
             spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_PET;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = TARGET_UNIT_PET;
             ++count;
             break;
         case 70893: // Culling The Herd
             spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_MASTER;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = TARGET_UNIT_MASTER;
             ++count;
             break;
         case 54800: // Sigil of the Frozen Conscience - change class mask to custom extended flags of Icy Touch
@@ -4032,7 +4032,7 @@ void SpellMgr::LoadSpellCustomAttr()
         case 72442: // Boiling Blood (Deathbringer Saurfang)
         case 72443: // Boiling Blood (Deathbringer Saurfang)
             spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_TARGET_ENEMY;
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = 0;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = 0;
             ++count;
             break;
         case 70460: // Coldflame Jets (Traps after Saurfang)
@@ -4054,14 +4054,14 @@ void SpellMgr::LoadSpellCustomAttr()
         case 72673: // Mutated Strength (Professor Putricide)
         case 72674: // Mutated Strength (Professor Putricide)
         case 72675: // Mutated Strength (Professor Putricide)
-            spellInfo->Effect[1] = 0;
+            spellInfo->GetSpellEffectIdByIndex(1) = 0;
             ++count;
             break;
         case 70911: // Unbound Plague (Professor Putricide)
         case 72854: // Unbound Plague (Professor Putricide)
         case 72855: // Unbound Plague (Professor Putricide)
         case 72856: // Unbound Plague (Professor Putricide)
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_TARGET_ENEMY;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = TARGET_UNIT_TARGET_ENEMY;
             ++count;
             break;
         case 71518: // Unholy Infusion Quest Credit (Professor Putricide)
@@ -4090,13 +4090,13 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 70598: // Sindragosa's Fury
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DST_CASTER;
+            spellInfo->GetSpellEffect(0)->EffectImplicitTargetA[0] = TARGET_DST_CASTER;
             ++count;
             break;
         case 69846: // Frost Bomb
             spellInfo->speed = 10;
             spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DEST_TARGET_ANY;
-            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_TARGET_ANY;
+            spellInfo->GetEffectImplicitTargetBByIndex(0) = TARGET_UNIT_TARGET_ANY;
             spellInfo->Effect[1] = 0;
             ++count;
             break;

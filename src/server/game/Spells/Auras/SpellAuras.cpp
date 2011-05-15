@@ -1941,14 +1941,14 @@ void UnitAura::FillTargetMap(std::map<Unit *, uint8> & targets, Unit * caster)
             continue;
         UnitList targetList;
         // non-area aura
-        if (GetSpellProto()->GetSpellEffect(effIndex) == SPELL_EFFECT_APPLY_AURA)
+        if (GetSpellProto()->GetSpellEffectIdByIndex(effIndex) == SPELL_EFFECT_APPLY_AURA)
         {
             targetList.push_back(GetUnitOwner());
         }
         else
         {
             float radius;
-            if (GetSpellProto()->GetSpellEffect(effIndex) == SPELL_EFFECT_APPLY_AREA_AURA_ENEMY)
+            if (GetSpellProto()->GetSpellEffectIdByIndex(effIndex) == SPELL_EFFECT_APPLY_AREA_AURA_ENEMY)
                 radius = GetSpellRadiusForHostile(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[effIndex]));
             else
                 radius = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[effIndex]));

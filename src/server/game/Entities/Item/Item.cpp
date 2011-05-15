@@ -826,32 +826,32 @@ bool Item::IsFitToSpellRequirements(SpellEntry const* spellInfo) const
 {
     ItemTemplate const* proto = GetTemplate();
 
-    if (spellInfo->EquippedItemClass != -1)                 // -1 == any item class
+    if (spellInfo->GetEquippedItemClass() != -1)                 // -1 == any item class
     {
         // Special case - accept vellum for armor/weapon requirements
         if ((spellInfo->GetEquippedItemClass() == ITEM_CLASS_ARMOR && proto->IsArmorVellum())
-            ||(spellInfo-GetEquippedItemClass() == ITEM_CLASS_WEAPON && proto->IsWeaponVellum()))
+            ||(spellInfo->GetEquippedItemClass() == ITEM_CLASS_WEAPON && proto->IsWeaponVellum()))
             if (sSpellMgr->IsSkillTypeSpell(spellInfo->Id, SKILL_ENCHANTING)) // only for enchanting spells
                 return true;
 
         if (spellInfo->GetEquippedItemClass() != int32(proto->Class))
             return false;                                   //  wrong item class
 
-        if (spellInfo->EquippedItemSubClassMask != 0)        // 0 == any subclass
+        if (spellInfo->GetEquippedItemSubClassMask() != 0)        // 0 == any subclass
         {
-            if ((spellInfo->EquippedItemSubClassMask & (1 << proto->SubClass)) == 0)
+            if ((spellInfo->GetEquippedItemSubClassMask() & (1 << proto->SubClass)) == 0)
                 return false;                               // subclass not present in mask
         }
     }
 
-    if (spellInfo->EquippedItemInventoryTypeMask != 0)       // 0 == any inventory type
+    if (spellInfo->GetEquippedItemInventoryTypeMask() != 0)       // 0 == any inventory type
     {
         // Special case - accept weapon type for main and offhand requirements
         if (proto->InventoryType == INVTYPE_WEAPON &&
-            (spellInfo->EquippedItemInventoryTypeMask & (1 << INVTYPE_WEAPONMAINHAND) ||
-            spellInfo->EquippedItemInventoryTypeMask & (1 << INVTYPE_WEAPONOFFHAND)))
+            (spellInfo->GetEquippedItemInventoryTypeMask() & (1 << INVTYPE_WEAPONMAINHAND) ||
+            spellInfo->GetEquippedItemInventoryTypeMask() & (1 << INVTYPE_WEAPONOFFHAND)))
             return true;
-        else if ((spellInfo->EquippedItemInventoryTypeMask & (1 << proto->InventoryType)) == 0)
+        else if ((spellInfo->GetEquippedItemInventoryTypeMask() & (1 << proto->InventoryType)) == 0)
             return false;                                   // inventory type not present in mask
     }
 

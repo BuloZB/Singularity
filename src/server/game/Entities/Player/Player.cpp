@@ -4382,8 +4382,8 @@ bool Player::resetTalents(bool no_cost)
             removeSpell(talentInfo->RankID[rank], true);
             if (const SpellEntry *_spellEntry = sSpellStore.LookupEntry(talentInfo->RankID[rank]))
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)                  // search through the SpellEntry for valid trigger spells
-                    if (_spellEntry->EffectTriggerSpell[i] > 0 && _spellEntry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL)
-                        removeSpell(_spellEntry->EffectTriggerSpell[i], true); // and remove any spells that the talent teaches
+                    if (_spellEntry->GetSpellEffect(i)->EffectTriggerSpell > 0 && _spellEntry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL)
+                        removeSpell(_spellEntry->GetSpellEffect(i)->EffectTriggerSpell, true); // and remove any spells that the talent teaches
             // if this talent rank can be found in the PlayerTalentMap, mark the talent as removed so it gets deleted
             PlayerTalentMap::iterator plrTalent = m_talents[m_activeSpec]->find(talentInfo->RankID[rank]);
             if (plrTalent != m_talents[m_activeSpec]->end())
@@ -8005,7 +8005,7 @@ void Player::_ApplyWeaponDependentAuraMods(Item *item, WeaponAttackType attackTy
 void Player::_ApplyWeaponDependentAuraCritMod(Item *item, WeaponAttackType attackType, AuraEffect const* aura, bool apply)
 {
     // generic not weapon specific case processes in aura code
-    if (aura->GetSpellProto()->EquippedItemClass == -1)
+    if (aura->GetSpellProto()->GetEquippedItemClass() == -1)
         return;
 
     BaseModGroup mod = BASEMOD_END;
@@ -8032,7 +8032,7 @@ void Player::_ApplyWeaponDependentAuraDamageMod(Item *item, WeaponAttackType att
         return;
 
     // generic not weapon specific case processes in aura code
-    if (aura->GetSpellProto()->EquippedItemClass == -1)
+    if (aura->GetSpellProto()->GetEquippedItemClass() == -1)
         return;
 
     UnitMods unitMod = UNIT_MOD_END;
@@ -19122,9 +19122,9 @@ void Player::RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent)
                     InventoryResult msg = CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, spellInfo->GetSpellReagents()->Reagent[i], spellInfo->GetSpellReagents()->ReagentCount[i]);
                     if (msg == EQUIP_ERR_OK)
                     {
-                        Item* item = StoreNewItem(dest, spellInfo->Reagent[i], true);
+                        Item* item = StoreNewItem(dest, spellInfo->GetSpellReagents()->Reagent[i], true);
                         if (IsInWorld())
-                            SendNewItem(item, spellInfo->ReagentCount[i], true, false);
+                            SendNewItem(item, spellInfo->GetSpellReagents()->ReagentCount[i], true, false);
                     }
                 }
             }
@@ -21551,7 +21551,7 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
     bool found = false;
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL && !HasSpell(spellInfo->EffectTriggerSpell[i]))
+        if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL && !HasSpell(spellInfo->GetSpellEffect(i)->EffectTriggerSpell))
         {
             found = true;
             break;
@@ -21563,7 +21563,7 @@ void Player::learnQuestRewardedSpells(Quest const* quest)
         return;
 
     // prevent learn non first rank unknown profession and second specialization for same profession)
-    uint32 learned_0 = spellInfo->EffectTriggerSpell[0];
+    uint32 learned_0 = spellInfo->GetSpellEffect(0)->EffectTriggerSpell;
     if (sSpellMgr->GetSpellRank(learned_0) > 1 && !HasSpell(learned_0))
     {
         // not have first rank learned (unlearned prof?)
@@ -21984,12 +21984,12 @@ OutdoorPvP * Player::GetOutdoorPvP() const
 
 bool Player::HasItemFitToSpellRequirements(SpellEntry const* spellInfo, Item const* ignoreItem)
 {
-    if (spellInfo->EquippedItemClass < 0)
+    if (spellInfo->GetEquippedItemClass() < 0)
         return true;
 
     // scan other equipped items for same requirements (mostly 2 daggers/etc)
     // for optimize check 2 used cases only
-    switch (spellInfo->EquippedItemClass)
+    switch (spellInfo->GetEquippedItemClass())
     {
         case ITEM_CLASS_WEAPON:
         {
@@ -22020,7 +22020,7 @@ bool Player::HasItemFitToSpellRequirements(SpellEntry const* spellInfo, Item con
             break;
         }
         default:
-            sLog->outError("HasItemFitToSpellRequirements: Not handled spell requirement for item class %u", spellInfo->EquippedItemClass);
+            sLog->outError("HasItemFitToSpellRequirements: Not handled spell requirement for item class %u", spellInfo->GetEquippedItemClass());
             break;
     }
 
@@ -24241,8 +24241,8 @@ void Player::ActivateSpec(uint8 spec)
             removeSpell(talentInfo->RankID[rank], true); // removes the talent, and all dependant, learned, and chained spells..
             if (const SpellEntry *_spellEntry = sSpellStore.LookupEntry(talentInfo->RankID[rank]))
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)                  // search through the SpellEntry for valid trigger spells
-                    if (_spellEntry->EffectTriggerSpell[i] > 0 && _spellEntry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL)
-                        removeSpell(_spellEntry->EffectTriggerSpell[i], true); // and remove any spells that the talent teaches
+                    if (_spellEntry->GetSpellEffect(i)->EffectTriggerSpell > 0 && _spellEntry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_LEARN_SPELL)
+                        removeSpell(_spellEntry->GetSpellEffect(i)->EffectTriggerSpell, true); // and remove any spells that the talent teaches
             // if this talent rank can be found in the PlayerTalentMap, mark the talent as removed so it gets deleted
             //PlayerTalentMap::iterator plrTalent = m_talents[m_activeSpec]->find(talentInfo->RankID[rank]);
             //if (plrTalent != m_talents[m_activeSpec]->end())

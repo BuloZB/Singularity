@@ -117,12 +117,13 @@ class boss_janalai : public CreatureScript
             {
                 pInstance =c->GetInstanceScript();
 
-                SpellEntry *TempSpell = GET_SPELL(SPELL_HATCH_EGG);
+                //TODO: rewrite
+                /*SpellEntry *TempSpell = GET_SPELL(SPELL_HATCH_EGG);
                 if (TempSpell && TempSpell->EffectImplicitTargetA[0] != 1)
                 {
                     TempSpell->EffectImplicitTargetA[0] = 1;
                     TempSpell->EffectImplicitTargetB[0] = 0;
-                }
+                }*/
             }
 
             InstanceScript *pInstance;
