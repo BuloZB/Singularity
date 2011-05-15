@@ -227,49 +227,49 @@ void ScriptMgr::FillSpellSummary()
         for (uint32 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
             //Spell targets self
-            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_CASTER)
+            if (pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_CASTER)
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_SELF-1);
 
             //Spell targets a single enemy
-            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ENEMY ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_DST_TARGET_ENEMY)
+            if (pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_TARGET_ENEMY ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_DST_TARGET_ENEMY)
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_SINGLE_ENEMY-1);
 
             //Spell targets AoE at enemy
-            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_SRC ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_DST ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_DEST_DYNOBJ_ENEMY)
+            if (pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_AREA_ENEMY_SRC ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_AREA_ENEMY_DST ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_SRC_CASTER ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_DEST_DYNOBJ_ENEMY)
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_AOE_ENEMY-1);
 
             //Spell targets an enemy
-            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ENEMY ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_DST_TARGET_ENEMY ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_SRC ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_DST ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_DEST_DYNOBJ_ENEMY)
+            if (pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_TARGET_ENEMY ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_DST_TARGET_ENEMY ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_AREA_ENEMY_SRC ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_AREA_ENEMY_DST ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_SRC_CASTER ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_DEST_DYNOBJ_ENEMY)
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_ANY_ENEMY-1);
 
             //Spell targets a single friend(or self)
-            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_CASTER ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ALLY ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_PARTY)
+            if (pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_CASTER ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_TARGET_ALLY ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_TARGET_PARTY)
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_SINGLE_FRIEND-1);
 
             //Spell targets aoe friends
-            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_CASTER ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_TARGET ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER)
+            if (pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_PARTY_CASTER ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_PARTY_TARGET ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_SRC_CASTER)
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_AOE_FRIEND-1);
 
             //Spell targets any friend(or self)
-            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_CASTER ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ALLY ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_PARTY ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_CASTER ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_TARGET ||
-                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER)
+            if (pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_CASTER ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_TARGET_ALLY ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_TARGET_PARTY ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_PARTY_CASTER ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_UNIT_PARTY_TARGET ||
+                pTempSpell->GetEffectImplicitTargetAByIndex(j) == TARGET_SRC_CASTER)
                 SpellSummary[i].Targets |= 1 << (SELECT_TARGET_ANY_FRIEND-1);
 
             //Make sure that this spell includes a damage effect

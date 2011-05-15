@@ -1867,7 +1867,7 @@ void Spell::EffectJumpDest(SpellEffectEntry const* effect)
     {
         m_targets.m_dstPos.GetPosition(x, y, z);
 
-        if (m_spellInfo->EffectImplicitTargetA[effect] == TARGET_DEST_TARGET_BACK)
+        if (m_spellInfo->GetEffectImplicitTargetAByIndex(effect) == TARGET_DEST_TARGET_BACK)
         {
             // explicit cast data from client or server-side cast
             // some spell at client send caster
@@ -2166,7 +2166,7 @@ void Spell::EffectPowerBurn(SpellEffectEntry const* effect)
         return;
 
     // burn x% of target's mana, up to maximum of 2x% of caster's mana (Mana Burn)
-    if (m_spellInfo->ManaCostPercentage)
+    if (m_spellInfo->GetManaCostPercentage())
     {
         int32 maxDamage = int32(CalculatePctN(m_caster->GetMaxPower(powerType), damage * 2));
         damage = int32(CalculatePctN(unitTarget->GetMaxPower(powerType), damage));
@@ -6077,7 +6077,7 @@ void Spell::EffectKnockBack(SpellEffectEntry const* effect)
         else
             return;
     }
-    else //if (m_spellInfo->Effect[i] == SPELL_EFFECT_KNOCK_BACK)
+    else //if (m_spellInfo->GetSpellEffect(i) == SPELL_EFFECT_KNOCK_BACK)
     {
         m_caster->GetPosition(x, y);
     }
@@ -6163,7 +6163,7 @@ void Spell::EffectPullTowards(SpellEffectEntry const* effect)
         else
             return;
     }
-    else //if (m_spellInfo->Effect[i] == SPELL_EFFECT_PULL_TOWARDS)
+    else //if (m_spellInfo->GetSpellEffect(i) == SPELL_EFFECT_PULL_TOWARDS)
     {
         pos.Relocate(m_caster);
     }
@@ -6922,7 +6922,7 @@ void Spell::GetSummonPosition(uint32 i, Position &pos, float radius, uint32 coun
         else
         {
             //This is a workaround. Do not have time to write much about it
-            switch (m_spellInfo->EffectImplicitTargetA[i])
+            switch (m_spellInfo->GetEffectImplicitTargetAByIndex(i))
             {
                 case TARGET_MINION:
                 case TARGET_DEST_CASTER_RANDOM:
@@ -7094,7 +7094,7 @@ void Spell::EffectBind(SpellEffectEntry const* effect)
 
     uint32 area_id;
     WorldLocation loc;
-    if (m_spellInfo->EffectImplicitTargetA[effect] == TARGET_DST_DB || m_spellInfo->EffectImplicitTargetB[effect] == TARGET_DST_DB)
+    if (m_spellInfo->GetEffectImplicitTargetAByIndex(effect) == TARGET_DST_DB || m_spellInfo->GetEffectImplicitTargetAByIndex(effect) == TARGET_DST_DB)
     {
         SpellTargetPosition const* st = sSpellMgr->GetSpellTargetPosition(m_spellInfo->Id);
         if (!st)

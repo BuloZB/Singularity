@@ -7891,7 +7891,7 @@ bool Unit::HandleAuraProc(Unit * pVictim, uint32 damage, Aura * triggeredByAura,
             else if (dummySpell->SpellIconID == 3015)
             {
                 *handled = true;
-                if (procSpell->Category == SPELLCATEGORY_JUDGEMENT)
+                if (procSpell->GetCategory() == SPELLCATEGORY_JUDGEMENT)
                 {
                     CastSpell(pVictim, 68055, true);
                     return true;
@@ -8017,7 +8017,7 @@ bool Unit::HandleAuraProc(Unit * pVictim, uint32 damage, Aura * triggeredByAura,
                 case 51209:
                     *handled = true;
                     // Drop only in not disease case
-                    if (procSpell && procSpell->Dispel == DISPEL_DISEASE)
+                    if (procSpell && procSpell->GetDispel() == DISPEL_DISEASE)
                         return false;
                     return true;
             }
@@ -8397,7 +8397,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
                                 return false;
                             }
                             // percent stored in effect 1 (class scripts) base points
-                            int32 cost = int32(originalSpell->GetManaCost() + CalculatePctU(GetCreateMana(), originalSpell->ManaCostPercentage));
+                            int32 cost = int32(originalSpell->GetManaCost() + CalculatePctU(GetCreateMana(), originalSpell->GetManaCostPercentage()));
                             basepoints0 = CalculatePctN(cost, SpellMgr::CalculateSpellEffectAmount(auraSpellInfo, 1));
                             trigger_spell_id = 20272;
                             target = this;
@@ -8734,7 +8734,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
         // Enlightenment (trigger only from mana cost spells)
         case 35095:
         {
-            if (!procSpell || procSpell->powerType != POWER_MANA || (procSpell->GetManaCost() == 0 && procSpell->ManaCostPercentage == 0 && procSpell->manaCostPerlevel == 0))
+            if (!procSpell || procSpell->powerType != POWER_MANA || (procSpell->GetManaCost() == 0 && procSpell->GetManaCostPercentage() == 0 && procSpell->GetManaCostPerLevel() == 0))
                 return false;
             break;
         }
@@ -8768,7 +8768,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
             // Item - Shaman T10 Enhancement 4P Bonus
             if (AuraEffect const* aurEff = GetAuraEffect(70832, 0))
                 if (Aura const* maelstrom = GetAura(53817))
-                    if ((maelstrom->GetStackAmount() == maelstrom->GetSpellProto()->StackAmount) && roll_chance_i(aurEff->GetAmount()))
+                    if ((maelstrom->GetStackAmount() == maelstrom->GetSpellProto()->GetStackAmount()) && roll_chance_i(aurEff->GetAmount()))
                         CastSpell(this, 70831, true, castItem, triggeredByAura);
 
             // have rank dependent proc chance, ignore too often cases
@@ -9968,10 +9968,10 @@ Unit* Unit::SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo)
         return NULL;
 
     // Magic case
-    if (spellInfo && (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC))
+    if (spellInfo && (spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_NONE || spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_MAGIC))
     {
         //I am not sure if this should be redirected.
-        if (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE)
+        if (spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_NONE)
             return victim;
 
         Unit::AuraEffectList const& magnetAuras = victim->GetAuraEffectsByType(SPELL_AURA_SPELL_MAGNET);
@@ -13749,7 +13749,7 @@ void CharmInfo::InitCharmCreateSpells()
                 {
                     bool autocast = false;
                     for (uint32 i = 0; i < MAX_SPELL_EFFECTS && !autocast; ++i)
-                        if (SpellTargetType[spellInfo->EffectImplicitTargetA[i]] == TARGET_TYPE_UNIT_TARGET)
+                        if (SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_UNIT_TARGET)
                             autocast = true;
 
                     if (autocast)
@@ -14685,7 +14685,7 @@ uint32 Unit::GetCastingTimeForBonus(SpellEntry const *spellProto, DamageEffectTy
                 break;
         }
 
-        if (IsAreaEffectTarget[spellProto->EffectImplicitTargetA[i]] || IsAreaEffectTarget[spellProto->EffectImplicitTargetB[i]])
+        if (IsAreaEffectTarget[spellProto->GetEffectImplicitTargetAByIndex(i)] || IsAreaEffectTarget[spellProto->GetEffectImplicitTargetAByIndex(i)])
             AreaEffect = true;
     }
 

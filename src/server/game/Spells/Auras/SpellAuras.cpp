@@ -337,7 +337,7 @@ m_owner(owner), m_timeCla(0), m_updateTargetMapInterval(0),
 m_casterLevel(caster ? caster->getLevel() : m_spellProto->GetSpellLevel()), m_procCharges(0), m_stackAmount(1),
 m_isRemoved(false), m_isSingleTarget(false)
 {
-    if (m_spellProto->manaPerSecond || m_spellProto->manaPerSecondPerLevel)
+    if (m_spellProto->GetManaPerSecond() || m_spellProto->manaPerSecondPerLevel)
         m_timeCla = 1 * IN_MILLISECONDS;
 
     Player* modOwner = NULL;
@@ -358,7 +358,7 @@ m_isRemoved(false), m_isSingleTarget(false)
 
     m_duration = m_maxDuration;
 
-    m_procCharges = m_spellProto->procCharges;
+    m_procCharges = m_spellProto->GetProcCharges();
     if (modOwner)
         modOwner->ApplySpellMod(GetId(), SPELLMOD_CHARGES, m_procCharges);
 }
@@ -675,7 +675,7 @@ void Aura::Update(uint32 diff, Unit * caster)
                 m_timeCla -= diff;
             else if (caster)
             {
-                if (int32 manaPerSecond = m_spellProto->manaPerSecond + m_spellProto->manaPerSecondPerLevel * caster->getLevel())
+                if (int32 manaPerSecond = m_spellProto->GetManaPerSecond() + m_spellProto->manaPerSecondPerLevel * caster->getLevel())
                 {
                     m_timeCla += 1000 - diff;
 
@@ -725,7 +725,7 @@ void Aura::RefreshDuration()
         if (m_effects[i])
             m_effects[i]->ResetPeriodic();
 
-    if (m_spellProto->manaPerSecond || m_spellProto->manaPerSecondPerLevel)
+    if (m_spellProto->GetManaPerSecond() || m_spellProto->manaPerSecondPerLevel)
         m_timeCla = 1 * IN_MILLISECONDS;
 }
 
@@ -765,13 +765,13 @@ void Aura::SetStackAmount(uint8 stackAmount, bool /*applied*/)
 bool Aura::ModStackAmount(int32 num)
 {
     // Can`t mod
-    if (!m_spellProto->StackAmount || !GetStackAmount())
+    if (!m_spellProto->GetStackAmount() || !GetStackAmount())
         return true;
 
     // Modify stack but limit it
     int32 stackAmount = m_stackAmount + num;
-    if (stackAmount > int32(m_spellProto->StackAmount))
-        stackAmount = m_spellProto->StackAmount;
+    if (stackAmount > int32(m_spellProto->GetStackAmount()))
+        stackAmount = m_spellProto->GetStackAmount();
     else if (stackAmount <= 0) // Last aura from stack removed
     {
         m_stackAmount = 0;
@@ -1083,7 +1083,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const * aurApp, Unit * caster,
                 break;
             case SPELLFAMILY_ROGUE:
                 // Sprint (skip non player casted spells by category)
-                if (GetSpellProto()->SpellFamilyFlags[0] & 0x40 && GetSpellProto()->Category == 44)
+                if (GetSpellProto()->SpellFamilyFlags[0] & 0x40 && GetSpellProto()->GetCategory() == 44)
                     // in official maybe there is only one icon?
                     if (target->HasAura(58039)) // Glyph of Blurred Speed
                         target->CastSpell(target, 61922, true); // Sprint (waterwalk)
@@ -1940,14 +1940,14 @@ void UnitAura::FillTargetMap(std::map<Unit *, uint8> & targets, Unit * caster)
             continue;
         UnitList targetList;
         // non-area aura
-        if (GetSpellProto()->Effect[effIndex] == SPELL_EFFECT_APPLY_AURA)
+        if (GetSpellProto()->GetSpellEffect(effIndex) == SPELL_EFFECT_APPLY_AURA)
         {
             targetList.push_back(GetUnitOwner());
         }
         else
         {
             float radius;
-            if (GetSpellProto()->Effect[effIndex] == SPELL_EFFECT_APPLY_AREA_AURA_ENEMY)
+            if (GetSpellProto()->GetSpellEffect(effIndex) == SPELL_EFFECT_APPLY_AREA_AURA_ENEMY)
                 radius = GetSpellRadiusForHostile(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[effIndex]));
             else
                 radius = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[effIndex]));
@@ -1957,7 +1957,7 @@ void UnitAura::FillTargetMap(std::map<Unit *, uint8> & targets, Unit * caster)
 
             if (!GetUnitOwner()->HasUnitState(UNIT_STAT_ISOLATED))
             {
-                switch(GetSpellProto()->Effect[effIndex])
+                switch(GetSpellProto()->GetSpellEffect(effIndex))
                 {
                     case SPELL_EFFECT_APPLY_AREA_AURA_PARTY:
                         targetList.push_back(GetUnitOwner());
@@ -2034,8 +2034,8 @@ void DynObjAura::FillTargetMap(std::map<Unit *, uint8> & targets, Unit * /*caste
         if (!HasEffect(effIndex))
             continue;
         UnitList targetList;
-        if (GetSpellProto()->EffectImplicitTargetB[effIndex] == TARGET_DEST_DYNOBJ_ALLY
-            || GetSpellProto()->EffectImplicitTargetB[effIndex] == TARGET_UNIT_AREA_ALLY_DST)
+        if (GetSpellProto()->GetEffectImplicitTargetAByIndex(effIndex) == TARGET_DEST_DYNOBJ_ALLY
+            || GetSpellProto()->GetEffectImplicitTargetAByIndex(effIndex) == TARGET_UNIT_AREA_ALLY_DST)
         {
             Trinity::AnyFriendlyUnitInObjectRangeCheck u_check(GetDynobjOwner(), dynObjOwnerCaster, radius);
             Trinity::UnitListSearcher<Trinity::AnyFriendlyUnitInObjectRangeCheck> searcher(GetDynobjOwner(), targetList, u_check);

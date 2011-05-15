@@ -301,7 +301,7 @@ void WorldSession::HandlePetActionHelper(Unit *pet, uint64 guid1, uint16 spellid
 
             for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
-                if (spellInfo->EffectImplicitTargetA[i] == TARGET_UNIT_AREA_ENEMY_SRC || spellInfo->EffectImplicitTargetA[i] == TARGET_UNIT_AREA_ENEMY_DST || spellInfo->EffectImplicitTargetA[i] == TARGET_DEST_DYNOBJ_ENEMY)
+                if (spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_UNIT_AREA_ENEMY_SRC || spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_UNIT_AREA_ENEMY_DST || spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DEST_DYNOBJ_ENEMY)
                     return;
             }
 

@@ -1671,7 +1671,7 @@ void AuraEffect::PeriodicTick(AuraApplication * aurApp, Unit * caster) const
 
             // Special case: draining x% of mana (up to a maximum of 2*x% of the caster's maximum mana)
             // It's mana percent cost spells, m_amount is percent drain from target
-            if (m_spellProto->ManaCostPercentage)
+            if (m_spellProto->GetManaCostPercentage())
             {
                 // max value
                 uint32 maxmana = CalculatePctF(caster->GetMaxPower(power), damage * 2.0f);
@@ -1963,7 +1963,7 @@ void AuraEffect::PeriodicDummyTick(Unit * target, Unit * caster) const
                 }
                 break;
             case 64821: // Fuse Armor (Razorscale)
-                if (GetBase()->GetStackAmount() == GetSpellProto()->StackAmount)
+                if (GetBase()->GetStackAmount() == GetSpellProto()->GetStackAmount())
                 {
                     target->CastSpell(target, 64774, true, NULL, NULL, GetCasterGUID());
                     target->RemoveAura(64821);
@@ -2511,7 +2511,7 @@ void AuraEffect::CleanupTriggeredSpells(Unit * target)
 
     // needed for spell 43680, maybe others
     // TODO: is there a spell flag, which can solve this in a more sophisticated way?
-    if (m_spellProto->EffectApplyAuraName[GetEffIndex()] == SPELL_AURA_PERIODIC_TRIGGER_SPELL &&
+    if (m_spellProto->GetEffectApplyAuraNameByIndex(GetEffIndex()) == SPELL_AURA_PERIODIC_TRIGGER_SPELL &&
             uint32(GetSpellDuration(m_spellProto)) == m_spellProto->EffectAmplitude[GetEffIndex()])
         return;
 
@@ -2622,14 +2622,14 @@ void AuraEffect::HandleShapeshiftBoosts(Unit * target, bool apply) const
                 if (itr->first == spellId || itr->first == spellId2) continue;
                 SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
                 if (!spellInfo || !(spellInfo->Attributes & (SPELL_ATTR0_PASSIVE | SPELL_ATTR0_UNK7))) continue;
-                if (spellInfo->Stances & (1<<(GetMiscValue()-1)))
+                if (spellInfo->GetStances() & (1<<(GetMiscValue()-1)))
                     target->CastSpell(target, itr->first, true, NULL, this);
             }
             // Leader of the Pack
             if (target->ToPlayer()->HasSpell(17007))
             {
                 SpellEntry const *spellInfo = sSpellStore.LookupEntry(24932);
-                if (spellInfo && spellInfo->Stances & (1<<(GetMiscValue()-1)))
+                if (spellInfo && spellInfo->GetStances() & (1<<(GetMiscValue()-1)))
                     target->CastSpell(target, 24932, true, NULL, this);
             }
             // Improved Barkskin - apply/remove armor bonus due to shapeshift
@@ -3654,7 +3654,7 @@ void AuraEffect::HandleAuraModSilence(AuraApplication const * aurApp, uint8 mode
         // Stop cast only spells vs PreventionType == SPELL_PREVENTION_TYPE_SILENCE
         for (uint32 i = CURRENT_MELEE_SPELL; i < CURRENT_MAX_SPELL; ++i)
             if (Spell* spell = target->GetCurrentSpell(CurrentSpellTypes(i)))
-                if (spell->m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_SILENCE)
+                if (spell->m_spellInfo->GetPreventionType() == SPELL_PREVENTION_TYPE_SILENCE)
                     // Stop spells on prepare or casting state
                     target->InterruptSpell(CurrentSpellTypes(i), false);
     }
@@ -4589,7 +4589,7 @@ void AuraEffect::HandleAuraModSchoolImmunity(AuraApplication const * aurApp, uin
     if (apply && aurApp->GetRemoveMode())
         return;
 
-    if (GetSpellProto()->Mechanic == MECHANIC_BANISH)
+    if (GetSpellProto()->GetMechanic() == MECHANIC_BANISH)
     {
         if (apply)
             target->AddUnitState(UNIT_STAT_ISOLATED);
@@ -4598,7 +4598,7 @@ void AuraEffect::HandleAuraModSchoolImmunity(AuraApplication const * aurApp, uin
             bool banishFound = false;
             Unit::AuraEffectList const& banishAuras = target->GetAuraEffectsByType(GetAuraType());
             for (Unit::AuraEffectList::const_iterator i = banishAuras.begin(); i !=  banishAuras.end(); ++i)
-                if ((*i)->GetSpellProto()->Mechanic == MECHANIC_BANISH)
+                if ((*i)->GetSpellProto()->GetMechanic() == MECHANIC_BANISH)
                 {
                     banishFound = true;
                     break;
@@ -5743,12 +5743,12 @@ void AuraEffect::HandleAuraDummy(AuraApplication const * aurApp, uint8 mode, boo
                     Aura * pet_aura  = pet->GetAura(58914, GetCasterGUID());
                     if (owner_aura)
                     {
-                        owner_aura->SetStackAmount(owner_aura->GetSpellProto()->StackAmount);
+                        owner_aura->SetStackAmount(owner_aura->GetSpellProto()->GetStackAmount());
                     }
                     if (pet_aura)
                     {
                         pet_aura->SetCharges(0);
-                        pet_aura->SetStackAmount(owner_aura->GetSpellProto()->StackAmount);
+                        pet_aura->SetStackAmount(owner_aura->GetSpellProto()->GetStackAmount());
                     }
                     break;
                 }
@@ -5782,7 +5782,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const * aurApp, uint8 mode, boo
                         GetBase()->SetDuration(owner_aura->GetDuration());
                         // Make aura be not charged-this prevents removing charge on not crit spells
                         owner_aura->SetCharges(0);
-                        owner_aura->SetStackAmount(owner_aura->GetSpellProto()->StackAmount);
+                        owner_aura->SetStackAmount(owner_aura->GetSpellProto()->GetStackAmount());
                     }
                     break;
                 }
@@ -5860,7 +5860,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const * aurApp, uint8 mode, boo
                 }
                 case 71563:
                     if (Aura* newAura = target->AddAura(71564, target))
-                        newAura->SetStackAmount(newAura->GetSpellProto()->StackAmount);
+                        newAura->SetStackAmount(newAura->GetSpellProto()->GetStackAmount());
             }
         }
         // AT REMOVE
@@ -5978,7 +5978,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const * aurApp, uint8 mode, boo
                         // restore mana
                         if (caster)
                         {
-                            int32 returnmana = CalculatePctU(caster->GetCreateMana(), GetSpellProto()->ManaCostPercentage) * stack / 2;
+                            int32 returnmana = CalculatePctU(caster->GetCreateMana(), GetSpellProto()->GetManaCostPercentage()) * stack / 2;
                             caster->CastCustomSpell(caster, 64372, &returnmana, NULL, NULL, true, NULL, this, GetCasterGUID());
                         }
                     }

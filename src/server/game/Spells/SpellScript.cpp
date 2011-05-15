@@ -204,7 +204,7 @@ bool SpellScript::UnitTargetHandler::CheckEffect(SpellEntry const* spellEntry, u
 {
     if (!targetType)
         return false;
-    return (effIndex == EFFECT_ALL) || (spellEntry->EffectImplicitTargetA[effIndex] == targetType || spellEntry->EffectImplicitTargetB[effIndex] == targetType);
+    return (effIndex == EFFECT_ALL) || (spellEntry->GetEffectImplicitTargetAByIndex(effIndex) == targetType || spellEntry->GetEffectImplicitTargetAByIndex(effIndex) == targetType);
 }
 
 void SpellScript::UnitTargetHandler::Call(SpellScript* spellScript, std::list<Unit*>& unitTargets)

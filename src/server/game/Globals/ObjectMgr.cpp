@@ -4158,7 +4158,7 @@ void ObjectMgr::LoadQuests()
                     bool found = false;
                     for (uint8 k = 0; k < MAX_SPELL_EFFECTS; ++k)
                     {
-                        if ((spellInfo->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_QUEST_COMPLETE && uint32(spellInfo->EffectMiscValue[k]) == qinfo->QuestId) ||
+                        if ((spellInfo->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_QUEST_COMPLETE && uint32(spellInfo->GetEffectMiscValue(k)) == qinfo->QuestId) ||
                             spellInfo->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_SEND_EVENT)
                         {
                             found = true;
@@ -8315,8 +8315,8 @@ void ObjectMgr::AddSpellToTrainer( uint32 entry, uint32 spell, uint32 spellCost,
         if (trainerSpell.learnedSpell[0] == spell)
             trainerSpell.learnedSpell[0] = 0;
         // player must be able to cast spell on himself
-        if (spellinfo->EffectImplicitTargetA[i] != 0 && spellinfo->EffectImplicitTargetA[i] != TARGET_UNIT_TARGET_ALLY
-            && spellinfo->EffectImplicitTargetA[i] != TARGET_UNIT_TARGET_ANY && spellinfo->EffectImplicitTargetA[i] != TARGET_UNIT_CASTER)
+        if (spellinfo->GetEffectImplicitTargetAByIndex(i) != 0 && spellinfo->GetEffectImplicitTargetAByIndex(i) != TARGET_UNIT_TARGET_ALLY
+            && spellinfo->GetEffectImplicitTargetAByIndex(i) != TARGET_UNIT_TARGET_ANY && spellinfo->GetEffectImplicitTargetAByIndex(i) != TARGET_UNIT_CASTER)
         {
             sLog->outErrorDb("Table `npc_trainer` has spell %u for trainer entry %u with learn effect which has incorrect target type, ignoring learn effect!", spell, entry);
             continue;

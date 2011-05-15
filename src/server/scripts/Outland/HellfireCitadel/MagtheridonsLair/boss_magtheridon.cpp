@@ -224,7 +224,7 @@ class boss_magtheridon : public CreatureScript
                 // target 7, random target with certain entry spell, need core fix
                 SpellEntry *TempSpell;
                 TempSpell = GET_SPELL(SPELL_BLAZE_TARGET);
-                if (TempSpell && TempSpell->EffectImplicitTargetA[0] != 6)
+                if (TempSpell && TempSpell->GetEffectImplicitTargetAByIndex(0) != 6)
                 {
                     TempSpell->EffectImplicitTargetA[0] = 6;
                     TempSpell->EffectImplicitTargetB[0] = 0;

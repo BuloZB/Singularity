@@ -172,7 +172,7 @@ public:
                     if (!pTarget) return;
                     for (uint32 i = 0; i<3; ++i)
                     {
-                        uint8 eff = spellInfo->Effect[i];
+                        uint8 eff = spellInfo->GetSpellEffect(i);
                         if (eff >= TOTAL_SPELL_EFFECTS)
                             continue;
 

@@ -261,7 +261,7 @@ bool SpellMgr::IsSrcTargetSpell(SpellEntry const *spellInfo) const
 {
     for (uint8 i = 0; i< MAX_SPELL_EFFECTS; ++i)
     {
-        if (SpellTargetType[spellInfo->EffectImplicitTargetA[i]] == TARGET_TYPE_AREA_SRC || SpellTargetType[spellInfo->EffectImplicitTargetB[i]] == TARGET_TYPE_AREA_SRC)
+        if (SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_AREA_SRC || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_AREA_SRC)
             return true;
     }
     return false;
@@ -431,12 +431,12 @@ Unit* GetTriggeredSpellCaster(SpellEntry const * spellInfo, Unit * caster, Unit 
 {
     for (uint8 i = 0 ; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (SpellTargetType[spellInfo->EffectImplicitTargetA[i]] == TARGET_TYPE_UNIT_TARGET
-            || SpellTargetType[spellInfo->EffectImplicitTargetB[i]] == TARGET_TYPE_UNIT_TARGET
-            || SpellTargetType[spellInfo->EffectImplicitTargetA[i]] == TARGET_TYPE_CHANNEL
-            || SpellTargetType[spellInfo->EffectImplicitTargetB[i]] == TARGET_TYPE_CHANNEL
-            || SpellTargetType[spellInfo->EffectImplicitTargetA[i]] == TARGET_TYPE_DEST_TARGET
-            || SpellTargetType[spellInfo->EffectImplicitTargetB[i]] == TARGET_TYPE_DEST_TARGET)
+        if (SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_UNIT_TARGET
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_UNIT_TARGET
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_CHANNEL
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_CHANNEL
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_DEST_TARGET
+            || SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(i)] == TARGET_TYPE_DEST_TARGET)
             return caster;
     }
     return target;
@@ -877,7 +877,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                                     continue;
                                 // if non-positive trigger cast targeted to positive target this main cast is non-positive
                                 // this will place this spell auras as debuffs
-                                if (IsPositiveTarget(spellTriggeredProto->EffectImplicitTargetA[effIndex], spellTriggeredProto->EffectImplicitTargetB[effIndex]) && !_isPositiveEffect(spellTriggeredId, i, true))
+                                if (IsPositiveTarget(spellTriggeredProto->GetEffectImplicitTargetAByIndex(effIndex), spellTriggeredProto->GetEffectImplicitTargetAByIndex(effIndex)) && !_isPositiveEffect(spellTriggeredId, i, true))
                                     return false;
                             }
                         }
@@ -903,12 +903,12 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                     return false;
                 case SPELL_AURA_PERIODIC_DAMAGE:            // used in positive spells also.
                     // part of negative spell if casted at self (prevent cancel)
-                    if (spellproto->EffectImplicitTargetA[effIndex] == TARGET_UNIT_CASTER)
+                    if (spellproto->GetEffectImplicitTargetAByIndex(effIndex) == TARGET_UNIT_CASTER)
                         return false;
                     break;
                 case SPELL_AURA_MOD_DECREASE_SPEED:         // used in positive spells also
                     // part of positive spell if casted at self
-                    if (spellproto->EffectImplicitTargetA[effIndex] != TARGET_UNIT_CASTER)
+                    if (spellproto->GetEffectImplicitTargetAByIndex(effIndex) != TARGET_UNIT_CASTER)
                         return false;
                     // but not this if this first effect (didn't find better check)
                     if (spellproto->Attributes & SPELL_ATTR0_NEGATIVE_1 && effIndex == 0)
@@ -968,7 +968,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
     }
 
     // non-positive targets
-    if (!IsPositiveTarget(spellproto->EffectImplicitTargetA[effIndex], spellproto->EffectImplicitTargetB[effIndex]))
+    if (!IsPositiveTarget(spellproto->GetEffectImplicitTargetAByIndex(effIndex), spellproto->GetEffectImplicitTargetAByIndex(effIndex)))
         return false;
 
     // AttributesEx check
@@ -977,7 +977,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
 
     if (!deep && spellproto->EffectTriggerSpell[effIndex]
         && !spellproto->GetEffectApplyAuraNameByIndex(effIndex)
-        && IsPositiveTarget(spellproto->EffectImplicitTargetA[effIndex], spellproto->EffectImplicitTargetB[effIndex])
+        && IsPositiveTarget(spellproto->GetEffectImplicitTargetAByIndex(effIndex), spellproto->GetEffectImplicitTargetAByIndex(effIndex))
         && !_isPositiveSpell(spellproto->EffectTriggerSpell[effIndex], true))
         return false;
 
@@ -1169,7 +1169,7 @@ void SpellMgr::LoadSpellTargetPositions()
         bool found = false;
         for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            if (spellInfo->EffectImplicitTargetA[i] == TARGET_DST_DB || spellInfo->EffectImplicitTargetB[i] == TARGET_DST_DB)
+            if (spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DST_DB || spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_DST_DB)
             {
                 // additional requirements
                 if (spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_BIND && spellInfo->EffectMiscValue[i])
@@ -1207,7 +1207,7 @@ void SpellMgr::LoadSpellTargetPositions()
         bool found = false;
         for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
-            switch(spellInfo->EffectImplicitTargetA[j])
+            switch(spellInfo->GetEffectImplicitTargetAByIndex(j))
             {
                 case TARGET_DST_DB:
                     found = true;
@@ -1215,7 +1215,7 @@ void SpellMgr::LoadSpellTargetPositions()
             }
             if (found)
                 break;
-            switch(spellInfo->EffectImplicitTargetB[j])
+            switch(spellInfo->GetEffectImplicitTargetAByIndex(j))
             {
                 case TARGET_DST_DB:
                     found = true;
@@ -2050,7 +2050,7 @@ void SpellMgr::LoadSpellLearnSpells()
                 // talent or passive spells or skill-step spells auto-casted and not need dependent learning,
                 // pet teaching spells don't must be dependent learning (casted)
                 // other required explicit dependent learning
-                dbc_node.autoLearned = entry->EffectImplicitTargetA[i] == TARGET_UNIT_PET || GetTalentSpellCost(spell) > 0 || IsPassiveSpell(spell) || IsSpellHaveEffect(entry, SPELL_EFFECT_SKILL_STEP);
+                dbc_node.autoLearned = entry->GetEffectImplicitTargetAByIndex(i) == TARGET_UNIT_PET || GetTalentSpellCost(spell) > 0 || IsPassiveSpell(spell) || IsSpellHaveEffect(entry, SPELL_EFFECT_SKILL_STEP);
 
                 SpellLearnSpellMapBounds db_node_bounds = GetSpellLearnSpellMapBounds(spell);
 
@@ -2131,7 +2131,7 @@ void SpellMgr::LoadSpellPetAuras()
                 continue;
             }
 
-            PetAura pa(pet, aura, spellInfo->EffectImplicitTargetA[eff] == TARGET_UNIT_PET, SpellMgr::CalculateSpellEffectAmount(spellInfo, eff));
+            PetAura pa(pet, aura, spellInfo->GetEffectImplicitTargetAByIndex(eff) == TARGET_UNIT_PET, SpellMgr::CalculateSpellEffectAmount(spellInfo, eff));
             mSpellPetAuraMap[(spell<<8) + eff] = pa;
         }
 
@@ -2297,7 +2297,7 @@ void SpellMgr::LoadPetDefaultSpells()
 
         for (uint8 k = 0; k < MAX_SPELL_EFFECTS; ++k)
         {
-            if (spellEntry->Effect[k] == SPELL_EFFECT_SUMMON || spellEntry->Effect[k] == SPELL_EFFECT_SUMMON_PET)
+            if (spellEntry->GetSpellEffect(k) == SPELL_EFFECT_SUMMON || spellEntry->GetSpellEffect(k) == SPELL_EFFECT_SUMMON_PET)
             {
                 uint32 creature_id = spellEntry->EffectMiscValue[k];
                 CreatureTemplate const *cInfo = sObjectMgr->GetCreatureTemplate(creature_id);
@@ -2342,7 +2342,7 @@ bool SpellMgr::IsSpellValid(SpellEntry const *spellInfo, Player *pl, bool msg)
     // check effects
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        switch (spellInfo->Effect[i])
+        switch (spellInfo->GetSpellEffect(i))
         {
             case 0:
                 continue;
@@ -2627,10 +2627,10 @@ void SpellMgr::LoadSpellAreas()
 SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spellInfo, uint32 map_id, uint32 zone_id, uint32 area_id, Player const* player)
 {
     // normal case
-    if (spellInfo->AreaGroupId > 0)
+    if (spellInfo->GetAreaGroupId() > 0)
     {
         bool found = false;
-        AreaGroupEntry const* groupEntry = sAreaGroupStore.LookupEntry(spellInfo->AreaGroupId);
+        AreaGroupEntry const* groupEntry = sAreaGroupStore.LookupEntry(spellInfo->GetAreaGroupId());
         while (groupEntry)
         {
             for (uint8 i = 0; i < MAX_GROUP_AREA_IDS; ++i)
@@ -2743,7 +2743,7 @@ SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spell
     // aura limitations
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        switch (spellInfo->EffectApplyAuraName[i])
+        switch (spellInfo->GetEffectApplyAuraNameByIndex(i))
         {
             case SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED:
             case SPELL_AURA_FLY:
@@ -2792,7 +2792,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
             return DIMINISHING_NONE;
         case SPELLFAMILY_GENERIC:
             // some generic arena related spells have by some strange reason MECHANIC_TURN
-            if  (spellproto->Mechanic == MECHANIC_TURN)
+            if  (spellproto->GetMechanic() == MECHANIC_TURN)
                 return DIMINISHING_NONE;
             switch (spellproto->Id)
             {
@@ -2934,7 +2934,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
     // Get by effect
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        if (spellproto->EffectApplyAuraName[i] == SPELL_AURA_MOD_TAUNT)
+        if (spellproto->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_MOD_TAUNT)
             return DIMINISHING_TAUNT;
     }
     return DIMINISHING_NONE;
@@ -3147,7 +3147,7 @@ bool SpellMgr::CanAurasStack(Aura const *aura1, Aura const *aura2, bool sameCast
         // check same periodic auras
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         {
-            switch(spellInfo_1->EffectApplyAuraName[i])
+            switch(spellInfo_1->GetEffectApplyAuraNameByIndex(i))
             {
                 // DOT or HOT from different casters will stack
                 case SPELL_AURA_PERIODIC_DAMAGE:
@@ -3176,9 +3176,9 @@ bool SpellMgr::CanAurasStack(Aura const *aura1, Aura const *aura2, bool sameCast
     uint8 i = 0;
     while (i < MAX_SPELL_EFFECTS && !(isVehicleAura1 && isVehicleAura2))
     {
-        if (spellInfo_1->EffectApplyAuraName[i] == SPELL_AURA_CONTROL_VEHICLE)
+        if (spellInfo_1->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_CONTROL_VEHICLE)
             isVehicleAura1 = true;
-        if (spellInfo_2->EffectApplyAuraName[i] == SPELL_AURA_CONTROL_VEHICLE)
+        if (spellInfo_2->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_CONTROL_VEHICLE)
             isVehicleAura2 = true;
 
         ++i;
@@ -3248,7 +3248,7 @@ bool CanSpellPierceImmuneAura(SpellEntry const * pierceSpell, SpellEntry const *
     // these spells (Cyclone for example) can pierce all...
     if ((pierceSpell->AttributesEx & SPELL_ATTR1_UNAFFECTED_BY_SCHOOL_IMMUNE)
         // ...but not these (Divine shield for example)
-        && !(aura && (aura->Mechanic == MECHANIC_IMMUNE_SHIELD || aura->Mechanic == MECHANIC_INVULNERABILITY)))
+        && !(aura && (aura->GetMechanic() == MECHANIC_IMMUNE_SHIELD || aura->GetMechanic() == MECHANIC_INVULNERABILITY)))
         return true;
 
     return false;
@@ -3487,7 +3487,7 @@ void SpellMgr::LoadSpellCustomAttr()
 
         for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
-            switch (spellInfo->Effect[j])
+            switch (spellInfo->GetSpellEffect(j))
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
                 case SPELL_EFFECT_WEAPON_DAMAGE:
@@ -3512,9 +3512,9 @@ void SpellMgr::LoadSpellCustomAttr()
                     mSpellCustomAttr[i] |= SPELL_ATTR0_CU_PICKPOCKET;
                     break;
                 case SPELL_EFFECT_TRIGGER_SPELL:
-                    if (IsPositionTarget(spellInfo->EffectImplicitTargetA[j]) ||
+                    if (IsPositionTarget(spellInfo->GetEffectImplicitTargetAByIndex(j)) ||
                         spellInfo->Targets & (TARGET_FLAG_SOURCE_LOCATION | TARGET_FLAG_DEST_LOCATION))
-                        spellInfo->Effect[j] = SPELL_EFFECT_TRIGGER_MISSILE;
+                        spellInfo->GetSpellEffect(j) = SPELL_EFFECT_TRIGGER_MISSILE;
                     ++count;
                     break;
                 case SPELL_EFFECT_ENCHANT_ITEM:
@@ -3549,7 +3549,7 @@ void SpellMgr::LoadSpellCustomAttr()
                 }
             }
 
-            switch (SpellTargetType[spellInfo->EffectImplicitTargetA[j]])
+            switch (SpellTargetType[spellInfo->GetEffectImplicitTargetAByIndex(j)])
             {
                 case TARGET_TYPE_UNIT_TARGET:
                 case TARGET_TYPE_DEST_TARGET:
@@ -3563,7 +3563,7 @@ void SpellMgr::LoadSpellCustomAttr()
 
         for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
         {
-            switch (spellInfo->EffectApplyAuraName[j])
+            switch (spellInfo->GetEffectApplyAuraNameByIndex(j))
             {
                 case SPELL_AURA_MOD_POSSESS:
                 case SPELL_AURA_MOD_CONFUSE:
@@ -3619,17 +3619,17 @@ void SpellMgr::LoadSpellCustomAttr()
         case 62136: // Energize Cores
         case 54069: // Energize Cores
         case 56251: // Energize Cores
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENTRY_SRC;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_AREA_ENTRY_SRC;
             ++count;
             break;
         case 50785: // Energize Cores
         case 59372: // Energize Cores
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_AREA_ENEMY_SRC;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_AREA_ENEMY_SRC;
             ++count;
             break;
         case 3286:  // Bind
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
-            spellInfo->EffectImplicitTargetA[1] = TARGET_UNIT_TARGET_ENEMY;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_TARGET_ENEMY;
+            spellInfo->GetEffectImplicitTargetAByIndex(1) = TARGET_UNIT_TARGET_ENEMY;
             ++count;
             break;
         case 32182: // Heroism
@@ -3650,8 +3650,8 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 16007: // Draco-Incarcinatrix 900
             // was 46, but effect is aura effect
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_NEARBY_ENTRY;
-            spellInfo->EffectImplicitTargetB[0] = TARGET_DST_NEARBY_ENTRY;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_NEARBY_ENTRY;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DST_NEARBY_ENTRY;
             ++count;
             break;
         case 26029: // Dark Glare
@@ -3681,7 +3681,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 59725:                         // Improved Spell Reflection - aoe aura
             // Target entry seems to be wrong for this spell :/
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_PARTY_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_PARTY_CASTER;
             spellInfo->EffectRadiusIndex[0] = 45;
             ++count;
             break;
@@ -3720,8 +3720,8 @@ void SpellMgr::LoadSpellCustomAttr()
         case 52479: // Gift of the Harvester
             spellInfo->MaxAffectedTargets = 1;
             // a trap always has dst = src?
-            spellInfo->EffectImplicitTargetA[0] = TARGET_DST_CASTER;
-            spellInfo->EffectImplicitTargetA[1] = TARGET_DST_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DST_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(1) = TARGET_DST_CASTER;
             ++count;
             break;
         case 41376: // Spite
@@ -3817,7 +3817,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 49305: // Teleport to Boss 1 DND
         case 64981: // Summon Random Vanquished Tentacle
-            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
             ++count;
             break;
         case 51852: // The Eye of Acherus (no spawn in phase 2 in db)
@@ -3829,7 +3829,7 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 51904: // Summon Ghouls On Scarlet Crusade (core does not know the triggered spell is summon spell)
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
             ++count;
             break;
         case 29809:  // Desecration Arm - 36 instead of 37 - typo? :/
@@ -3892,13 +3892,13 @@ void SpellMgr::LoadSpellCustomAttr()
         // this is the only known exception, probably just wrong data
         case 29214: // Wrath of the Plaguebringer
         case 54836: // Wrath of the Plaguebringer
-            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_AREA_ALLY_SRC;
-            spellInfo->EffectImplicitTargetB[1] = TARGET_UNIT_AREA_ALLY_SRC;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_AREA_ALLY_SRC;
+            spellInfo->GetEffectImplicitTargetAByIndex(1) = TARGET_UNIT_AREA_ALLY_SRC;
             ++count;
             break;
         case 31687: // Summon Water Elemental
             // 322-330 switch - effect changed to dummy, target entry not changed in client:(
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
             ++count;
             break;
         case 25771: // Forbearance - wrong mechanic immunity in DBC since 3.0.x
@@ -3954,13 +3954,13 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 70728: // Exploit Weakness
         case 70840: // Devious Minds
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
-            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_PET;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_PET;
             ++count;
             break;
         case 70893: // Culling The Herd
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_CASTER;
-            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_MASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_MASTER;
             ++count;
             break;
         case 54800: // Sigil of the Frozen Conscience - change class mask to custom extended flags of Icy Touch
@@ -4005,7 +4005,7 @@ void SpellMgr::LoadSpellCustomAttr()
         case 70859: // Upper Spire Teleport
         case 70860: // Frozen Throne Teleport
         case 70861: // Sindragosa's Lair Teleport
-            spellInfo->EffectImplicitTargetA[0] = TARGET_DST_DB;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DST_DB;
             ++count;
             break;
         case 69055: // Saber Lash (Lord Marrowgar)
@@ -4030,8 +4030,8 @@ void SpellMgr::LoadSpellCustomAttr()
         case 72441: // Boiling Blood (Deathbringer Saurfang)
         case 72442: // Boiling Blood (Deathbringer Saurfang)
         case 72443: // Boiling Blood (Deathbringer Saurfang)
-            spellInfo->EffectImplicitTargetA[0] = TARGET_UNIT_TARGET_ENEMY;
-            spellInfo->EffectImplicitTargetB[0] = 0;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_TARGET_ENEMY;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = 0;
             ++count;
             break;
         case 70460: // Coldflame Jets (Traps after Saurfang)
@@ -4040,7 +4040,7 @@ void SpellMgr::LoadSpellCustomAttr()
             break;
         case 71413: // Green Ooze Summon (Professor Putricide)
         case 71414: // Orange Ooze Summon (Professor Putricide)
-            spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_DEST;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DEST_DEST;
             ++count;
             break;
             // this is here until targetAuraSpell and alike support SpellDifficulty.dbc
@@ -4060,7 +4060,7 @@ void SpellMgr::LoadSpellCustomAttr()
         case 72854: // Unbound Plague (Professor Putricide)
         case 72855: // Unbound Plague (Professor Putricide)
         case 72856: // Unbound Plague (Professor Putricide)
-            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ENEMY;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_TARGET_ENEMY;
             ++count;
             break;
         case 71518: // Unholy Infusion Quest Credit (Professor Putricide)
@@ -4081,7 +4081,7 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 71266: // Swarming Shadows
-            spellInfo->AreaGroupId = 0;
+            spellInfo->GetAreaGroupId() = 0;
             ++count;
             break;
         case 71357: // Order Whelp
@@ -4089,13 +4089,13 @@ void SpellMgr::LoadSpellCustomAttr()
             ++count;
             break;
         case 70598: // Sindragosa's Fury
-            spellInfo->EffectImplicitTargetA[0] = TARGET_DST_CASTER;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DST_CASTER;
             ++count;
             break;
         case 69846: // Frost Bomb
             spellInfo->speed = 10;
-            spellInfo->EffectImplicitTargetA[0] = TARGET_DEST_TARGET_ANY;
-            spellInfo->EffectImplicitTargetB[0] = TARGET_UNIT_TARGET_ANY;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_DEST_TARGET_ANY;
+            spellInfo->GetEffectImplicitTargetAByIndex(0) = TARGET_UNIT_TARGET_ANY;
             spellInfo->Effect[1] = 0;
             ++count;
             break;
