@@ -5284,7 +5284,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             // This is generic summon effect
             case SPELL_EFFECT_SUMMON:
             {
-                SummonPropertiesEntry const *SummonProperties = sSummonPropertiesStore.LookupEntry(m_spellInfo->EffectMiscValueB[i]);
+                SummonPropertiesEntry const *SummonProperties = sSummonPropertiesStore.LookupEntry(m_spellInfo->GetEffectMiscValueB(i));
                 if (!SummonProperties)
                     break;
                 switch(SummonProperties->Category)
@@ -6993,7 +6993,7 @@ SpellCastResult Spell::CanOpenLock(uint32 effIndex, uint32 lockId, SkillType& sk
                 reqKey = true;
 
                 // wrong locktype, skip
-                if (uint32(m_spellInfo->EffectMiscValue[effIndex]) != lockInfo->Index[j])
+                if (uint32(m_spellInfo->GetEffectMiscValue(effIndex)) != lockInfo->Index[j])
                     continue;
 
                 skillId = SkillByLockType(LockType(lockInfo->Index[j]));

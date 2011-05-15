@@ -1644,6 +1644,8 @@ struct SpellEffectEntry
     uint32 GetEffectItemType() const { return EffectItemType; }
     uint32 GetEffectTriggerSpell() const { return EffectTriggerSpell; }
     uint32 GetEffectAmplitude() const { return EffectAmplitude; }
+    uint32 GetEffectMiscValue() const { return EffectMiscValue; }
+    uint32 GetEffectMiscValueB() const { return EffectMiscValueB; }
 };
 
 // SpellEquippedItems.dbc
@@ -1807,9 +1809,12 @@ struct SpellEntry
     //uint32 ResearchProject;                               // 46       ResearchProject.dbc
 
     int32 CalculateSimpleValue(uint32 eff) const;
+    //SpellEffectEntry
     uint32 GetEffectItemType(uint32 eff) const;
     uint32 GetEffectTriggerSpell(uint32 eff) const;
     uint32 GetEffectAmplitude(uint32 eff) const;
+    int32 GetEffectMiscValue(uint32 eff) const;
+    int32 GetEffectMiscValueB(uint32 eff) const;
     uint32 const* GetEffectSpellClassMask(uint32 eff) const;
 
     // struct access functions
@@ -1865,8 +1870,7 @@ struct SpellEntry
     uint32 GetFacingCasterFlags() const;
     uint32 GetBaseLevel() const;
     uint32 GetInterruptFlags() const;
-    uint32 GetTargetCreatureType() const;
-    int32 GetEffectMiscValue(uint32 index) const;
+    uint32 GetTargetCreatureType() const;    
     uint32 GetStances() const;
     uint32 GetStancesNot() const;
     uint32 GetProcFlags() const;

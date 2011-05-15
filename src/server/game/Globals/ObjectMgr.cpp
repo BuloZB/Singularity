@@ -4433,7 +4433,7 @@ void ObjectMgr::LoadQuests()
             if (spellInfo->GetSpellEffectIdByIndex(j) != SPELL_EFFECT_QUEST_COMPLETE)
                 continue;
 
-            uint32 quest_id = spellInfo->EffectMiscValue[j];
+            uint32 quest_id = spellInfo->GetEffectMiscValue(j);
 
             Quest const* quest = GetQuestTemplate(quest_id);
 
@@ -4922,8 +4922,8 @@ void ObjectMgr::LoadEventScripts()
             {
                 if (spell->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_SEND_EVENT)
                 {
-                    if (spell->EffectMiscValue[j])
-                        evt_scripts.insert(spell->EffectMiscValue[j]);
+                    if (spell->GetEffectMiscValue(j))
+                        evt_scripts.insert(spell->GetEffectMiscValue(j));
                 }
             }
         }

@@ -9777,7 +9777,7 @@ void Unit::SetMinion(Minion *minion, bool apply)
                 if (spInfo->Effect[i] != SPELL_EFFECT_SUMMON)
                     continue;
 
-                this->RemoveAllMinionsByEntry(spInfo->EffectMiscValue[i]);
+                this->RemoveAllMinionsByEntry(spInfo->GetEffectMiscValue(i));
             }
         }
 
@@ -11277,7 +11277,7 @@ int32 Unit::SpellBaseHealingBonus(SpellSchoolMask schoolMask)
         for (AuraEffectList::const_iterator i = mHealingDoneOfStatPercent.begin(); i != mHealingDoneOfStatPercent.end(); ++i)
         {
             // stat used dependent from misc value (stat index)
-            Stats usedStat = Stats((*i)->GetSpellProto()->EffectMiscValue[(*i)->GetEffIndex()]);
+            Stats usedStat = Stats((*i)->GetSpellProto()->GetEffectMiscValue((*i)->GetEffIndex()));
             AdvertisedBenefit += int32(CalculatePctN(GetStat(usedStat), (*i)->GetAmount()));
         }
 

@@ -1897,8 +1897,8 @@ void Spell::CalculateJumpSpeeds(uint8 i, float dist, float & speedXY, float & sp
 {
     if (m_spellInfo->GetEffectMiscValue(i))
         speedZ = float(m_spellInfo->GetEffectMiscValue(i))/10;
-    else if (m_spellInfo->EffectMiscValueB[i])
-        speedZ = float(m_spellInfo->EffectMiscValueB[i])/10;
+    else if (m_spellInfo->GetEffectMiscValueB(i))
+        speedZ = float(m_spellInfo->GetEffectMiscValueB(i))/10;
     else
         speedZ = 10.0f;
     speedXY = dist * 10.0f / speedZ;

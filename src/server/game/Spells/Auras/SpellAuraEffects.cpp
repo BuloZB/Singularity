@@ -3895,7 +3895,7 @@ void AuraEffect::HandleAuraMounted(AuraApplication const * aurApp, uint8 mode, b
         //some spell has one aura of mount and one of vehicle
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
             if (GetSpellProto()->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SUMMON
-                && GetSpellProto()->EffectMiscValue[i] == GetMiscValue())
+                && GetSpellProto()->GetEffectMiscValue(i) == GetMiscValue())
                 displayID = 0;
 
         target->Mount(displayID, ci->VehicleId, GetMiscValue());

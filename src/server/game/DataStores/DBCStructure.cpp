@@ -49,6 +49,20 @@ uint32 SpellEntry::GetEffectAmplitude(uint32 eff) const
    return 0;
 }
 
+int32 SpellEntry::GetEffectMiscValue(uint32 eff) const
+{
+    if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectMiscValue();
+   return 0;
+}
+
+int32 SpellEntry::GetEffectMiscValueB(uint32 eff) const
+{
+    if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectMiscValueB();
+   return 0;
+}
+
 uint32 const* SpellEntry::GetEffectSpellClassMask(uint32 eff) const
 {
     if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
@@ -344,12 +358,6 @@ uint32 SpellEntry::GetTargetCreatureType() const
 {
     SpellTargetRestrictionsEntry const* target = GetSpellTargetRestrictions();
     return target ? target->TargetCreatureType : 0;
-}
-
-int32 SpellEntry::GetEffectMiscValue(uint32 index) const
-{
-    SpellEffectEntry const* effect = GetSpellEffect(index);
-    return effect ? effect->EffectMiscValue : 0;
 }
 
 uint32 SpellEntry::GetStances() const

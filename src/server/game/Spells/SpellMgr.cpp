@@ -1956,7 +1956,7 @@ void SpellMgr::LoadSpellLearnSkills()
             if (entry->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_SKILL)
             {
                 SpellLearnSkillNode dbc_node;
-                dbc_node.skill = entry->EffectMiscValue[i];
+                dbc_node.skill = entry->GetEffectMiscValue(i);
                 dbc_node.step  = SpellMgr::CalculateSpellEffectAmount(entry, i);
                 if (dbc_node.skill != SKILL_RIDING)
                     dbc_node.value = 1;
@@ -2300,7 +2300,7 @@ void SpellMgr::LoadPetDefaultSpells()
         {
             if (spellEntry->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_SUMMON || spellEntry->GetSpellEffectIdByIndex(k) == SPELL_EFFECT_SUMMON_PET)
             {
-                uint32 creature_id = spellEntry->EffectMiscValue[k];
+                uint32 creature_id = spellEntry->GetEffectMiscValue(k);
                 CreatureTemplate const *cInfo = sObjectMgr->GetCreatureTemplate(creature_id);
                 if (!cInfo)
                     continue;
@@ -3526,7 +3526,7 @@ void SpellMgr::LoadSpellCustomAttr()
                     // only enchanting profession enchantments procs can stack
                     if (IsPartOfSkillLine(SKILL_ENCHANTING, i))
                     {
-                        uint32 enchantId = spellInfo->EffectMiscValue[j];
+                        uint32 enchantId = spellInfo->GetEffectMiscValue(j);
                         SpellItemEnchantmentEntry const *enchant = sSpellItemEnchantmentStore.LookupEntry(enchantId);
                         for (uint8 s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
                         {
@@ -4188,7 +4188,7 @@ void SpellMgr::LoadEnchantCustomAttr()
         {
             if (spellInfo->Effect[j] == SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY)
             {
-                uint32 enchId = spellInfo->EffectMiscValue[j];
+                uint32 enchId = spellInfo->GetEffectMiscValue(j);
                 SpellItemEnchantmentEntry const *ench = sSpellItemEnchantmentStore.LookupEntry(enchId);
                 if (!ench)
                     continue;
