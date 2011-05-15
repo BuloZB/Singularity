@@ -2964,7 +2964,7 @@ void Spell::prepare(SpellCastTargets const* targets, AuraEffect const * triggere
     // (even if they are interrupted on moving, spells with almost immediate effect get to have their effect processed before movement interrupter kicks in)
     if ((IsChanneledSpell(m_spellInfo) || m_casttime)
         && m_caster->GetTypeId() == TYPEID_PLAYER && m_caster->isMoving()
-        && m_spellInfo->InterruptFlags & SPELL_INTERRUPT_FLAG_MOVEMENT)
+        && m_spellInfo->GetInterruptFlags() & SPELL_INTERRUPT_FLAG_MOVEMENT)
     {
         SendCastResult(SPELL_FAILED_MOVING);
         finish(false);
@@ -3243,7 +3243,7 @@ void Spell::cast(bool skipCheck)
             continue;
         SpellEntry const *auraSpellInfo = (*i)->GetSpellProto();
         uint32 auraSpellIdx = (*i)->GetEffIndex();
-        if (SpellEntry const *spellInfo = sSpellStore.LookupEntry(auraSpellInfo->EffectTriggerSpell[auraSpellIdx]))
+        if (SpellEntry const *spellInfo = sSpellStore.LookupEntry(auraSpellInfo->GetEffectTriggerSpell(auraSpellIdx)))
         {
             int32 auraBaseAmount = (*i)->GetBaseAmount();
             int32 chance = m_caster->CalculateSpellDamage(NULL, auraSpellInfo, auraSpellIdx, &auraBaseAmount);
@@ -3798,7 +3798,7 @@ void Spell::SendCastResult(Player* caster, SpellEntry const* spellInfo, uint8 ca
             break;
         case SPELL_FAILED_EQUIPPED_ITEM_CLASS:
             data << uint32(spellInfo->GetEquippedItemClass());
-            data << uint32(spellInfo->EquippedItemSubClassMask);
+            data << uint32(spellInfo->GetEquippedItemSubClassMask());
             //data << uint32(spellInfo->EquippedItemInventoryTypeMask);
             break;
         case SPELL_FAILED_TOO_MANY_OF_ITEM:
@@ -5031,7 +5031,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
         // for effects of spells that have only one target
-        switch(m_spellInfo->GetSpellEffect(i))
+        switch(m_spellInfo->GetSpellEffectIdByIndex(i))
         {
             case SPELL_EFFECT_DUMMY:
             {
@@ -6089,7 +6089,7 @@ SpellCastResult Spell::CheckItems()
     // special checks for spell effects
     for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
     {
-        switch (m_spellInfo->GetSpellEffect(i))
+        switch (m_spellInfo->GetSpellEffectIdByIndex(i))
         {
             case SPELL_EFFECT_CREATE_ITEM:
             case SPELL_EFFECT_CREATE_ITEM_2:
@@ -6876,7 +6876,7 @@ void Spell::CalculateDamageDoneForAllTargets()
             {
                 if (!(mask & 1<<i))
                     continue;
-                switch (m_spellInfo->GetSpellEffect(i))
+                switch (m_spellInfo->GetSpellEffectIdByIndex(i))
                 {
                     case SPELL_EFFECT_SCHOOL_DAMAGE:
                     case SPELL_EFFECT_WEAPON_DAMAGE:
@@ -6918,7 +6918,7 @@ int32 Spell::CalculateDamageDone(Unit *unit, const uint32 effectMask, float * mu
             m_damage = 0;
             damage = CalculateDamage(i, NULL);
 
-            switch(m_spellInfo->GetSpellEffect(i))
+            switch(m_spellInfo->GetSpellEffectIdByIndex(i))
             {
                 case SPELL_EFFECT_SCHOOL_DAMAGE:
                     SpellDamageSchoolDmg((SpellEffIndex)i);

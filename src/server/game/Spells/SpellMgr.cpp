@@ -866,7 +866,7 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
                 case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
                     if (!deep)
                     {
-                        uint32 spellTriggeredId = spellproto->EffectTriggerSpell[effIndex];
+                        uint32 spellTriggeredId = spellproto->GetEffectTriggerSpell(effIndex);
                         SpellEntry const *spellTriggeredProto = sSpellStore.LookupEntry(spellTriggeredId);
 
                         if (spellTriggeredProto)
@@ -976,10 +976,10 @@ bool SpellMgr::_isPositiveEffect(uint32 spellId, uint32 effIndex, bool deep) con
     if (spellproto->AttributesEx & SPELL_ATTR1_NEGATIVE)
         return false;
 
-    if (!deep && spellproto->EffectTriggerSpell[effIndex]
+    if (!deep && spellproto->GetEffectTriggerSpell(effIndex)
         && !spellproto->GetEffectApplyAuraNameByIndex(effIndex)
         && IsPositiveTarget(spellproto->GetEffectImplicitTargetAByIndex(effIndex), spellproto->GetEffectImplicitTargetBByIndex(effIndex))
-        && !_isPositiveSpell(spellproto->EffectTriggerSpell[effIndex], true))
+        && !_isPositiveSpell(spellproto->GetEffectTriggerSpell(effIndex), true))
         return false;
 
     // ok, positive

@@ -935,7 +935,7 @@ void AuraEffect::CalculateSpellMod()
 
                 m_spellmod->type = SpellModType(GetAuraType());    // SpellModType value == spell aura types
                 m_spellmod->spellId = GetId();
-                m_spellmod->mask = GetSpellProto()->EffectSpellClassMask[GetEffIndex()];
+                m_spellmod->mask = GetSpellProto()->GetEffectSpellClassMask(GetEffIndex());
                 m_spellmod->charges = GetBase()->GetCharges();
             }
             m_spellmod->value = GetAmount();
