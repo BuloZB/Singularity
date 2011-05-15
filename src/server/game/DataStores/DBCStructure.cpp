@@ -42,6 +42,13 @@ uint32 SpellEntry::GetEffectTriggerSpell(uint32 eff) const
     return 0;
 }
 
+uint32 SpellEntry::GetEffectAmplitude(uint32 eff) const
+{
+   if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+       return effectEntry->GetEffectAmplitude();
+   return 0;
+}
+
 uint32 const* SpellEntry::GetEffectSpellClassMask(uint32 eff) const
 {
     if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))

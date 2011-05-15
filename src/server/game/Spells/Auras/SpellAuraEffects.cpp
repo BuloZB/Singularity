@@ -777,7 +777,7 @@ int32 AuraEffect::CalculateAmount(Unit * caster)
 
 void AuraEffect::CalculatePeriodic(Unit * caster, bool create)
 {
-    m_amplitude = m_spellProto->EffectAmplitude[m_effIndex];
+    m_amplitude = m_spellProto->GetEffectAmplitude(m_effIndex);
 
     // prepare periodics
     switch (GetAuraType())
@@ -2513,7 +2513,7 @@ void AuraEffect::CleanupTriggeredSpells(Unit * target)
     // needed for spell 43680, maybe others
     // TODO: is there a spell flag, which can solve this in a more sophisticated way?
     if (m_spellProto->GetEffectApplyAuraNameByIndex(GetEffIndex()) == SPELL_AURA_PERIODIC_TRIGGER_SPELL &&
-            uint32(GetSpellDuration(m_spellProto)) == m_spellProto->EffectAmplitude[GetEffIndex()])
+        uint32(GetSpellDuration(m_spellProto)) == m_spellProto->GetEffectAmplitude(GetEffIndex()))
         return;
 
     target->RemoveAurasDueToSpell(tSpellId, GetCasterGUID());
@@ -6048,7 +6048,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const * aurApp, uint8 mode, boo
                     if (apply && caster)
                     {
                         SpellEntry const * spell = sSpellStore.LookupEntry(spellId);
-                        for (uint32 i = 0; i < spell->StackAmount; ++i)
+                        for (uint32 i = 0; i < spell->GetStackAmount(); ++i)
                             caster->CastSpell(target, spell->Id, true, NULL, NULL, GetCasterGUID());
                         break;
                     }
