@@ -510,7 +510,7 @@ struct AchievementCriteriaEntry
     //uint32 unk1;                                          // 15 only one value, still unknown
     //uint32 unk2;                                          // 16 all zeros
     //uint32 moreRequirement[3];                            // 17-19
-    //uint32 moreRequirementValue[3];                       // 20-22
+    //uint32 moreRequirementValue[3];                       // 20-22 
 };
 
 struct AreaTableEntry
@@ -1268,7 +1268,7 @@ struct MapEntry
     float   entrance_y;                                     // 14       m_corpseY entrance y coordinate in ghost mode  (in most cases = normal entrance)
     //uint32  timeOfDayOverride;                            // 15       m_timeOfDayOverride
     uint32  addon;                                          // 16       m_expansionID
-    //uint32 unkTime;                                       // 17       m_raidOffset
+    uint32 unk_time;                                        // 17       m_raidOffset
     //uint32 maxPlayers;                                    // 18       m_maxPlayers
     //uint32 unk400;                                        // 19 new 4.0.0, mapid, related to phasing
 
@@ -1304,7 +1304,7 @@ struct MapDifficultyEntry
     //uint32      Id;                                       // 0
     uint32      MapId;                                      // 1
     uint32      Difficulty;                                 // 2 (for arenas: arena slot)
-    //char*       areaTriggerText;                          // 3        m_message_lang (text showed when transfer to map failed)
+    DBCString   areaTriggerText;                          // 3        m_message_lang (text showed when transfer to map failed)
     uint32      resetTime;                                  // 4,       m_raidDuration in secs, 0 if no fixed reset time
     uint32      maxPlayers;                                 // 5,       m_maxPlayers some heroic versions have 0 when expected same amount as in normal version
     //char*       difficultyString;                         // 6        m_difficultystring
@@ -1959,8 +1959,8 @@ struct SpellItemEnchantmentEntry
     uint32      slot;                                       // 16       m_flags
     uint32      GemID;                                      // 17       m_src_itemID
     uint32      EnchantmentCondition;                       // 18       m_condition_id
-    //uint32      requiredSkill;                            // 19       m_requiredSkillID
-    //uint32      requiredSkillValue;                       // 20       m_requiredSkillRank
+    uint32      requiredSkill;                            // 19       m_requiredSkillID
+    uint32      requiredSkillValue;                       // 20       m_requiredSkillRank
                                                             // 21       new in 3.1
                                                             // 22       new in 3.1
 };

@@ -385,7 +385,7 @@ void LoadDBCStores(const std::string& dataPath)
     // fill data
     for (uint32 i = 1; i < sMapDifficultyStore.GetNumRows(); ++i)
         if (MapDifficultyEntry const* entry = sMapDifficultyStore.LookupEntry(i))
-            sMapDifficultyMap[MAKE_PAIR32(entry->MapId, entry->Difficulty)] = MapDifficulty(entry->resetTime, entry->maxPlayers, strlen(entry->areaTriggerText)>0);
+            sMapDifficultyMap[MAKE_PAIR32(entry->MapId, entry->Difficulty)] = MapDifficulty(entry->resetTime, entry->maxPlayers, strlen(entry->areaTriggerText) > 0);
     sMapDifficultyStore.Clear();
 
     LoadDBC(availableDbcLocales, bad_dbc_files, sMovieStore,                  dbcPath, "Movie.dbc");
@@ -688,7 +688,7 @@ SimpleFactionsList const* GetFactionTeamList(uint32 faction)
     return NULL;
 }
 
-char* GetPetName(uint32 petfamily, uint32 dbclang)
+char const* GetPetName(uint32 petfamily, uint32 dbclang)
 {
     if (!petfamily)
         return NULL;
