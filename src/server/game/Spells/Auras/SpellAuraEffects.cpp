@@ -1953,7 +1953,7 @@ void AuraEffect::PeriodicDummyTick(Unit * target, Unit * caster) const
             }
             case 62292: // Blaze (Pool of Tar)
                 // should we use custom damage?
-                target->CastSpell((Unit*)NULL, m_spellProto->EffectTriggerSpell[m_effIndex], true);
+                target->CastSpell((Unit*)NULL, m_spellProto->GetEffectTriggerSpell(m_effIndex), true);
                 break;
             case 62399: // Overload Circuit
                 if (target->GetMap()->IsDungeon() && int(target->GetAppliedAuras().count(62399)) >= (target->GetMap()->IsHeroic() ? 4 : 2))
@@ -1977,7 +1977,7 @@ void AuraEffect::PeriodicDummyTick(Unit * target, Unit * caster) const
             // Mirror Image
             if (GetId() == 55342)
                 // Set name of summons to name of caster
-                target->CastSpell((Unit *)NULL, m_spellProto->EffectTriggerSpell[m_effIndex], true);
+                target->CastSpell((Unit *)NULL, m_spellProto->GetEffectTriggerSpell(m_effIndex), true);
             break;
         }
         case SPELLFAMILY_WARLOCK:
@@ -2166,7 +2166,7 @@ void AuraEffect::TriggerSpell(Unit * target, Unit * caster) const
     Unit* triggerTarget = GetTriggerTarget(target);
 
     // generic casting code with custom spells and target/caster customs
-    uint32 triggerSpellId = GetSpellProto()->EffectTriggerSpell[GetEffIndex()];
+    uint32 triggerSpellId = GetSpellProto()->GetEffectTriggerSpell(GetEffIndex());
 
     SpellEntry const *triggeredSpellInfo = sSpellStore.LookupEntry(triggerSpellId);
     SpellEntry const *auraSpellInfo = GetSpellProto();
@@ -2469,7 +2469,7 @@ void AuraEffect::TriggerSpellWithValue(Unit * target, Unit * caster) const
 
     Unit* triggerTarget = GetTriggerTarget(target);
 
-    uint32 triggerSpellId = GetSpellProto()->EffectTriggerSpell[m_effIndex];
+    uint32 triggerSpellId = GetSpellProto()->GetEffectTriggerSpell(m_effIndex);
     SpellEntry const *triggeredSpellInfo = sSpellStore.LookupEntry(triggerSpellId);
     if (triggeredSpellInfo)
     {
@@ -2499,7 +2499,7 @@ bool AuraEffect::IsAffectedOnSpell(SpellEntry const *spell) const
 
 void AuraEffect::CleanupTriggeredSpells(Unit * target)
 {
-    uint32 tSpellId = m_spellProto->EffectTriggerSpell[GetEffIndex()];
+    uint32 tSpellId = m_spellProto->GetEffectTriggerSpell(GetEffIndex());
     if (!tSpellId)
         return;
 
@@ -5523,7 +5523,7 @@ void AuraEffect::HandleModDamageDone(AuraApplication const * aurApp, uint8 mode,
     if ((GetMiscValue() & SPELL_SCHOOL_MASK_MAGIC) == 0)
         return;
 
-    if (GetSpellProto()->GetEquippedItemClass() != -1 || GetSpellProto()->EquippedItemInventoryTypeMask != 0)
+    if (GetSpellProto()->GetEquippedItemClass() != -1 || GetSpellProto()->GetEquippedItemInventoryTypeMask() != 0)
     {
         // wand magic case (skip generic to all item spell bonuses)
         // done in Player::_ApplyWeaponDependentAuraMods
@@ -6004,7 +6004,7 @@ void AuraEffect::HandleAuraDummy(AuraApplication const * aurApp, uint8 mode, boo
                 case SPELLFAMILY_DEATHKNIGHT:
                     // Summon Gargoyle (will start feeding gargoyle)
                     if (GetId() == 61777)
-                        target->CastSpell(target, m_spellProto->EffectTriggerSpell[m_effIndex], true);
+                        target->CastSpell(target, m_spellProto->GetEffectTriggerSpell(m_effIndex), true);
                     break;
                 default:
                     break;
@@ -6307,11 +6307,11 @@ void AuraEffect::HandleChannelDeathItem(AuraApplication const * aurApp, uint8 mo
         if (GetAmount() <= 0)
             return;
 
-        if (GetSpellProto()->EffectItemType[m_effIndex] == 0)
+        if (GetSpellProto()->GetEffectItemType(m_effIndex) == 0)
             return;
 
         // Soul Shard
-        if (GetSpellProto()->EffectItemType[m_effIndex] == 6265)
+        if (GetSpellProto()->GetEffectItemType(m_effIndex) == 6265)
         {
             // Soul Shard only from units that grant XP or honor
             if (!plCaster->isHonorOrXPTarget(target) ||
@@ -6333,16 +6333,16 @@ void AuraEffect::HandleChannelDeathItem(AuraApplication const * aurApp, uint8 mo
         uint32 count = m_amount;
 
         ItemPosCountVec dest;
-        InventoryResult msg = plCaster->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, GetSpellProto()->EffectItemType[m_effIndex], count, &noSpaceForCount);
+        InventoryResult msg = plCaster->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, GetSpellProto()->GetEffectItemType(m_effIndex), count, &noSpaceForCount);
         if (msg != EQUIP_ERR_OK)
         {
             count-=noSpaceForCount;
-            plCaster->SendEquipError(msg, NULL, NULL, GetSpellProto()->EffectItemType[m_effIndex]);
+            plCaster->SendEquipError(msg, NULL, NULL, GetSpellProto()->GetEffectItemType(m_effIndex));
             if (count == 0)
                 return;
         }
 
-        Item* newitem = plCaster->StoreNewItem(dest, GetSpellProto()->EffectItemType[m_effIndex], true);
+        Item* newitem = plCaster->StoreNewItem(dest, GetSpellProto()->GetEffectItemType(m_effIndex), true);
         if (!newitem)
         {
             plCaster->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
@@ -6500,12 +6500,12 @@ void AuraEffect::HandleAuraLinked(AuraApplication const * aurApp, uint8 mode, bo
             return;
         // If amount avalible cast with basepoints (Crypt Fever for example)
         if (GetAmount())
-            caster->CastCustomSpell(target, m_spellProto->EffectTriggerSpell[m_effIndex], &m_amount, NULL, NULL, true, NULL, this);
+            caster->CastCustomSpell(target, m_spellProto->GetEffectTriggerSpell(m_effIndex), &m_amount, NULL, NULL, true, NULL, this);
         else
-            caster->CastSpell(target, m_spellProto->EffectTriggerSpell[m_effIndex], true, NULL, this);
+            caster->CastSpell(target, m_spellProto->GetEffectTriggerSpell(m_effIndex), true, NULL, this);
     }
     else
-        target->RemoveAura(m_spellProto->EffectTriggerSpell[m_effIndex], GetCasterGUID(), 0, AuraRemoveMode(aurApp->GetRemoveMode()));
+        target->RemoveAura(m_spellProto->GetEffectTriggerSpell(m_effIndex), GetCasterGUID(), 0, AuraRemoveMode(aurApp->GetRemoveMode()));
 }
 
 void AuraEffect::HandleAuraOpenStable(AuraApplication const * aurApp, uint8 mode, bool apply) const

@@ -3805,8 +3805,8 @@ void Spell::SendCastResult(Player* caster, SpellEntry const* spellInfo, uint8 ca
         {
              uint32 item = 0;
              for (int8 x=0;x < 3;x++)
-                 if (spellInfo->EffectItemType[x])
-                     item = spellInfo->EffectItemType[x];
+                 if (spellInfo->GetEffectItemType(x))
+                     item = spellInfo->GetEffectItemType(x);
              ItemTemplate const *pProto = sObjectMgr->GetItemTemplate(item);
              if (pProto && pProto->ItemLimitCategory)
                  data << uint32(pProto->ItemLimitCategory);
@@ -6094,24 +6094,24 @@ SpellCastResult Spell::CheckItems()
             case SPELL_EFFECT_CREATE_ITEM:
             case SPELL_EFFECT_CREATE_ITEM_2:
             {
-                if (!m_IsTriggeredSpell && m_spellInfo->EffectItemType[i])
+                if (!m_IsTriggeredSpell && m_spellInfo->GetEffectItemType(i))
                 {
                     ItemPosCountVec dest;
-                    InventoryResult msg = p_caster->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, m_spellInfo->EffectItemType[i], 1);
+                    InventoryResult msg = p_caster->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, m_spellInfo->GetEffectItemType(i), 1);
                     if (msg != EQUIP_ERR_OK)
                     {
-                        ItemTemplate const *pProto = sObjectMgr->GetItemTemplate(m_spellInfo->EffectItemType[i]);
+                        ItemTemplate const *pProto = sObjectMgr->GetItemTemplate(m_spellInfo->GetEffectItemType(i));
                         // TODO: Needs review
                         if (pProto && !(pProto->ItemLimitCategory))
                         {
-                            p_caster->SendEquipError(msg, NULL, NULL, m_spellInfo->EffectItemType[i]);
+                            p_caster->SendEquipError(msg, NULL, NULL, m_spellInfo->GetEffectItemType(i));
                             return SPELL_FAILED_DONT_REPORT;
                         }
                         else
                         {
                             if (!(m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x40000000)))
                                 return SPELL_FAILED_TOO_MANY_OF_ITEM;
-                            else if (!(p_caster->HasItemCount(m_spellInfo->EffectItemType[i], 1)))
+                            else if (!(p_caster->HasItemCount(m_spellInfo->GetEffectItemType(i), 1)))
                                 return SPELL_FAILED_TOO_MANY_OF_ITEM;
                             else
                                 p_caster->CastSpell(m_caster, SpellMgr::CalculateSpellEffectAmount(m_spellInfo, 1), false);        // move this to anywhere
@@ -6122,7 +6122,7 @@ SpellCastResult Spell::CheckItems()
                 break;
             }
             case SPELL_EFFECT_ENCHANT_ITEM:
-                if (m_spellInfo->EffectItemType[i] && m_targets.getItemTarget()
+                if (m_spellInfo->GetEffectItemType(i) && m_targets.getItemTarget()
                     && (m_targets.getItemTarget()->IsWeaponVellum() || m_targets.getItemTarget()->IsArmorVellum()))
                 {
                     // cannot enchant vellum for other player
@@ -6132,10 +6132,10 @@ SpellCastResult Spell::CheckItems()
                     if (m_CastItem && m_CastItem->GetTemplate()->Flags & ITEM_PROTO_FLAG_TRIGGERED_CAST)
                         return SPELL_FAILED_TOTEM_CATEGORY;
                     ItemPosCountVec dest;
-                    InventoryResult msg = p_caster->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, m_spellInfo->EffectItemType[i], 1);
+                    InventoryResult msg = p_caster->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, m_spellInfo->GetEffectItemType(i), 1);
                     if (msg != EQUIP_ERR_OK)
                     {
-                        p_caster->SendEquipError(msg, NULL, NULL, m_spellInfo->EffectItemType[i]);
+                        p_caster->SendEquipError(msg, NULL, NULL, m_spellInfo->GetEffectItemType(i));
                         return SPELL_FAILED_DONT_REPORT;
                     }
                 }
@@ -6342,7 +6342,7 @@ SpellCastResult Spell::CheckItems()
             }
             case SPELL_EFFECT_CREATE_MANA_GEM:
             {
-                 uint32 item_id = m_spellInfo->EffectItemType[i];
+                 uint32 item_id = m_spellInfo->GetEffectItemType(i);
                  ItemTemplate const *pProto = sObjectMgr->GetItemTemplate(item_id);
 
                  if (!pProto)

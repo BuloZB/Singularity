@@ -2098,10 +2098,10 @@ void Spell::EffectUnlearnSpecialization(SpellEffectEntry const* effect)
 
 void Spell::EffectPowerDrain(SpellEffectEntry const* effect)
 {
-    if (m_spellInfo->EffectMiscValue[effect] < 0 || m_spellInfo->EffectMiscValue[effect] >= int8(MAX_POWERS))
+    if (effect->EffectMiscValue < 0 || effect->EffectMiscValue >= int8(MAX_POWERS))
         return;
 
-    Powers powerType = Powers(m_spellInfo->EffectMiscValue[effect]);
+    Powers powerType = Powers(effect->EffectMiscValue);
 
     if (!unitTarget || !unitTarget->isAlive() || unitTarget->getPowerType() != powerType || damage < 0)
         return;
@@ -2135,7 +2135,7 @@ void Spell::EffectSendEvent(SpellEffectEntry const* effect)
     /*
     we do not handle a flag dropping or clicking on flag in battleground by sendevent system
     */
-    sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell ScriptStart %u for spellid %u in EffectSendEvent ", m_spellInfo->EffectMiscValue[effect], m_spellInfo->Id);
+    sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell ScriptStart %u for spellid %u in EffectSendEvent ", effect->EffectMiscValue, m_spellInfo->Id);
 
     Object *pTarget;
     if (focusObject)
@@ -2150,10 +2150,10 @@ void Spell::EffectSendEvent(SpellEffectEntry const* effect)
     if (unitTarget)
     {
         if (ZoneScript* zoneScript = unitTarget->GetZoneScript())
-            zoneScript->ProcessEvent(unitTarget, m_spellInfo->EffectMiscValue[effect]);
+            zoneScript->ProcessEvent(unitTarget, effect->EffectMiscValue);
     }
 
-    m_caster->GetMap()->ScriptsStart(sEventScripts, m_spellInfo->EffectMiscValue[effect], m_caster, pTarget);
+    m_caster->GetMap()->ScriptsStart(sEventScripts, effect->EffectMiscValue, m_caster, pTarget);
 }
 
 void Spell::EffectPowerBurn(SpellEffectEntry const* effect)
@@ -2473,8 +2473,8 @@ void Spell::DoCreateItem(uint32 /*i*/, uint32 itemtype)
 
 void Spell::EffectCreateItem(SpellEffectEntry const* effect)
 {
-    DoCreateItem(effect, m_spellInfo->EffectItemType[effect]);
-    ExecuteLogEffectCreateItem(effect, m_spellInfo->EffectItemType[effect]);
+    DoCreateItem(effect, effect->EffectItemType);
+    ExecuteLogEffectCreateItem(effect, effect->EffectItemType);
 }
 
 void Spell::EffectCreateItem2(SpellEffectEntry const* effect)
@@ -2483,7 +2483,7 @@ void Spell::EffectCreateItem2(SpellEffectEntry const* effect)
         return;
     Player* player = (Player*)m_caster;
 
-    uint32 item_id = m_spellInfo->EffectItemType[effect];
+    uint32 item_id = effect->EffectItemType;
 
     if (item_id)
         DoCreateItem(effect, item_id);
@@ -2506,7 +2506,7 @@ void Spell::EffectCreateItem2(SpellEffectEntry const* effect)
         else
             player->AutoStoreLoot(m_spellInfo->Id, LootTemplates_Spell);    // create some random items
     }
-    // TODO: ExecuteLogEffectCreateItem(i, m_spellInfo->EffectItemType[i]);
+    // TODO: ExecuteLogEffectCreateItem(i, m_spellInfo->GetEffectItemType(i));
 }
 
 void Spell::EffectCreateRandomItem(SpellEffectEntry const* /*effect*/)
@@ -2517,7 +2517,7 @@ void Spell::EffectCreateRandomItem(SpellEffectEntry const* /*effect*/)
 
     // create some random items
     player->AutoStoreLoot(m_spellInfo->Id, LootTemplates_Spell);
-    // TODO: ExecuteLogEffectCreateItem(i, m_spellInfo->EffectItemType[i]);
+    // TODO: ExecuteLogEffectCreateItem(i, m_spellInfo->GetEffectItemType(i));
 }
 
 void Spell::EffectPersistentAA(SpellEffectEntry const* effect)
@@ -2865,7 +2865,7 @@ void Spell::EffectSummonChangeItem(SpellEffectEntry const* effect)
     if (m_CastItem->GetOwnerGUID() != player->GetGUID())
         return;
 
-    uint32 newitemid = m_spellInfo->EffectItemType[effect];
+    uint32 newitemid = effect->EffectItemType;
     if (!newitemid)
         return;
 
@@ -3472,7 +3472,7 @@ void Spell::EffectEnchantItemPerm(SpellEffectEntry const* effect)
         p_caster->DestroyItemCount(itemTarget, count, true);
         unitTarget=p_caster;
         // and add a scroll
-        DoCreateItem(effect, m_spellInfo->EffectItemType[effect]);
+        DoCreateItem(effect, effect->EffectItemType);
         itemTarget=NULL;
         m_targets.setItemTarget(NULL);
     }
@@ -3910,7 +3910,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
     // and handle all effects at once
     for (uint32 j = effect + 1; j < MAX_SPELL_EFFECTS; ++j)
     {
-        switch (m_spellInfo->Effect[j])
+        switch (m_spellInfo->GetSpellEffectIdByIndex(j))
         {
             case SPELL_EFFECT_WEAPON_DAMAGE:
             case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
@@ -3997,7 +3997,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
                     Unit::AuraApplicationMap const& auras = unitTarget->GetAppliedAuras();
                     for (Unit::AuraApplicationMap::const_iterator itr = auras.begin(); itr != auras.end(); ++itr)
                     {
-                        if (itr->second->GetBase()->GetSpellProto()->Dispel == DISPEL_POISON)
+                        if (itr->second->GetBase()->GetSpellProto()->GetDispel() == DISPEL_POISON)
                         {
                             found = true;
                             break;
@@ -4114,7 +4114,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
     float weaponDamagePercentMod = 1.0f;
     for (int j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
-        switch (m_spellInfo->Effect[j])
+        switch (m_spellInfo->GetSpellEffectIdByIndex(j))
         {
             case SPELL_EFFECT_WEAPON_DAMAGE:
             case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
@@ -4161,7 +4161,7 @@ void Spell::SpellDamageWeaponDmg(SpellEffectEntry const* effect)
     {
         // We assume that a spell have at most one fixed_bonus
         // and at most one weaponDamagePercentMod
-        switch(m_spellInfo->Effect[j])
+        switch(m_spellInfo->GetSpellEffectIdByIndex(j))
         {
             case SPELL_EFFECT_WEAPON_DAMAGE:
             case SPELL_EFFECT_WEAPON_DAMAGE_NOSCHOOL:
