@@ -1642,6 +1642,7 @@ struct SpellEffectEntry
     // helpers
     int32 CalculateSimpleValue() const { return EffectBasePoints; }
     uint32 GetEffectItemType() const { return EffectItemType; }
+    uint32 GetEffectTriggerSpell() const { return EffectTriggerSpell; }
 };
 
 // SpellEquippedItems.dbc
@@ -1805,7 +1806,8 @@ struct SpellEntry
     //uint32 ResearchProject;                               // 46       ResearchProject.dbc
 
     int32 CalculateSimpleValue(uint32 eff) const;
-    uint32 SpellEntry::GetEffectItemType(uint32 eff) const;
+    uint32 GetEffectItemType(uint32 eff) const;
+    uint32 GetEffectTriggerSpell(uint32 eff) const;
     uint32 const* GetEffectSpellClassMask(uint32 eff) const;
 
     // struct access functions
