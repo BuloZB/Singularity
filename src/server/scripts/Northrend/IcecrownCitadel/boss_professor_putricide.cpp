@@ -784,9 +784,9 @@ class spell_putricide_ooze_channel : public SpellScriptLoader
 
             bool Validate(SpellEntry const* spell)
             {
-                if (!spell->excludeTargetAuraSpell)
+                if (!spell->GetSpellAuraRestrictions()->excludeTargetAuraSpell)
                     return false;
-                if (!sSpellStore.LookupEntry(spell->excludeTargetAuraSpell))
+                if (!sSpellStore.LookupEntry(spell->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
                     return false;
                 return true;
             }
@@ -801,7 +801,7 @@ class spell_putricide_ooze_channel : public SpellScriptLoader
 
             void SelectTarget(std::list<Unit*>& targetList)
             {
-                targetList.remove_if(BeamProtectionCheck(GetSpellInfo()->excludeTargetAuraSpell));
+                targetList.remove_if(BeamProtectionCheck(GetSpellInfo()->GetSpellAuraRestrictions()->excludeTargetAuraSpell));
                 if (targetList.empty())
                 {
                     FinishCast(SPELL_FAILED_NO_VALID_TARGETS);
@@ -919,7 +919,7 @@ class spell_putricide_slime_puddle : public SpellScriptLoader
                     if (Aura* size = caster->GetAura(70347))
                         radiusMod += size->GetStackAmount();
 
-                    uint32 triggerSpellId = GetSpellProto()->EffectTriggerSpell[aurEff->GetEffIndex()];
+                    uint32 triggerSpellId = GetSpellProto()->GetSpellEffect(aurEff->GetEffIndex())->EffectTriggerSpell;
                     caster->CastCustomSpell(triggerSpellId, SPELLVALUE_RADIUS_MOD, radiusMod * 100, caster, true);
                 }
             }
@@ -965,7 +965,7 @@ class spell_putricide_unstable_experiment : public SpellScriptLoader
                         break;
                 }
 
-                GetCaster()->CastSpell(target, uint32(GetSpellInfo()->EffectBasePoints[stage]+1), true, NULL, NULL, GetCaster()->GetGUID());
+                GetCaster()->CastSpell(target, uint32(GetSpellInfo()->GetSpellEffect(stage)->EffectBasePoints+1), true, NULL, NULL, GetCaster()->GetGUID());
             }
 
             void Register()
@@ -994,7 +994,7 @@ class spell_putricide_ooze_summon : public SpellScriptLoader
                 PreventDefaultAction();
                 if (Unit* caster = GetCaster())
                 {
-                    uint32 triggerSpellId = GetSpellProto()->EffectTriggerSpell[aurEff->GetEffIndex()];
+                    uint32 triggerSpellId = GetSpellProto()->GetSpellEffect(aurEff->GetEffIndex())->EffectTriggerSpell;
                     float x, y, z;
                     GetTarget()->GetPosition(x, y, z);
                     z = GetTarget()->GetMap()->GetHeight(x, y, z, true, 25.0f);
@@ -1213,7 +1213,7 @@ class spell_putricide_mutated_plague : public SpellScriptLoader
                 if (!caster)
                     return;
 
-                uint32 triggerSpell = GetSpellProto()->EffectTriggerSpell[aurEff->GetEffIndex()];
+                uint32 triggerSpell = GetSpellProto()->GetSpellEffect(aurEff->GetEffIndex())->EffectTriggerSpell;
                 SpellEntry const* spell = sSpellStore.LookupEntry(triggerSpell);
                 spell = sSpellMgr->GetSpellForDifficultyFromSpell(spell, caster);
 
@@ -1397,7 +1397,7 @@ class spell_putricide_mutated_transformation : public SpellScriptLoader
                 }
 
                 uint32 entry = uint32(GetSpellInfo()->GetEffectMiscValue(effIndex));
-                SummonPropertiesEntry const* properties = sSummonPropertiesStore.LookupEntry(uint32(GetSpellInfo()->EffectMiscValueB[effIndex]));
+                SummonPropertiesEntry const* properties = sSummonPropertiesStore.LookupEntry(uint32(GetSpellInfo()->GetSpellEffect(effIndex)->EffectMiscValueB));
                 uint32 duration = uint32(GetSpellDuration(GetSpellInfo()));
 
                 Position pos;

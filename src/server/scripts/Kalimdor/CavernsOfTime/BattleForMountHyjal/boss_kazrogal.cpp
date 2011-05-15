@@ -58,12 +58,13 @@ public:
             pInstance = c->GetInstanceScript();
             pGo = false;
             pos = 0;
-            SpellEntry *TempSpell = GET_SPELL(SPELL_MARK);
+            // REWRITE
+            /*SpellEntry *TempSpell = GET_SPELL(SPELL_MARK);
             if (TempSpell && TempSpell->EffectImplicitTargetA[0] != 1)
             {
                 TempSpell->EffectImplicitTargetA[0] = 1;
                 TempSpell->EffectImplicitTargetB[0] = 0;
-            }
+            }*/
         }
 
         uint32 CleaveTimer;

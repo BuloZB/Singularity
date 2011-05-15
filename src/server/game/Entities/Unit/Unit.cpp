@@ -1536,7 +1536,7 @@ uint32 Unit::CalcArmorReducedDamage(Unit* pVictim, const uint32 damage, SpellEnt
         for (AuraEffectList::const_iterator itr = ResIgnoreAuras.begin(); itr != ResIgnoreAuras.end(); ++itr)
         {
             // item neutral spell
-            if ((*itr)->GetSpellProto()->EquippedItemClass == -1)
+            if ((*itr)->GetSpellProto()->GetEquippedItemClass() == -1)
             {
                 armor = floor(AddPctN(armor, -(*itr)->GetAmount()));
                 continue;
@@ -9528,7 +9528,7 @@ void Unit::ModifyAuraState(AuraState flag, bool apply)
                     if (itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled) continue;
                     SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
                     if (!spellInfo || !IsPassiveSpell(itr->first)) continue;
-                    if (spellInfo->CasterAuraState == uint32(flag))
+                    if (spellInfo->GetSpellAuraRestrictions()->CasterAuraState == uint32(flag))
                         CastSpell(this, itr->first, true, NULL);
                 }
             }
@@ -9540,7 +9540,7 @@ void Unit::ModifyAuraState(AuraState flag, bool apply)
                     if (itr->second.state == PETSPELL_REMOVED) continue;
                     SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
                     if (!spellInfo || !IsPassiveSpell(itr->first)) continue;
-                    if (spellInfo->CasterAuraState == uint32(flag))
+                    if (spellInfo->GetSpellAuraRestrictions()->CasterAuraState == uint32(flag))
                         CastSpell(this, itr->first, true, NULL);
                 }
             }
@@ -9558,7 +9558,7 @@ void Unit::ModifyAuraState(AuraState flag, bool apply)
                 for (Unit::AuraApplicationMap::iterator itr = tAuras.begin(); itr != tAuras.end();)
                 {
                     SpellEntry const* spellProto = (*itr).second->GetBase()->GetSpellProto();
-                    if (spellProto->CasterAuraState == uint32(flag))
+                    if (spellProto->GetSpellAuraRestrictions()->CasterAuraState == uint32(flag))
                         RemoveAura(itr);
                     else
                         ++itr;
@@ -10207,15 +10207,15 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         for (AuraEffectList::const_iterator i = mModDamagePercentDone.begin(); i != mModDamagePercentDone.end(); ++i)
             if ((*i)->GetMiscValue() & GetSpellSchoolMask(spellProto))
             {
-                if ((*i)->GetSpellProto()->EquippedItemClass == -1)
+                if ((*i)->GetSpellProto()->GetEquippedItemClass() == -1)
                 {
                     AddPctN(DoneTotalMod, (*i)->GetAmount());
                 }
                 else if (!((*i)->GetSpellProto()->AttributesEx5 & SPELL_ATTR5_SPECIAL_ITEM_CLASS_CHECK))
                 {
-                    if ((*i)->GetSpellProto()->EquippedItemClass & spellProto->EquippedItemClass)
-                        if (((*i)->GetSpellProto()->EquippedItemSubClassMask == 0) ||
-                            ((*i)->GetSpellProto()->EquippedItemSubClassMask & spellProto->EquippedItemSubClassMask))
+                    if ((*i)->GetSpellProto()->GetEquippedItemClass() & spellProto->GetEquippedItemClass())
+                        if (((*i)->GetSpellProto()->GetEquippedItemSubClassMask() == 0) ||
+                            ((*i)->GetSpellProto()->GetEquippedItemSubClassMask() & spellProto->GetEquippedItemSubClassMask()))
                             AddPctN(DoneTotalMod, (*i)->GetAmount());
                 }
                 else if (ToPlayer() && ToPlayer()->HasItemFitToSpellRequirements((*i)->GetSpellProto()))
@@ -10693,10 +10693,10 @@ int32 Unit::SpellBaseDamageBonus(SpellSchoolMask schoolMask)
     AuraEffectList const& mDamageDone = GetAuraEffectsByType(SPELL_AURA_MOD_DAMAGE_DONE);
     for (AuraEffectList::const_iterator i = mDamageDone.begin(); i != mDamageDone.end(); ++i)
         if (((*i)->GetMiscValue() & schoolMask) != 0 &&
-        (*i)->GetSpellProto()->EquippedItemClass == -1 &&
-                                                            // -1 == any item class (not wand then)
-        (*i)->GetSpellProto()->EquippedItemInventoryTypeMask == 0)
-                                                            // 0 == any inventory type (not wand then)
+            (*i)->GetSpellProto()->GetEquippedItemClass() == -1 &&
+            // -1 == any item class (not wand then)
+            (*i)->GetSpellProto()->GetEquippedItemInventoryTypeMask() == 0)
+            // 0 == any inventory type (not wand then)
             DoneAdvertisedBenefit += (*i)->GetAmount();
 
     if (GetTypeId() == TYPEID_PLAYER)
@@ -10857,7 +10857,7 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                             break;
                         }
                         // Exorcism
-                        else if (spellProto->Category == 19)
+                        else if (spellProto->GetCategory() == 19)
                         {
                             if (pVictim->GetCreatureTypeMask() & CREATURE_TYPEMASK_DEMON_OR_UNDEAD)
                                 return true;
@@ -11537,15 +11537,15 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage, WeaponAttackType att
         {
                 if ((*i)->GetMiscValue() & GetSpellSchoolMask(spellProto))
                 {
-                    if ((*i)->GetSpellProto()->EquippedItemClass == -1)
+                    if ((*i)->GetSpellProto()->GetEquippedItemClass() == -1)
                     {
                         AddPctN(DoneTotalMod, (*i)->GetAmount());
                     }
                     else if (!((*i)->GetSpellProto()->AttributesEx5 & SPELL_ATTR5_SPECIAL_ITEM_CLASS_CHECK))
                     {
-                        if ((*i)->GetSpellProto()->EquippedItemClass & spellProto->EquippedItemClass)
-                            if (((*i)->GetSpellProto()->EquippedItemSubClassMask == 0) ||
-                                ((*i)->GetSpellProto()->EquippedItemSubClassMask & spellProto->EquippedItemSubClassMask))
+                        if ((*i)->GetSpellProto()->GetEquippedItemClass() & spellProto->GetEquippedItemSubClassMask())
+                            if (((*i)->GetSpellProto()->GetEquippedItemSubClassMask() == 0) ||
+                                ((*i)->GetSpellProto()->GetEquippedItemSubClassMask() & spellProto->GetEquippedItemSubClassMask()))
                                 AddPctN(DoneTotalMod, (*i)->GetAmount());
                     }
                     else if (ToPlayer() && ToPlayer()->HasItemFitToSpellRequirements((*i)->GetSpellProto()))
@@ -14943,7 +14943,7 @@ bool Unit::IsTriggeredAtSpellProcEvent(Unit *pVictim, Aura * aura, SpellEntry co
     // Check if current equipment allows aura to proc
     if (!isVictim && GetTypeId() == TYPEID_PLAYER)
     {
-        if (spellProto->EquippedItemClass == ITEM_CLASS_WEAPON)
+        if (spellProto->GetEquippedItemSubClassMask() == ITEM_CLASS_WEAPON)
         {
             Item *item = NULL;
             if (attType == BASE_ATTACK)
@@ -14959,7 +14959,7 @@ bool Unit::IsTriggeredAtSpellProcEvent(Unit *pVictim, Aura * aura, SpellEntry co
             if (!item || item->IsBroken() || item->GetTemplate()->Class != ITEM_CLASS_WEAPON || !((1<<item->GetTemplate()->SubClass) & spellProto->EquippedItemSubClassMask))
                 return false;
         }
-        else if (spellProto->EquippedItemClass == ITEM_CLASS_ARMOR)
+        else if (spellProto->GetEquippedItemClass() == ITEM_CLASS_ARMOR)
         {
             // Check if player is wearing shield
             Item *item = this->ToPlayer()->GetUseableItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);

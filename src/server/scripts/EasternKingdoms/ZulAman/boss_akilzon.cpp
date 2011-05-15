@@ -76,9 +76,10 @@ class boss_akilzon : public CreatureScript
         {
             boss_akilzonAI(Creature *c) : ScriptedAI(c)
             {
-                SpellEntry *TempSpell = GET_SPELL(SPELL_ELECTRICAL_DAMAGE);
-                if (TempSpell)
-                    TempSpell->EffectBasePoints[1] = 49;//disable bugged lightning until fixed in core
+                //Nasty Hack TODO: REWRITE THIS
+                //SpellEntry *TempSpell = GET_SPELL(SPELL_ELECTRICAL_DAMAGE);
+                //if (TempSpell)
+                //    TempSpell->EffectBasePoints[1] = 49;//disable bugged lightning until fixed in core
                 pInstance = c->GetInstanceScript();
             }
             InstanceScript *pInstance;

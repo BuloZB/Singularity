@@ -872,8 +872,8 @@ void Spell::prepareDataForTriggerSystem(AuraEffect const * /*triggeredByAura*/)
             }
             break;
         default:
-            if (m_spellInfo->EquippedItemClass == ITEM_CLASS_WEAPON &&
-                m_spellInfo->EquippedItemSubClassMask & (1<<ITEM_SUBCLASS_WEAPON_WAND)
+            if (m_spellInfo->GetEquippedItemClass() == ITEM_CLASS_WEAPON &&
+                m_spellInfo->GetEquippedItemSubClassMask() & (1<<ITEM_SUBCLASS_WEAPON_WAND)
                 && m_spellInfo->AttributesEx2 & SPELL_ATTR2_AUTOREPEAT_FLAG) // Wands auto attack
             {
                 m_procAttacker = PROC_FLAG_DONE_RANGED_AUTO_ATTACK;
@@ -1886,7 +1886,7 @@ void Spell::SearchGOAreaTarget(std::list<GameObject*> &TagGOMap, float radius, S
     m_caster->GetMap()->VisitGrid(pos->m_positionX, pos->m_positionY, radius, searcher);
 }
 
-WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, SpellEffIndex effIndex)
+WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, SpellEffIndex const* effIndex)
 {
     switch(TargetType)
     {
@@ -2162,11 +2162,11 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
 
             float angle, dist;
 
-            float objSize = m_caster->GetObjectSize();
+            float objSize = m_caster->GetObjectSize();            
             if (m_spellInfo->AttributesEx & SPELL_ATTR1_USE_RADIUS_AS_MAX_DISTANCE)
                 dist = 0.0f;
             else
-                dist = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+                dist = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(m_spellInfo->GetSpellEffect(i)->EffectRadiusIndex));
             if (modOwner) modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_RADIUS, dist, this);
             if (dist < objSize)
                 dist = objSize;
@@ -2216,7 +2216,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
             float angle, dist;
 
             float objSize = target->GetObjectSize();
-            dist = (float)target->GetSpellRadiusForTarget(target, sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+            dist = (float)target->GetSpellRadiusForTarget(target, sSpellRadiusStore.LookupEntry(m_spellInfo->GetSpellEffect(i)->EffectRadiusIndex));
             if (dist < objSize)
                 dist = objSize;
             else if (cur == TARGET_DEST_TARGET_RANDOM)
@@ -2273,7 +2273,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
             }
 
             float dist;
-            dist = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+            dist = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(m_spellInfo->GetSpellEffect(i)->EffectRadiusIndex));
             if (cur == TARGET_DEST_DEST_RANDOM || cur == TARGET_DEST_DEST_RANDOM_DIR_DIST)
                 dist *= (float)rand_norm();
 
@@ -3183,10 +3183,10 @@ void Spell::cast(bool skipCheck)
 
     if (m_spellInfo->GetSpellFamilyName())
     {
-        if (m_spellInfo->excludeCasterAuraSpell && !IsPositiveSpell(m_spellInfo->excludeCasterAuraSpell))
-            m_preCastSpell = m_spellInfo->excludeCasterAuraSpell;
-        else if (m_spellInfo->excludeTargetAuraSpell && !IsPositiveSpell(m_spellInfo->excludeTargetAuraSpell))
-            m_preCastSpell = m_spellInfo->excludeTargetAuraSpell;
+        if (m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell && !IsPositiveSpell(m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell))
+            m_preCastSpell = m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell;
+        else if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && !IsPositiveSpell(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
+            m_preCastSpell = m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell;
     }
 
     switch (m_spellInfo->GetSpellFamilyName())
@@ -3334,7 +3334,7 @@ void Spell::handle_immediate()
                 m_caster->ModSpellCastTime(m_spellInfo, duration, this);
 
             m_spellState = SPELL_STATE_CASTING;
-            m_caster->AddInterruptMask(m_spellInfo->ChannelInterruptFlags);
+            m_caster->AddInterruptMask(m_spellInfo->GetChannelInterruptFlags());
             SendChannelStart(duration);
         }
     }
@@ -3797,7 +3797,7 @@ void Spell::SendCastResult(Player* caster, SpellEntry const* spellInfo, uint8 ca
                 data << uint32(spellInfo->TotemCategory[1]);
             break;
         case SPELL_FAILED_EQUIPPED_ITEM_CLASS:
-            data << uint32(spellInfo->EquippedItemClass);
+            data << uint32(spellInfo->GetEquippedItemClass());
             data << uint32(spellInfo->EquippedItemSubClassMask);
             //data << uint32(spellInfo->EquippedItemInventoryTypeMask);
             break;
@@ -4760,15 +4760,15 @@ SpellCastResult Spell::CheckCast(bool strict)
     // not for triggered spells (needed by execute)
     if (!m_IsTriggeredSpell)
     {
-        if (m_spellInfo->CasterAuraState && !m_caster->HasAuraState(AuraState(m_spellInfo->CasterAuraState), m_spellInfo, m_caster))
+        if (m_spellInfo->GetSpellAuraRestrictions()->CasterAuraState && !m_caster->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->CasterAuraState), m_spellInfo, m_caster))
             return SPELL_FAILED_CASTER_AURASTATE;
-        if (m_spellInfo->CasterAuraStateNot && m_caster->HasAuraState(AuraState(m_spellInfo->CasterAuraStateNot), m_spellInfo, m_caster))
+        if (m_spellInfo->GetSpellAuraRestrictions()->CasterAuraStateNot && m_caster->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->CasterAuraStateNot), m_spellInfo, m_caster))
             return SPELL_FAILED_CASTER_AURASTATE;
 
         // Note: spell 62473 requres casterAuraSpell = triggering spell
-        if (m_spellInfo->casterAuraSpell && !m_caster->HasAura(m_spellInfo->casterAuraSpell))
+        if (m_spellInfo->GetSpellAuraRestrictions()->casterAuraSpell && !m_caster->HasAura(m_spellInfo->GetSpellAuraRestrictions()->casterAuraSpell))
             return SPELL_FAILED_CASTER_AURASTATE;
-        if (m_spellInfo->excludeCasterAuraSpell && m_caster->HasAura(m_spellInfo->excludeCasterAuraSpell))
+        if (m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell && m_caster->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell))
             return SPELL_FAILED_CASTER_AURASTATE;
 
         if (reqCombat && m_caster->isInCombat() && IsNonCombatSpell(m_spellInfo))
@@ -4781,7 +4781,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     {
         // skip stuck spell to allow use it in falling case and apply spell limitations at movement
         if ((!m_caster->HasUnitMovementFlag(MOVEMENTFLAG_FALLING) || m_spellInfo->GetSpellEffectIdByIndex(0) != SPELL_EFFECT_STUCK) &&
-            (IsAutoRepeat() || (m_spellInfo->AuraInterruptFlags & AURA_INTERRUPT_FLAG_NOT_SEATED) != 0))
+            (IsAutoRepeat() || (m_spellInfo->GetAuraInterruptFlags() & AURA_INTERRUPT_FLAG_NOT_SEATED) != 0))
             return SPELL_FAILED_MOVING;
     }
 
@@ -4800,7 +4800,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (m_spellInfo->targetAuraSpell && !target->HasAura(m_spellInfo->targetAuraSpell))
             return SPELL_FAILED_TARGET_AURASTATE;
 
-        if (m_spellInfo->excludeTargetAuraSpell && target->HasAura(m_spellInfo->excludeTargetAuraSpell))
+        if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
             return SPELL_FAILED_TARGET_AURASTATE;
 
         if (!m_IsTriggeredSpell && target == m_caster && m_spellInfo->AttributesEx & SPELL_ATTR1_CANT_TARGET_SELF)
@@ -5763,7 +5763,7 @@ bool Spell::CanAutoCast(Unit* target)
 
     for (uint32 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
-        if (m_spellInfo->Effect[j] == SPELL_EFFECT_APPLY_AURA)
+        if (m_spellInfo->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA)
         {
             if (m_spellInfo->GetStackAmount() <= 1)
             {
@@ -5777,7 +5777,7 @@ bool Spell::CanAutoCast(Unit* target)
                         return false;
             }
         }
-        else if (IsAreaAuraEffect(m_spellInfo->Effect[j]))
+        else if (IsAreaAuraEffect(m_spellInfo->GetSpellEffectIdByIndex(j)))
         {
             if (target->HasAuraEffect(m_spellInfo->Id, j))
                 return false;
@@ -5922,11 +5922,11 @@ SpellCastResult Spell::CheckItems()
             SpellCastResult failReason = SPELL_CAST_OK;
             for (int i = 0; i < MAX_SPELL_EFFECTS; i++)
             {
-                    // skip check, pet not required like checks, and for TARGET_UNIT_PET m_targets.getUnitTarget() is not the real target but the caster
-                    if (m_spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_UNIT_PET)
+                // skip check, pet not required like checks, and for TARGET_UNIT_PET m_targets.getUnitTarget() is not the real target but the caster
+                if (m_spellInfo->GetEffectImplicitTargetAByIndex(i) == TARGET_UNIT_PET)
                     continue;
 
-                if (m_spellInfo->GetSpellEffect(i) == SPELL_EFFECT_HEAL)
+                if (m_spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_HEAL)
                 {
                     if (m_targets.getUnitTarget()->IsFullHealth())
                     {
@@ -5941,7 +5941,7 @@ SpellCastResult Spell::CheckItems()
                 }
 
                 // Mana Potion, Rage Potion, Thistle Tea(Rogue), ...
-                if (m_spellInfo->GetSpellEffect(i) == SPELL_EFFECT_ENERGIZE)
+                if (m_spellInfo->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_ENERGIZE)
                 {
                     if (m_spellInfo->GetEffectMiscValue(i) < 0 || m_spellInfo->GetEffectMiscValue(i) >= int8(MAX_POWERS))
                     {
@@ -6362,7 +6362,7 @@ SpellCastResult Spell::CheckItems()
     }
 
     // check weapon presence in slots for main/offhand weapons
-    if (m_spellInfo->EquippedItemClass >=0)
+    if (m_spellInfo->GetEquippedItemClass() >=0)
     {
         // main hand weapon required
         if (m_spellInfo->AttributesEx3 & SPELL_ATTR3_MAIN_HAND)
@@ -6500,7 +6500,7 @@ bool Spell::CheckTargetCreatureType(Unit* target) const
     uint32 spellCreatureTargetMask = m_spellInfo->TargetCreatureType;
 
     // Curse of Doom & Exorcism: not find another way to fix spell target check :/
-    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->Category == 1179)
+    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->GetCategory() == 1179)
     {
         // not allow cast at player
         if (target->GetTypeId() == TYPEID_PLAYER)
@@ -6550,7 +6550,7 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     // Check Aura spell req (need for AoE spells)
     if (m_spellInfo->targetAuraSpell && !target->HasAura(m_spellInfo->targetAuraSpell))
         return false;
-    if (m_spellInfo->excludeTargetAuraSpell && target->HasAura(m_spellInfo->excludeTargetAuraSpell))
+    if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
         return false;
 
     // Check targets for not_selectable unit flag and remove
@@ -6605,7 +6605,7 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
         return true;
 
     //Check targets for LOS visibility (except spells without range limitations)
-    switch(m_spellInfo->Effect[eff])
+    switch(m_spellInfo->GetSpellEffectIdByIndex(eff))
     {
         case SPELL_EFFECT_SUMMON_PLAYER:                    // from anywhere
             break;

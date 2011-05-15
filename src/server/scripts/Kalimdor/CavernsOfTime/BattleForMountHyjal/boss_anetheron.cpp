@@ -70,12 +70,13 @@ public:
             pInstance = c->GetInstanceScript();
             pGo = false;
             pos = 0;
-            SpellEntry *TempSpell = GET_SPELL(SPELL_SLEEP);
+            //NASTY HACK TODO: REWRITE
+            /*SpellEntry *TempSpell = GET_SPELL(SPELL_SLEEP);
             if (TempSpell && TempSpell->EffectImplicitTargetA[0] != 1)
             {
                 TempSpell->EffectImplicitTargetA[0] = 1;
                 TempSpell->EffectImplicitTargetB[0] = 0;
-            }
+            }*/
         }
 
         uint32 SwarmTimer;

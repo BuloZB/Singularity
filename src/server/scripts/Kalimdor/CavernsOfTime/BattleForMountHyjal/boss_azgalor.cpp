@@ -61,9 +61,10 @@ public:
             pInstance = c->GetInstanceScript();
             pGo = false;
             pos = 0;
-            SpellEntry *TempSpell = GET_SPELL(SPELL_HOWL_OF_AZGALOR);
-            if (TempSpell)
-                TempSpell->EffectRadiusIndex[0] = 12;//100yards instead of 50000?!
+            //HACK TODO: add decent support for this below
+            //SpellEntry *TempSpell = GET_SPELL(SPELL_HOWL_OF_AZGALOR);
+            //if (TempSpell)
+            //    TempSpell->EffectRadiusIndex[0] = 12;//100yards instead of 50000?!
         }
 
         uint32 RainTimer;
