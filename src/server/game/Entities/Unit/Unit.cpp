@@ -8049,7 +8049,7 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, AuraEffect* trig
     int32 triggerAmount = triggeredByAura->GetAmount();
 
     // Set trigger spell id, target, custom basepoints
-    uint32 trigger_spell_id = auraSpellInfo->EffectTriggerSpell[triggeredByAura->GetEffIndex()];
+    uint32 trigger_spell_id = auraSpellInfo->GetEffectTriggerSpell(triggeredByAura->GetEffIndex());
 
     Unit*  target = NULL;
     int32  basepoints0 = 0;
@@ -9774,7 +9774,7 @@ void Unit::SetMinion(Minion *minion, bool apply)
         if (const SpellEntry* spInfo = sSpellStore.LookupEntry(minion->ToTotem()->GetSpell()))
             for (int i = 0; i < MAX_SPELL_EFFECTS; ++i)
             {
-                if (spInfo->Effect[i] != SPELL_EFFECT_SUMMON)
+                if (spInfo->GetSpellEffectIdByIndex(i) != SPELL_EFFECT_SUMMON)
                     continue;
 
                 this->RemoveAllMinionsByEntry(spInfo->GetEffectMiscValue(i));
@@ -10618,9 +10618,9 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                     uint8 x = 0;
                     for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
                     {
-                        if (spellProto->Effect[j] == SPELL_EFFECT_APPLY_AURA && (
-                            spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_DAMAGE ||
-                            spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                        if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && (
+                            spellProto->GetEffectApplyAuraName(j) == SPELL_AURA_PERIODIC_DAMAGE ||
+                            spellProto->GetEffectApplyAuraName(j) == SPELL_AURA_PERIODIC_LEECH))
                         {
                             x = j;
                             break;
@@ -10642,8 +10642,8 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             // 50% for damage and healing spells for leech spells from damage bonus and 0% from healing
             for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
-                if (spellProto->Effect[j] == SPELL_EFFECT_HEALTH_LEECH ||
-                    (spellProto->Effect[j] == SPELL_EFFECT_APPLY_AURA && spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEALTH_LEECH ||
+                    (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
                 {
                     CastingTime /= 2;
                     break;
@@ -11091,7 +11091,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
                 scripted = true;
                 break;
         }
-        if (spellProto->Effect[i] == SPELL_EFFECT_HEALTH_LEECH)
+        if (spellProto->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_HEALTH_LEECH)
             scripted = true;
     }
 
@@ -11160,7 +11160,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
                     uint32 x = 0;
                     for (uint8 j = 0; j < MAX_SPELL_EFFECTS; j++)
                     {
-                        if (spellProto->Effect[j] == SPELL_EFFECT_APPLY_AURA && (
+                        if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && (
                             spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_DAMAGE ||
                             spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
                         {
@@ -11183,8 +11183,8 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
             // 50% for damage and healing spells for leech spells from damage bonus and 0% from healing
             for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
-                if (spellProto->Effect[j] == SPELL_EFFECT_HEALTH_LEECH ||
-                    (spellProto->Effect[j] == SPELL_EFFECT_APPLY_AURA && spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEALTH_LEECH ||
+                    (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
                 {
                     CastingTime /= 2;
                     break;
@@ -11398,7 +11398,7 @@ bool Unit::IsImmunedToSpellEffect(SpellEntry const* spellInfo, uint32 index) con
     if (!spellInfo)
         return false;
     //If m_immuneToEffect type contain this effect type, IMMUNE effect.
-    uint32 effect = spellInfo->Effect[index];
+    uint32 effect = spellInfo->GetSpellEffectIdByIndex(index);
     SpellImmuneList const& effectList = m_spellImmune[IMMUNITY_EFFECT];
     for (SpellImmuneList::const_iterator itr = effectList.begin(); itr != effectList.end(); ++itr)
         if (itr->type == effect)

@@ -31,7 +31,7 @@ class AuraEffect
         int32 GetBaseAmount() const { return m_baseAmount; }
         int32 GetAmplitude() const { return m_amplitude; }
 
-        //int32 GetMiscValueB() const { return m_spellProto->EffectMiscValueB[m_effIndex]; }
+        int32 GetMiscValueB() const { return m_spellProto->GetEffectMiscValueB(m_effIndex); }
         int32 GetMiscValue() const { return m_spellProto->GetEffectMiscValue(m_effIndex); }
         AuraType GetAuraType() const { return (AuraType)m_spellProto->GetEffectApplyAuraNameByIndex(m_effIndex); }
         int32 GetAmount() const { return m_amount; }

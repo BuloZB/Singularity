@@ -8323,7 +8323,7 @@ void ObjectMgr::AddSpellToTrainer( uint32 entry, uint32 spell, uint32 spellCost,
             continue;
         }
 
-        trainerSpell.learnedSpell[i] = spellinfo->EffectTriggerSpell[i];
+        trainerSpell.learnedSpell[i] = spellinfo->GetEffectTriggerSpell(i);
 
         if (trainerSpell.learnedSpell[i] && SpellMgr::IsProfessionSpell(trainerSpell.learnedSpell[i]))
             data.trainerType = 2;
