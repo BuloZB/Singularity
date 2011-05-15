@@ -1839,6 +1839,8 @@ struct SpellEntry
     uint32 GetStartRecoveryCategory() const;
     uint32 GetSpellLevel() const;
     int32 GetEquippedItemClass() const;
+    int32 GetEquippedItemSubClassMask() const;
+    int32 GetEquippedItemInventoryTypeMask() const;
     uint32 GetSpellFamilyName() const;
     uint32 GetDmgClass() const;
     uint32 GetDispel() const;
@@ -1856,6 +1858,7 @@ struct SpellEntry
     uint32 GetSpellEffectBasePoints(uint32 index) const;    
     uint32 GetAuraInterruptFlags() const;
     uint32 GetEffectImplicitTargetAByIndex(uint32 index) const;
+    uint32 GetEffectImplicitTargetBByIndex(uint32 index) const;
     int32 GetAreaGroupId() const;
     uint32 GetFacingCasterFlags() const;
     uint32 GetBaseLevel() const;

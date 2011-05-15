@@ -189,6 +189,18 @@ int32 SpellEntry::GetEquippedItemClass() const
     return items ? items->EquippedItemClass : -1;
 }
 
+int32 SpellEntry::GetEquippedItemInventoryTypeMask() const
+{
+    SpellEquippedItemsEntry const* items = GetSpellEquippedItems();
+    return items ? items->EquippedItemInventoryTypeMask : -1;
+}
+
+int32 SpellEntry::GetEquippedItemSubClassMask() const
+{
+    SpellEquippedItemsEntry const* items = GetSpellEquippedItems();
+    return items ? items->EquippedItemSubClassMask : -1;
+}
+
 uint32 SpellEntry::GetSpellFamilyName() const
 {
     SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
@@ -289,6 +301,12 @@ uint32 SpellEntry::GetEffectImplicitTargetAByIndex(uint32 index) const
 {
     SpellEffectEntry const* effect = GetSpellEffect(index);
     return effect ? effect->EffectImplicitTargetA : NULL;
+}
+
+uint32 SpellEntry::GetEffectImplicitTargetBByIndex(uint32 index) const
+{
+    SpellEffectEntry const* effect = GetSpellEffect(index);
+    return effect ? effect->EffectImplicitTargetB : NULL;
 }
 
 int32 SpellEntry::GetAreaGroupId() const
