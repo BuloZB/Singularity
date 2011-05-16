@@ -781,7 +781,7 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
                     {
                         if (spell->getState() == SPELL_STATE_PREPARING)
                         {
-                            uint32 interruptFlags = spell->m_spellInfo->InterruptFlags;
+                            uint32 interruptFlags = spell->m_spellInfo->GetInterruptFlags();
                             if (interruptFlags & SPELL_INTERRUPT_FLAG_ABORT_ON_DMG)
                                 pVictim->InterruptNonMeleeSpells(false);
                             else if (interruptFlags & SPELL_INTERRUPT_FLAG_PUSH_BACK)
@@ -7366,7 +7366,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                     // Chain lightning has [LightOverload_Proc_Chance] / [Max_Number_of_Targets] chance to proc of each individual target hit.
                     // A maxed LO would have a 33% / 3 = 11% chance to proc of each target.
                     // LO chance was already "accounted" at the proc chance roll, now need to divide the chance by [Max_Number_of_Targets]
-                    float chance = 100.0f / procSpell->EffectChainTarget[effIndex];
+                    float chance = 100.0f / procSpell->GetEffectChainTarget(effIndex);
                     if (!roll_chance_f(chance))
                         return false;
 

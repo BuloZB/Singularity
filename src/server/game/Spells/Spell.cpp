@@ -2395,7 +2395,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
         }
 
         //Chain: 2, 6, 22, 25, 45, 77
-        uint32 maxTargets = m_spellInfo->EffectChainTarget[i];
+        uint32 maxTargets = m_spellInfo->GetEffectChainTarget(i);
         if (modOwner)
             modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_JUMP_TARGETS, maxTargets, this);
 

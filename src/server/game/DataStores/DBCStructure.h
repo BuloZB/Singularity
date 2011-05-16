@@ -1646,6 +1646,7 @@ struct SpellEffectEntry
     uint32 GetEffectAmplitude() const { return EffectAmplitude; }
     uint32 GetEffectMiscValue() const { return EffectMiscValue; }
     uint32 GetEffectMiscValueB() const { return EffectMiscValueB; }
+    uint32 GetEffectChainTarget() const { return EffectChainTarget; }
 };
 
 // SpellEquippedItems.dbc
@@ -1715,19 +1716,12 @@ struct SpellScalingEntry
 // SpellShapeshift.dbc
 struct SpellShapeshiftEntry
 {
-    uint32 ID;                                              // 0
-    //uint32 buttonPosition;                                // 1 unused
-    //char*  Name;                                          // 2        m_name_lang
-    uint32 flags1;                                          // 3        m_flags
-    int32  creatureType;                                    // 4        m_creatureType <=0 humanoid, other normal creature types
-    //uint32 unk1;                                          // 5        m_attackIconID
-    uint32 attackSpeed;                                     // 6        m_combatRoundTime
-    uint32 modelID_A;                                       // 7        m_creatureDisplayID[4]
-    uint32 modelID_H;                                       // 8
-    //uint32 unk3;                                          // 9 unused always 0
-    //uint32 unk4;                                          // 10 unused always 0
-    uint32 spellId[8];                                      // 11-18    m_presetSpellID[8]
-    //uint32 unk5;                                          // 19 unused, !=0 for fligh forms
+    //uint32    Id;                                           // 0        m_ID
+    uint32    Stances;                                      // 13       m_shapeshiftMask
+    // uint32 unk_320_2;                                    // 14       3.2.0
+    uint32    StancesNot;                                   // 15       m_shapeshiftExclude
+    // uint32 unk_320_3;                                    // 16       3.2.0
+    // uint32    StanceBarOrder;                            // 155      m_stanceBarOrder not used
 };
 
 // SpellTargetRestrictions.dbc
@@ -1805,6 +1799,7 @@ struct SpellEntry
     uint32 GetEffectAmplitude(uint32 eff) const;
     int32 GetEffectMiscValue(uint32 eff) const;
     int32 GetEffectMiscValueB(uint32 eff) const;
+    uint32 GetEffectChainTarget(uint32 eff) const;
     uint32 const* GetEffectSpellClassMask(uint32 eff) const;
 
     // struct access functions
@@ -1953,8 +1948,8 @@ struct SpellItemEnchantmentEntry
     uint32      slot;                                       // 16       m_flags
     uint32      GemID;                                      // 17       m_src_itemID
     uint32      EnchantmentCondition;                       // 18       m_condition_id
-    uint32      requiredSkill;                            // 19       m_requiredSkillID
-    uint32      requiredSkillValue;                       // 20       m_requiredSkillRank
+    uint32      requiredSkill;                              // 19       m_requiredSkillID
+    uint32      requiredSkillValue;                         // 20       m_requiredSkillRank
                                                             // 21       new in 3.1
                                                             // 22       new in 3.1
 };

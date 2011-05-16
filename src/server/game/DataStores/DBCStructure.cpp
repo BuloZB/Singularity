@@ -44,28 +44,35 @@ uint32 SpellEntry::GetEffectTriggerSpell(uint32 eff) const
 
 uint32 SpellEntry::GetEffectAmplitude(uint32 eff) const
 {
-   if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+   if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
        return effectEntry->GetEffectAmplitude();
    return 0;
 }
 
 int32 SpellEntry::GetEffectMiscValue(uint32 eff) const
 {
-    if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
         return effectEntry->GetEffectMiscValue();
    return 0;
 }
 
 int32 SpellEntry::GetEffectMiscValueB(uint32 eff) const
 {
-    if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
         return effectEntry->GetEffectMiscValueB();
    return 0;
 }
 
+uint32 SpellEntry::GetEffectChainTarget(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return &effectEntry->GetEffectChainTarget();
+    return NULL;
+}
+
 uint32 const* SpellEntry::GetEffectSpellClassMask(uint32 eff) const
 {
-    if(SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
         return &effectEntry->EffectSpellClassMaskA[0];
     return NULL;
 }

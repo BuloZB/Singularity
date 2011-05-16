@@ -2492,7 +2492,7 @@ bool AuraEffect::IsAffectedOnSpell(SpellEntry const *spell) const
         return false;
 
     // Check EffectClassMask
-    if (m_spellProto->EffectSpellClassMask[m_effIndex] & spell->GetSpellClassOptions()->SpellFamilyFlags)
+    if (m_spellProto->GetEffectSpellClassMask(m_effIndex) & spell->GetSpellClassOptions()->SpellFamilyFlags)
         return true;
     return false;
 }
@@ -3272,20 +3272,20 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const * aurApp, uint8 m
     if (apply && aurApp->GetRemoveMode())
         return;
 
-    if (target->GetTypeId() == TYPEID_PLAYER)
-    {
-        SpellShapeshiftEntry const *shapeInfo = sSpellShapeshiftStore.LookupEntry(form);
-        // Learn spells for shapeshift form - no need to send action bars or add spells to spellbook
-        for (uint8 i = 0; i<MAX_SHAPESHIFT_SPELLS; ++i)
-        {
-            if (!shapeInfo->stanceSpell[i])
-                continue;
-            if (apply)
-                target->ToPlayer()->AddTemporarySpell(shapeInfo->stanceSpell[i]);
-            else
-                target->ToPlayer()->RemoveTemporarySpell(shapeInfo->stanceSpell[i]);
-        }
-    }
+    //if (target->GetTypeId() == TYPEID_PLAYER)
+    //{
+    //    SpellShapeshiftEntry const *shapeInfo = sSpellShapeshiftStore.LookupEntry(form);
+    //    // Learn spells for shapeshift form - no need to send action bars or add spells to spellbook
+    //    for (uint8 i = 0; i<MAX_SHAPESHIFT_SPELLS; ++i)
+    //    {
+    //        if (!shapeInfo->stanceSpell[i])
+    //            continue;
+    //        if (apply)
+    //            target->ToPlayer()->AddTemporarySpell(shapeInfo->stanceSpell[i]);
+    //        else
+    //            target->ToPlayer()->RemoveTemporarySpell(shapeInfo->stanceSpell[i]);
+    //    }
+    //}
 }
 
 void AuraEffect::HandleAuraTransform(AuraApplication const * aurApp, uint8 mode, bool apply) const
