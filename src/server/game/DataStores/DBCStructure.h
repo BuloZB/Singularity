@@ -1554,7 +1554,7 @@ struct SpellAuraOptionsEntry
     uint32    procFlags;                                    // 4       m_procTypeMask
 };
 
-// SpellAuraRestrictions.dbc
+// SpellAuraRestrictions.dbc/
 struct SpellAuraRestrictionsEntry
 {
     //uint32    Id;                                           // 0        m_ID
@@ -1647,6 +1647,10 @@ struct SpellEffectEntry
     uint32 GetEffectMiscValue() const { return EffectMiscValue; }
     uint32 GetEffectMiscValueB() const { return EffectMiscValueB; }
     uint32 GetEffectChainTarget() const { return EffectChainTarget; }
+    uint32 GetEffectDieSides() const { return EffectDieSides; }
+    uint32 GetEffectPointsPerComboPoint() const { return EffectPointsPerComboPoint; }
+    uint32 GetEffectRealPointsPerLevel() const { return EffectRealPointsPerLevel; }
+    uint32 GetEffectRadiusIndex() const { return EffectRadiusIndex; }
 };
 
 // SpellEquippedItems.dbc
@@ -1800,6 +1804,10 @@ struct SpellEntry
     int32 GetEffectMiscValue(uint32 eff) const;
     int32 GetEffectMiscValueB(uint32 eff) const;
     uint32 GetEffectChainTarget(uint32 eff) const;
+    uint32 GetEffectDieSides(uint32 eff) const;
+    uint32 GetEffectPointsPerComboPoint(uint32 eff) const;
+    uint32 GetEffectRealPointsPerLevel(uint32 eff) const;
+    uint32 GetEffectRadiusIndex(uint32 eff) const;
     uint32 const* GetEffectSpellClassMask(uint32 eff) const;
 
     // struct access functions

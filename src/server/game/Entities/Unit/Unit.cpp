@@ -15018,8 +15018,8 @@ bool Unit::HandleAuraRaidProcFromChargeWithValue(AuraEffect *triggeredByAura)
     if (jumps > 0)
     {
         float radius;
-        if (spellProto->EffectRadiusIndex[effIdx])
-            radius = (float)GetSpellRadiusForTarget(triggeredByAura->GetCaster(), sSpellRadiusStore.LookupEntry(spellProto->EffectRadiusIndex[effIdx]));
+        if (spellProto->GetEffectRadiusIndex(effIdx))
+            radius = (float)GetSpellRadiusForTarget(triggeredByAura->GetCaster(), sSpellRadiusStore.LookupEntry(spellProto->GetEffectRadiusIndex(effIdx)));
         else
             radius = (float)GetSpellMaxRangeForTarget(triggeredByAura->GetCaster(), sSpellRangeStore.LookupEntry(spellProto->rangeIndex));
 
@@ -15078,8 +15078,8 @@ bool Unit::HandleAuraRaidProcFromCharge(AuraEffect* triggeredByAura)
     if (jumps > 0)
     {
         float radius;
-        if (spellProto->EffectRadiusIndex[effIdx])
-            radius = (float)GetSpellRadiusForTarget(triggeredByAura->GetCaster(), sSpellRadiusStore.LookupEntry(spellProto->EffectRadiusIndex[effIdx]));
+        if (spellProto->GetEffectRadiusIndex(effIdx))
+            radius = (float)GetSpellRadiusForTarget(triggeredByAura->GetCaster(), sSpellRadiusStore.LookupEntry(spellProto->GetEffectRadiusIndex(effIdx)));
         else
             radius = (float)GetSpellMaxRangeForTarget(triggeredByAura->GetCaster() , sSpellRangeStore.LookupEntry(spellProto->rangeIndex));
 

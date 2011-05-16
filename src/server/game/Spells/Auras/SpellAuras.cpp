@@ -1949,9 +1949,9 @@ void UnitAura::FillTargetMap(std::map<Unit *, uint8> & targets, Unit * caster)
         {
             float radius;
             if (GetSpellProto()->GetSpellEffectIdByIndex(effIndex) == SPELL_EFFECT_APPLY_AREA_AURA_ENEMY)
-                radius = GetSpellRadiusForHostile(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[effIndex]));
+                radius = GetSpellRadiusForHostile(sSpellRadiusStore.LookupEntry(GetSpellProto()->GetEffectRadiusIndex(effIndex)));
             else
-                radius = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(GetSpellProto()->EffectRadiusIndex[effIndex]));
+                radius = GetSpellRadiusForFriend(sSpellRadiusStore.LookupEntry(GetSpellProto()->GetEffectRadiusIndex(effIndex)));
 
             if (modOwner)
                 modOwner->ApplySpellMod(GetId(), SPELLMOD_RADIUS, radius);

@@ -70,6 +70,35 @@ uint32 SpellEntry::GetEffectChainTarget(uint32 eff) const
     return NULL;
 }
 
+uint32 SpellEntry::GetEffectDieSides(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectDieSides();
+    return NULL;
+}
+
+uint32 SpellEntry::GetEffectPointsPerComboPoint(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectPointsPerComboPoint();
+    return NULL;
+}
+
+uint32 SpellEntry::GetEffectRealPointsPerLevel(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectRealPointsPerLevel();
+    return NULL;
+}
+
+uint32 SpellEntry::GetEffectRadiusIndex(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectRadiusIndex();
+    return NULL;
+}
+
+
 uint32 const* SpellEntry::GetEffectSpellClassMask(uint32 eff) const
 {
     if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
