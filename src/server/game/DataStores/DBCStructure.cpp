@@ -66,7 +66,7 @@ int32 SpellEntry::GetEffectMiscValueB(uint32 eff) const
 uint32 SpellEntry::GetEffectChainTarget(uint32 eff) const
 {
     if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
-        return &effectEntry->GetEffectChainTarget();
+        return effectEntry->GetEffectChainTarget();
     return NULL;
 }
 

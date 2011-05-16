@@ -10619,8 +10619,8 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
                     for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
                     {
                         if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && (
-                            spellProto->GetEffectApplyAuraName(j) == SPELL_AURA_PERIODIC_DAMAGE ||
-                            spellProto->GetEffectApplyAuraName(j) == SPELL_AURA_PERIODIC_LEECH))
+                            spellProto->GetEffectApplyAuraNameByIndex(j) == SPELL_AURA_PERIODIC_DAMAGE ||
+                            spellProto->GetEffectApplyAuraNameByIndex(j) == SPELL_AURA_PERIODIC_LEECH))
                         {
                             x = j;
                             break;
@@ -10643,7 +10643,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
                 if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEALTH_LEECH ||
-                    (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                    (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && spellProto->GetEffectApplyAuraNameByIndex(j) == SPELL_AURA_PERIODIC_LEECH))
                 {
                     CastingTime /= 2;
                     break;
@@ -11083,7 +11083,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
 
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
-        switch (spellProto->EffectApplyAuraName[i])
+        switch (spellProto->GetEffectApplyAuraNameByIndex(i))
         {
             // These auras do not use healing coeff
             case SPELL_AURA_PERIODIC_LEECH:
@@ -11161,8 +11161,8 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
                     for (uint8 j = 0; j < MAX_SPELL_EFFECTS; j++)
                     {
                         if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && (
-                            spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_DAMAGE ||
-                            spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                            spellProto->GetEffectApplyAuraNameByIndex(j) == SPELL_AURA_PERIODIC_DAMAGE ||
+                            spellProto->GetEffectApplyAuraNameByIndex(j) == SPELL_AURA_PERIODIC_LEECH))
                         {
                             x = j;
                             break;
@@ -11184,7 +11184,7 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
             for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
             {
                 if (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_HEALTH_LEECH ||
-                    (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                    (spellProto->GetSpellEffectIdByIndex(j) == SPELL_EFFECT_APPLY_AURA && spellProto->GetEffectApplyAuraNameByIndex(j) == SPELL_AURA_PERIODIC_LEECH))
                 {
                     CastingTime /= 2;
                     break;
@@ -11412,7 +11412,7 @@ bool Unit::IsImmunedToSpellEffect(SpellEntry const* spellInfo, uint32 index) con
                 return true;
     }
 
-    if (uint32 aura = spellInfo->EffectApplyAuraName[index])
+    if (uint32 aura = spellInfo->GetEffectApplyAuraNameByIndex(index))
     {
         SpellImmuneList const& list = m_spellImmune[IMMUNITY_STATE];
         for (SpellImmuneList::const_iterator itr = list.begin(); itr != list.end(); ++itr)
@@ -11506,7 +11506,7 @@ void Unit::MeleeDamageBonus(Unit *pVictim, uint32 *pdamage, WeaponAttackType att
         bool normalized = false;
         if (spellProto)
             for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                if (spellProto->Effect[i] == SPELL_EFFECT_NORMALIZED_WEAPON_DMG)
+                if (spellProto->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_NORMALIZED_WEAPON_DMG)
                 {
                     normalized = true;
                     break;
@@ -12920,7 +12920,7 @@ int32 Unit::ModSpellDuration(SpellEntry const* spellProto, Unit const* target, i
                 sSpellMgr->IsSpellMemberOfSpellGroup(spellProto->Id, SPELL_GROUP_ELIXIR_BATTLE) ||
                 sSpellMgr->IsSpellMemberOfSpellGroup(spellProto->Id, SPELL_GROUP_ELIXIR_GUARDIAN)))
             {
-                if (target->HasAura(53042) && target->HasSpell(spellProto->EffectTriggerSpell[0]))
+                if (target->HasAura(53042) && target->HasSpell(spellProto->GetEffectTriggerSpell(0)))
                     duration *= 2;
             }
         }
@@ -14657,7 +14657,7 @@ uint32 Unit::GetCastingTimeForBonus(SpellEntry const *spellProto, DamageEffectTy
 
     for (uint32 i=0; i<MAX_SPELL_EFFECTS; i++)
     {
-        switch (spellProto->Effect[i])
+        switch (spellProto->GetSpellEffectIdByIndex(i))
         {
             case SPELL_EFFECT_SCHOOL_DAMAGE:
             case SPELL_EFFECT_POWER_DRAIN:
@@ -14668,7 +14668,7 @@ uint32 Unit::GetCastingTimeForBonus(SpellEntry const *spellProto, DamageEffectTy
                 DirectDamage = true;
                 break;
             case SPELL_EFFECT_APPLY_AURA:
-                switch (spellProto->EffectApplyAuraName[i])
+                switch (spellProto->GetEffectApplyAuraNameByIndex(i))
                 {
                     case SPELL_AURA_PERIODIC_DAMAGE:
                     case SPELL_AURA_PERIODIC_HEAL:
@@ -14955,19 +14955,19 @@ bool Unit::IsTriggeredAtSpellProcEvent(Unit *pVictim, Aura * aura, SpellEntry co
             if (this->ToPlayer()->IsInFeralForm())
                 return false;
 
-            if (!item || item->IsBroken() || item->GetTemplate()->Class != ITEM_CLASS_WEAPON || !((1<<item->GetTemplate()->SubClass) & spellProto->EquippedItemSubClassMask))
+            if (!item || item->IsBroken() || item->GetTemplate()->Class != ITEM_CLASS_WEAPON || !((1<<item->GetTemplate()->SubClass) & spellProto->GetEquippedItemSubClassMask()))
                 return false;
         }
         else if (spellProto->GetEquippedItemClass() == ITEM_CLASS_ARMOR)
         {
             // Check if player is wearing shield
             Item *item = this->ToPlayer()->GetUseableItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
-            if (!item || item->IsBroken() || item->GetTemplate()->Class != ITEM_CLASS_ARMOR || !((1<<item->GetTemplate()->SubClass) & spellProto->EquippedItemSubClassMask))
+            if (!item || item->IsBroken() || item->GetTemplate()->Class != ITEM_CLASS_ARMOR || !((1<<item->GetTemplate()->SubClass) & spellProto->GetEquippedItemSubClassMask()))
                 return false;
         }
     }
     // Get chance from spell
-    float chance = float(spellProto->>GetProcChance());
+    float chance = float(spellProto->GetProcChance());
     // If in spellProcEvent exist custom chance, chance = spellProcEvent->customChance;
     if (spellProcEvent && spellProcEvent->customChance)
         chance = spellProcEvent->customChance;
@@ -16649,7 +16649,7 @@ bool Unit::HandleSpellClick(Unit* clicker, int8 seatId)
                 bool valid = false;
                 while (i < MAX_SPELL_EFFECTS && !valid)
                 {
-                    if (spellEntry->EffectApplyAuraName[i] == SPELL_AURA_CONTROL_VEHICLE)
+                    if (spellEntry->GetEffectApplyAuraNameByIndex(i) == SPELL_AURA_CONTROL_VEHICLE)
                     {
                         valid = true;
                         break;
