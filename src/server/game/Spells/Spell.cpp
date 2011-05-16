@@ -1886,7 +1886,7 @@ void Spell::SearchGOAreaTarget(std::list<GameObject*> &TagGOMap, float radius, S
     m_caster->GetMap()->VisitGrid(pos->m_positionX, pos->m_positionY, radius, searcher);
 }
 
-WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, SpellEffIndex const* effIndex)
+WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, SpellEffectEntry const* effect)
 {
     switch(TargetType)
     {
@@ -1897,9 +1897,9 @@ WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, Spe
             {
                 sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "Spell (ID: %u) (caster Entry: %u) does not have record in `conditions` for spell script target (ConditionSourceType 13)", m_spellInfo->Id, m_caster->GetEntry());
                 if (IsPositiveSpell(m_spellInfo->Id))
-                    return SearchNearbyTarget(range, SPELL_TARGETS_ALLY, effIndex);
+                    return SearchNearbyTarget(range, SPELL_TARGETS_ALLY, effect);
                 else
-                    return SearchNearbyTarget(range, SPELL_TARGETS_ENEMY, effIndex);
+                    return SearchNearbyTarget(range, SPELL_TARGETS_ENEMY, effect);
             }
 
             Creature* creatureScriptTarget = NULL;
@@ -1909,7 +1909,7 @@ WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, Spe
             {
                 if ((*i_spellST)->mConditionType != CONDITION_SPELL_SCRIPT_TARGET)
                     continue;
-                if ((*i_spellST)->mConditionValue3 && !((*i_spellST)->mConditionValue3 & (1 << uint32(effIndex))))
+                if ((*i_spellST)->mConditionValue3 && !((*i_spellST)->mConditionValue3 & (1 << uint32(effect))))
                     continue;
                 switch((*i_spellST)->mConditionValue1)
                 {

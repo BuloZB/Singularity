@@ -3454,8 +3454,8 @@ bool Unit::_IsNoStackAuraDueToAura(Aura * appliedAura, Aura * existingAura) cons
     // prevent triggered aura of removing aura that triggering it (triggered effect early some aura of parent spell
     for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
     {
-        if (i_spellProto->EffectTriggerSpell[j] == spellProto->Id
-            || spellProto->EffectTriggerSpell[j] == i_spellProto->Id) // I do not know what is this for
+        if (i_spellProto->GetEffectTriggerSpell(j) == spellProto->Id
+            || spellProto->GetEffectTriggerSpell(j) == i_spellProto->Id) // I do not know what is this for
         {
             is_triggered_by_spell = true;
             break;
@@ -7311,7 +7311,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 // Water Shield
                 if (AuraEffect const * aurEff = GetAuraEffect(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_SHAMAN, 0, 0x00000020, 0))
                 {
-                    uint32 spell = aurEff->GetSpellProto()->EffectTriggerSpell[aurEff->GetEffIndex()];
+                    uint32 spell = aurEff->GetSpellProto()->GetEffectTriggerSpell(aurEff->GetEffIndex());
                     CastSpell(this, spell, true, castItem, triggeredByAura);
                     return true;
                 }
@@ -7409,7 +7409,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
                 if (!target || !target->isAlive())
                     return false;
 
-                triggered_spell_id = dummySpell->EffectTriggerSpell[effIndex];
+                triggered_spell_id = dummySpell->GetEffectTriggerSpell(effIndex);
                 break;
             }
             // Improved Blood Presence
@@ -7676,7 +7676,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, AuraEffect* trigger
 
     // if not handled by custom case, get triggered spell from dummySpell proto
     if (!triggered_spell_id)
-        triggered_spell_id = dummySpell->EffectTriggerSpell[triggeredByAura->GetEffIndex()];
+        triggered_spell_id = dummySpell->GetEffectTriggerSpell(triggeredByAura->GetEffIndex());
 
     // processed charge only counting case
     if (!triggered_spell_id)
@@ -7907,7 +7907,7 @@ bool Unit::HandleAuraProc(Unit * pVictim, uint32 damage, Aura * triggeredByAura,
                 // Lookup base amount mana restore
                 for (uint8 i=0; i<MAX_SPELL_EFFECTS; i++)
                 {
-                    if (procSpell->Effect[i] == SPELL_EFFECT_ENERGIZE)
+                    if (procSpell->GetSpellEffectIdByIndex(i) == SPELL_EFFECT_ENERGIZE)
                     {
                         // value multiplied by 2 because you should get twice amount
                         int32 mana = SpellMgr::CalculateSpellEffectAmount(procSpell, i) * 2;

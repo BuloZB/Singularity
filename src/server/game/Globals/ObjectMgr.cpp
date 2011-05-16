@@ -1046,30 +1046,30 @@ void ObjectMgr::LoadEquipmentTemplates()
             if (!equipmentInfo.ItemEntry[i])
                 continue;
 
-           ItemEntry const *dbcItem = sItemStore.LookupEntry(equipmentInfo.ItemEntry[i]);
+           //ItemEntry const *dbcItem = sItemStore.LookupEntry(equipmentInfo.ItemEntry[i]);
 
-            if (!dbcItem)
-            {
-                sLog->outErrorDb("Unknown item (entry=%u) in creature_equip_template.itemEntry%u for entry = %u, forced to 0.",
-                    equipmentInfo.ItemEntry[i], i+1, entry);
-                equipmentInfo.ItemEntry[i] = 0;
-                continue;
-            }
+           // if (!dbcItem)
+           // {
+           //     sLog->outErrorDb("Unknown item (entry=%u) in creature_equip_template.itemEntry%u for entry = %u, forced to 0.",
+           //         equipmentInfo.ItemEntry[i], i+1, entry);
+           //     equipmentInfo.ItemEntry[i] = 0;
+           //     continue;
+           // }
 
-            if (dbcItem->InventoryType != INVTYPE_WEAPON &&
-                dbcItem->InventoryType != INVTYPE_SHIELD &&
-                dbcItem->InventoryType != INVTYPE_RANGED &&
-                dbcItem->InventoryType != INVTYPE_2HWEAPON &&
-                dbcItem->InventoryType != INVTYPE_WEAPONMAINHAND &&
-                dbcItem->InventoryType != INVTYPE_WEAPONOFFHAND &&
-                dbcItem->InventoryType != INVTYPE_HOLDABLE &&
-                dbcItem->InventoryType != INVTYPE_THROWN &&
-                dbcItem->InventoryType != INVTYPE_RANGEDRIGHT)
-            {
-                sLog->outErrorDb("Item (entry=%u) in creature_equip_template.itemEntry%u for entry = %u is not equipable in a hand, forced to 0.",
-                    equipmentInfo.ItemEntry[i], i+1, entry);
-                equipmentInfo.ItemEntry[i] = 0;
-            }
+           // if (dbcItem->InventoryType != INVTYPE_WEAPON &&
+           //     dbcItem->InventoryType != INVTYPE_SHIELD &&
+           //     dbcItem->InventoryType != INVTYPE_RANGED &&
+           //     dbcItem->InventoryType != INVTYPE_2HWEAPON &&
+           //     dbcItem->InventoryType != INVTYPE_WEAPONMAINHAND &&
+           //     dbcItem->InventoryType != INVTYPE_WEAPONOFFHAND &&
+           //     dbcItem->InventoryType != INVTYPE_HOLDABLE &&
+           //     dbcItem->InventoryType != INVTYPE_THROWN &&
+           //     dbcItem->InventoryType != INVTYPE_RANGEDRIGHT)
+           // {
+           //     sLog->outErrorDb("Item (entry=%u) in creature_equip_template.itemEntry%u for entry = %u is not equipable in a hand, forced to 0.",
+           //         equipmentInfo.ItemEntry[i], i+1, entry);
+           //     equipmentInfo.ItemEntry[i] = 0;
+           // }
         }
 
         ++count;
@@ -2291,7 +2291,7 @@ void ObjectMgr::LoadItemTemplates()
 
         // Checks
 
-        ItemEntry const *dbcitem = sItemStore.LookupEntry(entry);
+        ItemEntry const *dbcitem = NULL;
 
         if (dbcitem)
         {
