@@ -2661,6 +2661,7 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
             // Special target selection for smart heals and energizes
             uint32 maxSize = 0;
             int32 power = -1;
+            SpellClassOptionsEntry const* flag = m_spellInfo->GetSpellClassOptions();
             switch (m_spellInfo->GetSpellFamilyName())
             {
                 case SPELLFAMILY_GENERIC:
@@ -2692,7 +2693,6 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                     }
                     break;
                 case SPELLFAMILY_PRIEST:
-                    SpellClassOptionsEntry const* flag = m_spellInfo->GetSpellClassOptions();
                     if (flag->SpellFamilyFlags[0] == 0x10000000) // Circle of Healing
                     {
                         maxSize = m_caster->HasAura(55675) ? 6 : 5; // Glyph of Circle of Healing
@@ -2720,13 +2720,13 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                             ++itr;
                     }
                     break;
-                case SPELLFAMILY_DRUID:
-                    if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[1] == 0x04000000) // Wild Growth
+                case SPELLFAMILY_DRUID:                    
+                    if (flag->SpellFamilyFlags[1] == 0x04000000) // Wild Growth
                     {
                         maxSize = m_caster->HasAura(62970) ? 6 : 5; // Glyph of Wild Growth
                         power = POWER_HEALTH;
-                    }
-                    else if (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[2] == 0x0100) // Starfall
+                    }else
+                    if (flag->SpellFamilyFlags[2] == 0x0100) // Starfall
                     {
                         // Remove targets not in LoS or in stealth
                         for (std::list<Unit*>::iterator itr = unitList.begin() ; itr != unitList.end();)
@@ -4665,11 +4665,12 @@ void Spell::HandleEffects(Unit *pUnitTarget, Item *pItemTarget, GameObject *pGOT
     //we do not need DamageMultiplier here.
     damage = CalculateDamage(i, NULL);
 
-    bool preventDefault = CallScriptEffectHandlers(m_spellInfo->GetSpellEffect(i));
+    const SpellEffectEntry * Effect = m_spellInfo->GetSpellEffect((SpellEffIndex)i);
+    bool preventDefault = CallScriptEffectHandlers((SpellEffIndex)i);
 
     if (!preventDefault && eff < TOTAL_SPELL_EFFECTS)
     {
-        (this->*SpellEffects[eff])(m_spellInfo->GetSpellEffect(i));
+        (this->*SpellEffects[eff])(Effect);
     }
 }
 
@@ -7271,7 +7272,7 @@ SpellCastResult Spell::CallScriptCheckCastHandlers()
     return retVal;
 }
 
-bool Spell::CallScriptEffectHandlers(const SpellEffectEntry* effect)
+bool Spell::CallScriptEffectHandlers(SpellEffIndex effIndex)
 {
     // execute script effect handler hooks and check if effects was prevented
     bool preventDefault = false;
@@ -7281,11 +7282,11 @@ bool Spell::CallScriptEffectHandlers(const SpellEffectEntry* effect)
         std::list<SpellScript::EffectHandler>::iterator effEndItr = (*scritr)->OnEffect.end(), effItr = (*scritr)->OnEffect.begin();
         for (; effItr != effEndItr ; ++effItr)
             // effect execution can be prevented
-            if (!(*scritr)->_IsEffectPrevented(effect) && (*effItr).IsEffectAffected(m_spellInfo, effect->EffectIndex))
-                (*effItr).Call(*scritr, effect);
+            if (!(*scritr)->_IsEffectPrevented(effIndex) && (*effItr).IsEffectAffected(m_spellInfo, effIndex))
+                (*effItr).Call(*scritr, effIndex);
 
         if (!preventDefault)
-            preventDefault = (*scritr)->_IsDefaultEffectPrevented(effect);
+            preventDefault = (*scritr)->_IsDefaultEffectPrevented(effIndex);
 
         (*scritr)->_FinishScriptCall();
     }

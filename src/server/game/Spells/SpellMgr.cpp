@@ -1877,7 +1877,7 @@ int32 SpellMgr::CalculateSpellEffectBaseAmount(int32 value, SpellEntry const * s
 
 float SpellMgr::CalculateSpellEffectValueMultiplier(SpellEntry const * spellEntry, uint8 effIndex, Unit * caster, Spell * spell)
 {
-    float multiplier = spellEntry->EffectValueMultiplier[effIndex];
+    float multiplier = spellEntry->GetEffectMultipleValue(effIndex);
 
     if (caster)
         if (Player * modOwner = caster->GetSpellModOwner())
@@ -1887,7 +1887,7 @@ float SpellMgr::CalculateSpellEffectValueMultiplier(SpellEntry const * spellEntr
 
 float SpellMgr::CalculateSpellEffectDamageMultiplier(SpellEntry const * spellEntry, uint8 effIndex, Unit * caster, Spell * spell)
 {
-    float multiplier = spellEntry->EffectDamageMultiplier[effIndex];
+    float multiplier = spellEntry->GetDmgMultiplier(effIndex);
 
     if (caster)
         if (Player * modOwner = caster->GetSpellModOwner())

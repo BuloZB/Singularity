@@ -500,7 +500,7 @@ struct AchievementCriteriaEntry
 
     char*  name;                                            // 9        m_description_lang
     uint32  completionFlag;                                 // 10       m_flags
-    //uint32  timedCriteriaStartType;                       // 11       m_timer_start_event Only appears with timed achievements, seems to be the type of starting a timed Achievement, only type 1 and some of type 6 need manual starting
+    uint32  timedCriteriaStartType;                       // 11       m_timer_start_event Only appears with timed achievements, seems to be the type of starting a timed Achievement, only type 1 and some of type 6 need manual starting
                                                             //              1: ByEventId(?) (serverside IDs),    2: ByQuestId,   5: ByCastSpellId(?)
                                                             //              6: BySpellIdTarget(some of these are unknown spells, some not, some maybe spells)
                                                             //              7: ByKillNpcId,  9: ByUseItemId
@@ -1651,6 +1651,8 @@ struct SpellEffectEntry
     uint32 GetEffectPointsPerComboPoint() const { return EffectPointsPerComboPoint; }
     uint32 GetEffectRealPointsPerLevel() const { return EffectRealPointsPerLevel; }
     uint32 GetEffectRadiusIndex() const { return EffectRadiusIndex; }
+    uint32 GetDmgMultiplier() const { return DmgMultiplier; }
+    uint32 GetEffectMultipleValue() const { return EffectMultipleValue; }
 };
 
 // SpellEquippedItems.dbc
@@ -1721,6 +1723,11 @@ struct SpellScalingEntry
 struct SpellShapeshiftEntry
 {
     //uint32    Id;                                           // 0        m_ID
+    uint32 flags1;                                          // 3
+    int32  creatureType;                                    // 4 <=0 humanoid, other normal creature types
+    uint32 attackSpeed;                                     // 6
+    uint32 modelID_A;                                       // 7 alliance modelid (0 means no model)
+    uint32 modelID_H;                                       // 8 horde modelid (but only for one form)
     uint32    Stances;                                      // 13       m_shapeshiftMask
     // uint32 unk_320_2;                                    // 14       3.2.0
     uint32    StancesNot;                                   // 15       m_shapeshiftExclude
@@ -1808,6 +1815,8 @@ struct SpellEntry
     uint32 GetEffectPointsPerComboPoint(uint32 eff) const;
     uint32 GetEffectRealPointsPerLevel(uint32 eff) const;
     uint32 GetEffectRadiusIndex(uint32 eff) const;
+    uint32 GetDmgMultiplier(uint32 eff) const;
+    uint32 GetEffectMultipleValue(uint32 eff) const;
     uint32 const* GetEffectSpellClassMask(uint32 eff) const;
 
     // struct access functions
