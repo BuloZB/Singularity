@@ -98,6 +98,19 @@ uint32 SpellEntry::GetEffectRadiusIndex(uint32 eff) const
     return NULL;
 }
 
+uint32 SpellEntry::GetDmgMultiplier(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetDmgMultiplier();
+    return NULL;
+}
+
+uint32 SpellEntry::GetEffectMultipleValue(uint32 eff) const
+{
+    if (SpellEffectEntry const* effectEntry = GetSpellEffectEntry(Id, eff))
+        return effectEntry->GetEffectMultipleValue();
+    return NULL;
+}
 
 uint32 const* SpellEntry::GetEffectSpellClassMask(uint32 eff) const
 {
