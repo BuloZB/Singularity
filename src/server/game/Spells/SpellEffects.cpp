@@ -7022,7 +7022,7 @@ void Spell::EffectRemoveAura(SpellEffectEntry const* effect)
     if (!unitTarget)
         return;
     // there may be need of specifying casterguid of removed auras
-    unitTarget->RemoveAurasDueToSpell(m_spellInfo->GetEffectTriggerSpell(effect));
+    unitTarget->RemoveAurasDueToSpell(m_spellInfo->GetEffectTriggerSpell(effect->EffectSpellId));
 }
 
 void Spell::EffectCastButtons(SpellEffectEntry const* effect)

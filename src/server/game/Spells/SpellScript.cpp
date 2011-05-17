@@ -173,9 +173,9 @@ bool SpellScript::EffectHandler::CheckEffect(SpellEntry const* spellEntry, uint8
     return _SpellScript::EffectNameCheck::Check(spellEntry, effIndex);
 }
 
-void SpellScript::EffectHandler::Call(SpellScript* spellScript, SpellEffIndex effIndex)
+void SpellScript::EffectHandler::Call(SpellScript* spellScript, const SpellEffectEntry* effect)
 {
-    (spellScript->*pEffectHandlerScript)(effIndex);
+    (spellScript->*pEffectHandlerScript)(effect->EffectIndex);
 }
 
 SpellScript::HitHandler::HitHandler(SpellHitFnType _pHitHandlerScript)

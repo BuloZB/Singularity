@@ -2453,13 +2453,13 @@ void AuraEffect::TriggerSpell(Unit * target, Unit * caster) const
         triggerCaster->CastSpell(triggerTarget, triggeredSpellInfo, true, NULL, this);
         sLog->outDebug(LOG_FILTER_SPELLS_AURAS, "AuraEffect::TriggerSpell: Spell %u Trigger %u", GetId(), triggeredSpellInfo->Id);
     }
-    else
+    /*else
     {
         Creature* c = triggerTarget->ToCreature();
         if (!c || (c && !sScriptMgr->OnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex()), triggerTarget->ToCreature())) ||
             (c && !c->AI()->sOnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex()))))
             sLog->outError("AuraEffect::TriggerSpell: Spell %u has value 0 in EffectTriggered[%d] and is therefor not handled. Define as custom case?", GetId(), GetEffIndex());
-    }
+    }*/
 }
 
 void AuraEffect::TriggerSpellWithValue(Unit * target, Unit * caster) const
@@ -2492,7 +2492,7 @@ bool AuraEffect::IsAffectedOnSpell(SpellEntry const *spell) const
         return false;
 
     // Check EffectClassMask
-    if (m_spellProto->GetEffectSpellClassMask(m_effIndex) & spell->GetSpellClassOptions()->SpellFamilyFlags)
+    if (m_spellProto->GetEffectSpellClassMask(m_effIndex) && spell->GetSpellFamilyFlags())
         return true;
     return false;
 }

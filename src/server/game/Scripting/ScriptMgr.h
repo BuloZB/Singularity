@@ -381,7 +381,7 @@ class ItemScript : public ScriptObject
         bool IsDatabaseBound() const { return true; }
 
         // Called when a dummy spell effect is triggered on the item.
-        virtual bool OnDummyEffect(Unit* /*caster*/, uint32 /*spellId*/, SpellEffIndex const* /*effIndex*/, Item* /*target*/) { return false; }
+        virtual bool OnDummyEffect(Unit* /*caster*/, uint32 /*spellId*/, SpellEffectEntry const* effect, Item* /*target*/) { return false; }
 
         // Called when a player accepts a quest from the item.
         virtual bool OnQuestAccept(Player* /*player*/, Item* /*item*/, Quest const* /*quest*/) { return false; }
@@ -404,7 +404,7 @@ class CreatureScript : public ScriptObject, public UpdatableScript<Creature>
         bool IsDatabaseBound() const { return true; }
 
         // Called when a dummy spell effect is triggered on the creature.
-        virtual bool OnDummyEffect(Unit* /*caster*/, uint32 /*spellId*/, SpellEffIndex const* /*effIndex*/, Creature* /*target*/) { return false; }
+        virtual bool OnDummyEffect(Unit* /*caster*/, uint32 /*spellId*/, SpellEffectEntry const* effect, Creature* /*target*/) { return false; }
 
         // Called when a player opens a gossip dialog with the creature.
         virtual bool OnGossipHello(Player* /*player*/, Creature* /*creature*/) { return false; }
@@ -445,7 +445,7 @@ class GameObjectScript : public ScriptObject, public UpdatableScript<GameObject>
         bool IsDatabaseBound() const { return true; }
 
         // Called when a dummy spell effect is triggered on the gameobject.
-        virtual bool OnDummyEffect(Unit* /*caster*/, uint32 /*spellId*/, SpellEffIndex const* /*effIndex*/, GameObject* /*target*/) { return false; }
+        virtual bool OnDummyEffect(Unit* /*caster*/, uint32 /*spellId*/, SpellEffectEntry const* effect, GameObject* /*target*/) { return false; }
 
         // Called when a player opens a gossip dialog with the gameobject.
         virtual bool OnGossipHello(Player* /*player*/, GameObject* /*go*/) { return false; }

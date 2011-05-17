@@ -163,7 +163,7 @@ class SpellScript : public _SpellScript
                 EffectHandler(SpellEffectFnType _pEffectHandlerScript, uint8 _effIndex, uint16 _effName);
                 std::string ToString();
                 bool CheckEffect(SpellEntry const* spellEntry, uint8 effIndex);
-                void Call(SpellScript* spellScript, SpellEffIndex effIndex);
+                void Call(SpellScript* spellScript, const SpellEffectEntry* effect);
             private:
                 SpellEffectFnType pEffectHandlerScript;
         };

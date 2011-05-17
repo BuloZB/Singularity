@@ -5839,7 +5839,7 @@ SpellCastResult Spell::CheckRange(bool strict)
             return !m_IsTriggeredSpell ? SPELL_FAILED_TOO_CLOSE : SPELL_FAILED_DONT_REPORT;
 
         if (m_caster->GetTypeId() == TYPEID_PLAYER &&
-            (m_spellInfo->FacingCasterFlags & SPELL_FACING_FLAG_INFRONT) && !m_caster->HasInArc(static_cast<float>(M_PI), target))
+            (m_spellInfo->GetFacingCasterFlags() & SPELL_FACING_FLAG_INFRONT) && !m_caster->HasInArc(static_cast<float>(M_PI), target))
             return !m_IsTriggeredSpell ? SPELL_FAILED_UNIT_NOT_INFRONT : SPELL_FAILED_DONT_REPORT;
     }
 
@@ -6148,7 +6148,7 @@ SpellCastResult Spell::CheckItems()
                 if (!targetItem)
                     return SPELL_FAILED_ITEM_NOT_FOUND;
 
-                if (targetItem->GetTemplate()->ItemLevel < m_spellInfo->baseLevel)
+                if (targetItem->GetTemplate()->ItemLevel < m_spellInfo->GetBaseLevel())
                     return SPELL_FAILED_LOWLEVEL;
 
                 bool isItemUsable = false;
@@ -7281,11 +7281,11 @@ bool Spell::CallScriptEffectHandlers(const SpellEffectEntry* effect)
         std::list<SpellScript::EffectHandler>::iterator effEndItr = (*scritr)->OnEffect.end(), effItr = (*scritr)->OnEffect.begin();
         for (; effItr != effEndItr ; ++effItr)
             // effect execution can be prevented
-            if (!(*scritr)->_IsEffectPrevented(effect->EffectIndex) && (*effItr).IsEffectAffected(m_spellInfo, effect->EffectIndex))
+            if (!(*scritr)->_IsEffectPrevented(effect) && (*effItr).IsEffectAffected(m_spellInfo, effect->EffectIndex))
                 (*effItr).Call(*scritr, effect);
 
         if (!preventDefault)
-            preventDefault = (*scritr)->_IsDefaultEffectPrevented(effect->EffectIndex);
+            preventDefault = (*scritr)->_IsDefaultEffectPrevented(effect);
 
         (*scritr)->_FinishScriptCall();
     }

@@ -621,7 +621,7 @@ bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffectEntry con
     ASSERT(target);
 
     GET_SCRIPT_RET(ItemScript, target->GetScriptId(), tmpscript, false);
-    return tmpscript->OnDummyEffect(caster, spellId, effect->EffectIndex, target);
+    return tmpscript->OnDummyEffect(caster, spellId, effect, target);
 }
 
 bool ScriptMgr::OnQuestAccept(Player* player, Item* item, Quest const* quest)
@@ -659,7 +659,7 @@ bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffectEntry con
     ASSERT(target);
 
     GET_SCRIPT_RET(CreatureScript, target->GetScriptId(), tmpscript, false);
-    return tmpscript->OnDummyEffect(caster, spellId, effect->EffectIndex, target);
+    return tmpscript->OnDummyEffect(caster, spellId, effect, target);
 }
 
 bool ScriptMgr::OnGossipHello(Player* player, Creature* creature)
