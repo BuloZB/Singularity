@@ -935,7 +935,7 @@ void AuraEffect::CalculateSpellMod()
 
                 m_spellmod->type = SpellModType(GetAuraType());    // SpellModType value == spell aura types
                 m_spellmod->spellId = GetId();
-                m_spellmod->mask = GetSpellProto()->GetEffectSpellClassMask(GetEffIndex());
+                //m_spellmod->mask = GetBase()->GetSpellProto()->GetEffectSpellClassMask(GetEffIndex());
                 m_spellmod->charges = GetBase()->GetCharges();
             }
             m_spellmod->value = GetAmount();
@@ -5654,8 +5654,8 @@ void AuraEffect::HandleNoReagentUseAura(AuraApplication const * aurApp, uint8 mo
 
     flag96 mask;
     Unit::AuraEffectList const& noReagent = target->GetAuraEffectsByType(SPELL_AURA_NO_REAGENT_USE);
-        for (Unit::AuraEffectList::const_iterator i = noReagent.begin(); i !=  noReagent.end(); ++i)
-            mask |= (*i)->m_spellProto->GetEffectSpellClassMask((*i)->m_effIndex);
+  /*      for (Unit::AuraEffectList::const_iterator i = noReagent.begin(); i !=  noReagent.end(); ++i)
+            mask |= (*i)->m_spellProto->GetEffectSpellClassMask((*i)->m_effIndex);*/
 
     target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1  , mask[0]);
     target->SetUInt32Value(PLAYER_NO_REAGENT_COST_1+1, mask[1]);
