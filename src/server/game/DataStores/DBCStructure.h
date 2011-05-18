@@ -1185,7 +1185,7 @@ struct ItemLimitCategoryEntry
 struct ItemRandomPropertiesEntry
 {
     uint32    ID;                                           // 0        m_ID
-    //char*     internalName                                // 1        m_Name
+    //DBCString internalName                                // 1        m_Name
     uint32    enchant_id[MAX_ITEM_ENCHANTMENT_EFFECTS];     // 2-4      m_Enchantment
                                                             // 5-6      unused
     DBCString nameSuffix;                                   // 7        m_name_lang
@@ -1728,17 +1728,12 @@ struct SpellScalingEntry
 // SpellShapeshift.dbc
 struct SpellShapeshiftEntry
 {
-    //uint32    Id;                                           // 0        m_ID
-    uint32 flags1;                                          // 3
-    int32  creatureType;                                    // 4 <=0 humanoid, other normal creature types
-    uint32 attackSpeed;                                     // 6
-    uint32 modelID_A;                                       // 7 alliance modelid (0 means no model)
-    uint32 modelID_H;                                       // 8 horde modelid (but only for one form)
-    uint32    Stances;                                      // 13       m_shapeshiftMask
-    // uint32 unk_320_2;                                    // 14       3.2.0
-    uint32    StancesNot;                                   // 15       m_shapeshiftExclude
-    // uint32 unk_320_3;                                    // 16       3.2.0
-    // uint32    StanceBarOrder;                            // 155      m_stanceBarOrder not used
+    uint32    Id;                                           // 0 - m_ID
+    uint32    Stances;                                      // 1 - m_shapeshiftMask
+    // uint32 unk_320_2;                                    // 2 - 3.2.0
+    uint32    StancesNot;                                   // 3 - m_shapeshiftExclude
+    // uint32 unk_320_3;                                    // 4 - 3.2.0
+    // uint32    StanceBarOrder;                            // 5 - m_stanceBarOrder not used
 };
 
 // SpellTargetRestrictions.dbc
@@ -1755,8 +1750,8 @@ struct SpellTargetRestrictionsEntry
 struct SpellTotemsEntry
 {
     //uint32    Id;                                           // 0        m_ID
-    uint32    TotemCategory[3];                               // 162-163  m_requiredTotemCategoryID
-    uint32    Totem[3];                                       // 52-53    m_totem
+    uint32    TotemCategory[2];                               // 162-163  m_requiredTotemCategoryID
+    uint32    Totem[2];                                       // 52-53    m_totem
 };
 
 // Spell.dbc
@@ -1951,7 +1946,23 @@ struct SpellRuneCostEntry
 
 #define MAX_SHAPESHIFT_SPELLS 8
 
-
+struct SpellShapeshiftFormEntry
+{
+    uint32 ID;                                              // 0
+    //uint32 buttonPosition;                                // 1 unused
+    //DBCString Name;                                       // 2 unused
+    uint32 flags1;                                          // 3
+    int32  creatureType;                                    // 4 <=0 humanoid, other normal creature types
+    //uint32 unk1;                                          // 5 unused, related to next field
+    uint32 attackSpeed;                                     // 6
+    uint32 modelID_A;                                       // 7 alliance modelid (0 means no model)
+    uint32 modelID_H;                                       // 8 horde modelid (but only for one form)
+    //uint32 unk3;                                          // 9 unused always 0
+    //uint32 unk4;                                          // 10 unused always 0
+    uint32 stanceSpell[MAX_SHAPESHIFT_SPELLS];              // 11-18 spells which appear in the bar after shapeshifting
+    //uint32 unk5;                                          // 19
+    //uint32 unk6;                                          // 20
+};
 
 struct SpellDurationEntry
 {
