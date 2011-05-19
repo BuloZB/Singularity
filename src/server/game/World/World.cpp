@@ -1253,7 +1253,7 @@ void World::SetInitialWorldSettings()
     ///- Load the DBC files
     sLog->outString("Initialize data stores...");
     LoadDBCStores(m_dataPath);
-    DetectDBCLang();
+    //DetectDBCLang();
 
     sLog->outString("Loading Script Names...");
     sObjectMgr->LoadScriptNames();
@@ -1459,7 +1459,7 @@ void World::SetInitialWorldSettings()
     sSpellMgr->LoadEnchantCustomAttr();
 
     sLog->outString("Loading linked spells...");
-    sSpellMgr->LoadSpellLinked();
+    //sSpellMgr->LoadSpellLinked();
 
     sLog->outString("Loading Player Create Data...");
     sObjectMgr->LoadPlayerInfo();
@@ -1685,7 +1685,7 @@ void World::SetInitialWorldSettings()
     Channel::CleanOldChannelsInDB();
 
     sLog->outString("Starting Arena Season...");
-    sGameEventMgr->StartArenaSeason();
+    //sGameEventMgr->StartArenaSeason();
 
     sTicketMgr->Initialize();
 
