@@ -1397,7 +1397,7 @@ class SpellMgr
         void LoadSpellThreats();
         void LoadSkillLineAbilityMap();
         void LoadSpellPetAuras();
-        void LoadSpellCustomAttr();
+        //void LoadSpellCustomAttr();
         void LoadEnchantCustomAttr();
         void LoadSpellEnchantProcData();
         void LoadSpellLinked();

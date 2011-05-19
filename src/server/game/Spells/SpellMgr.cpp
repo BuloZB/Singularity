@@ -1078,10 +1078,10 @@ SpellCastResult GetErrorAtShapeshiftedCast (SpellEntry const *spellInfo, uint32 
         return SPELL_CAST_OK;
 
     bool actAsShifted = false;
-    SpellShapeshiftEntry const *shapeInfo = NULL;
+    SpellShapeshiftFormEntry const *shapeInfo = NULL;
     if (form > 0)
     {
-        shapeInfo = sSpellShapeshiftStore.LookupEntry(form);
+        shapeInfo = sSpellShapeshiftFormStore.LookupEntry(form);
         if (!shapeInfo)
         {
             sLog->outError("GetErrorAtShapeshiftedCast: unknown shapeshift %u", form);
@@ -1877,7 +1877,7 @@ int32 SpellMgr::CalculateSpellEffectBaseAmount(int32 value, SpellEntry const * s
 
 float SpellMgr::CalculateSpellEffectValueMultiplier(SpellEntry const * spellEntry, uint8 effIndex, Unit * caster, Spell * spell)
 {
-    float multiplier = spellEntry->EffectValueMultiplier[effIndex];
+    float multiplier = spellEntry->GetEffectMultipleValue(effIndex);
 
     if (caster)
         if (Player * modOwner = caster->GetSpellModOwner())
@@ -1887,7 +1887,7 @@ float SpellMgr::CalculateSpellEffectValueMultiplier(SpellEntry const * spellEntr
 
 float SpellMgr::CalculateSpellEffectDamageMultiplier(SpellEntry const * spellEntry, uint8 effIndex, Unit * caster, Spell * spell)
 {
-    float multiplier = spellEntry->EffectDamageMultiplier[effIndex];
+    float multiplier = spellEntry->GetDmgMultiplier(effIndex);
 
     if (caster)
         if (Player * modOwner = caster->GetSpellModOwner())

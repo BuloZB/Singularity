@@ -692,7 +692,7 @@ class Spell
         void LoadScripts();
         SpellCastResult CallScriptCheckCastHandlers();
         void PrepareScriptHitHandlers();
-        bool CallScriptEffectHandlers(SpellEffectEntry const* effect);
+        bool CallScriptEffectHandlers(SpellEffIndex effIndex);
         void CallScriptBeforeHitHandlers();
         void CallScriptOnHitHandlers();
         void CallScriptAfterHitHandlers();
