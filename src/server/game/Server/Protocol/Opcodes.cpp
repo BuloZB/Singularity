@@ -44,7 +44,7 @@ void InitOpcodeTable()
         DefineOpcode( i, "UNKNOWN", STATUS_NEVER, PROCESS_INPLACE,  &WorldSession::Handle_NULL );
     }
 
-    ///*0x000*/ { "MSG_NULL_ACTION",                              STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     },
+    OPCODE(MSG_NULL_ACTION,                              STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     ///*0x001*/ { "CMSG_BOOTME",                                  STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     },
     ///*0x002*/ { "CMSG_DBLOOKUP",                                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     },
     ///*0x003*/ { "SMSG_DBLOOKUP",                                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               },
