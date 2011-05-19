@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `Achievement_dbc`;
-CREATE TABLE `dbc_Achievement` (
+DROP TABLE IF EXISTS `achievement_dbc`;
+CREATE TABLE `achievement_dbc` (
 	`id` INT UNSIGNED NOT NULL DEFAULT '0',
 	`factionFlag` INT NOT NULL DEFAULT '0',
 	`mapId` INT NOT NULL DEFAULT '0',
