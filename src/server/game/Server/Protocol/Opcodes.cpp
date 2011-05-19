@@ -576,7 +576,6 @@ void InitOpcodeTable()
     /*0x211*/ OPCODE(CMSG_GMTICKET_GETTICKET,                      STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleGMTicketGetTicketOpcode   );
     /*0x212*/ OPCODE(SMSG_GMTICKET_GETTICKET,                      STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x213*/ OPCODE(CMSG_UNLEARN_TALENTS,                         STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    /*0x214*/ OPCODE(SMSG_GAMEOBJECT_SPAWN_ANIM_OBSOLETE,          STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x215*/ OPCODE(SMSG_GAMEOBJECT_DESPAWN_ANIM,                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x216*/ OPCODE(MSG_CORPSE_QUERY,                             STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleCorpseQueryOpcode         );
     /*0x217*/ OPCODE(CMSG_GMTICKET_DELETETICKET,                   STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleGMTicketDeleteOpcode      );
@@ -921,7 +920,6 @@ void InitOpcodeTable()
     /*0x36A*/ OPCODE(CMSG_LFG_SET_ROLES,                           STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgSetRolesOpcode         );
     /*0x36B*/ OPCODE(CMSG_LFG_SET_NEEDS,                           STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x36C*/ OPCODE(CMSG_LFG_SET_BOOT_VOTE,                       STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgSetBootVoteOpcode      );
-    /*0x36D*/ OPCODE(SMSG_LFG_BOOT_PROPOSAL_UPDATE,                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x36E*/ OPCODE(CMSG_LFD_PLAYER_LOCK_INFO_REQUEST,            STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgPlayerLockInfoRequestOpcode);
     /*0x36F*/ OPCODE(SMSG_LFG_PLAYER_INFO,                         STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x370*/ OPCODE(CMSG_LFG_TELEPORT,                            STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLfgTeleportOpcode         );
@@ -1252,7 +1250,6 @@ void InitOpcodeTable()
     /*0x4B5*/ OPCODE(SMSG_ITEM_REFUND_RESULT,                      STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x4B6*/ OPCODE(CMSG_CORPSE_MAP_POSITION_QUERY,               STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleCorpseMapPositionQuery    );
     /*0x4B7*/ OPCODE(SMSG_CORPSE_MAP_POSITION_QUERY_RESPONSE,      STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
-    /*0x4B8*/ OPCODE(CMSG_LFG_SET_ROLES_2,                         STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::Handle_NULL                     );
     /*0x4B9*/ OPCODE(UMSG_UNKNOWN_1209,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x4BA*/ OPCODE(CMSG_CALENDAR_CONTEXT_EVENT_SIGNUP,           STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x4BB*/ OPCODE(SMSG_CALENDAR_ACTION_PENDING,                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
@@ -1330,7 +1327,6 @@ void InitOpcodeTable()
     /*0x503*/ OPCODE(UMSG_UNKNOWN_1283,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x504*/ OPCODE(UMSG_UNKNOWN_1284,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x505*/ OPCODE(UMSG_UNKNOWN_1285,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    /*0x506*/ OPCODE(SMSG_CORPSE_IS_NOT_IN_INSTANCE,               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x507*/ OPCODE(UMSG_UNKNOWN_1287,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x508*/ OPCODE(CMSG_SET_ALLOW_LOW_LEVEL_RAID1,               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x509*/ OPCODE(CMSG_SET_ALLOW_LOW_LEVEL_RAID2,               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
@@ -1344,8 +1340,6 @@ void InitOpcodeTable()
     /*0x511*/ OPCODE(SMSG_FORCE_SEND_QUEUED_PACKETS,               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x512*/ OPCODE(CMSG_REDIRECTION_AUTH_PROOF,                  STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x513*/ OPCODE(UMSG_UNKNOWN_1299,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    /*0x514*/ OPCODE(SMSG_COMBAT_LOG_MULTIPLE,                     STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
-    /*0x515*/ OPCODE(SMSG_LFG_OPEN_FROM_GOSSIP,                    STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x516*/ OPCODE(SMSG_UNKNOWN_1302,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     /*0x517*/ OPCODE(CMSG_UNKNOWN_1303,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     /*0x518*/ OPCODE(SMSG_UNKNOWN_1304,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
