@@ -5825,18 +5825,14 @@ float Player::OCTRegenHPPerSpirit()
     if (level > GT_MAX_LEVEL)
         level = GT_MAX_LEVEL;
 
-    GtOCTRegenHPEntry     const *baseRatio = sGtOCTRegenHPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
-    GtRegenHPPerSptEntry  const *moreRatio = sGtRegenHPPerSptStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
-    if (baseRatio == NULL || moreRatio == NULL)
+ //   GtOCTRegenHPEntry     const *baseRatio = sGtOCTRegenHPStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
+    gtOCTHpPerStaminaEntry  const *moreRatio = gtOCTHpPerStaminaStore.LookupEntry((pclass-1)*GT_MAX_LEVEL + level-1);
+    if (moreRatio == NULL)
         return 0.0f;
 
     // Formula from PaperDollFrame script
     float spirit = GetStat(STAT_SPIRIT);
-    float baseSpirit = spirit;
-    if (baseSpirit > 50)
-        baseSpirit = 50;
-    float moreSpirit = spirit - baseSpirit;
-    float regen = baseSpirit * baseRatio->ratio + moreSpirit * moreRatio->ratio;
+    float regen = spirit * moreRatio->ratio;
     return regen;
 }
 

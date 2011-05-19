@@ -45,19 +45,19 @@ typedef char const* const* DBCString;                       //char* DBCStrings[M
 struct AchievementEntry
 {
     uint32    ID;                                           // 0
-    int32    requiredFaction;                               // 1       -1=all, 0=horde, 1=alliance
-    int32    mapID;                                         // 2       -1=none
-    //uint32 parentAchievement;                             // 3        its Achievement parent (can`t start while parent uncomplete, use its Criteria if don`t have own, use its progress on begin)
-    DBCString name;                                         // 4        m_title_lang
-    //char *description;                                    // 5        m_description_lang
-    uint32    categoryId;                                   // 6        m_category
-    uint32    points;                                       // 7        m_points
-    //uint32 OrderInCategory;                               // 8        m_ui_order
-    uint32    flags;                                        // 9        m_flags
-    //uint32    icon;                                       // 10       m_iconID
-    //char *titleReward;                                    // 11       m_reward_lang
-    uint32 count;                                           // 12       m_minimum_criteria - need this count of completed criterias (own or referenced achievement criterias)
-    uint32 refAchievement;                                  // 13       m_shares_criteria - referenced achievement (counting of all completed criterias)
+    int32    requiredFaction;                               // 1 -1=all, 0=horde, 1=alliance
+    int32    mapID;                                         // 2 -1=none
+    //uint32 parentAchievement;                             // 3 its Achievement parent (can`t start while parent uncomplete, use its Criteria if don`t have own, use its progress on begin)
+    DBCString name;                                         // 4
+    //DBCString description;                                // 5
+    uint32    categoryId;                                   // 6
+    uint32    points;                                       // 7 reward points
+    //uint32 OrderInCategory;                               // 8
+    uint32    flags;                                        // 9
+    //uint32    icon;                                       // 10 icon (from SpellIcon.dbc)
+    //DBCString reward;                                     // 11
+    uint32 count;                                           // 12 - need this count of completed criterias (own or referenced achievement criterias)
+    uint32 refAchievement;                                  // 13 - referenced achievement (counting of all completed criterias)
 };
 
 struct AchievementCategoryEntry
@@ -522,17 +522,14 @@ struct AreaTableEntry
     uint32  flags;                                          // 4, unknown value but 312 for all cities
                                                             // 5-9 unused
     int32   area_level;                                     // 10
-    DBCString area_name;                                    // 11       m_AreaName_lang
-    uint32  team;                                           // 12       m_factionGroupMask
-                                                            // 13-16    m_liquidTypeID[4]
-                                                            // 17       m_minElevation
-                                                            // 18       m_ambient_multiplier
-                                                            // 19       m_lightid
+    DBCString area_name;                                    // 11
+    uint32  team;                                           // 12
+                                                            // 13-19 unknown
     //uint32 unk20;                                         // 20 4.0.0
     //uint32 unk21;                                         // 21 4.0.0
     //uint32 unk22;                                         // 22 4.0.0
     //uint32 unk23;                                         // 23 4.0.0
-    //uint32 unk24;                                         // 24 4.0.1, may be worldStateId
+    //uint32 unk24;                                         // 24 - worldStateId
 
     // helpers
     bool IsSanctuary() const
@@ -811,24 +808,29 @@ struct CurrencyTypesEntry
 struct DestructibleModelDataEntry
 {
     uint32  Id;
+    uint32  DamagedDisplayId;
     //uint32  DamagedUnk1;
     //uint32  DamagedUnk2;
-    uint32  DamagedDisplayId;
     //uint32  DamagedUnk3;
+    uint32  DestroyedDisplayId;
     //uint32  DestroyedUnk1;
     //uint32  DestroyedUnk2;
-    uint32  DestroyedDisplayId;
     //uint32  DestroyedUnk3;
+    //uint32  DestroyedUnk4;
+    uint32  RebuildingDisplayId;
     //uint32  RebuildingUnk1;
     //uint32  RebuildingUnk2;
-    uint32  RebuildingDisplayId;
     //uint32  RebuildingUnk3;
+    //uint32  RebuildingUnk4;
+    uint32  SmokeDisplayId;
     //uint32  SmokeUnk1;
     //uint32  SmokeUnk2;
-    uint32  SmokeDisplayId;
     //uint32  SmokeUnk3;
-    //uint32  Unk4;
-    //uint32  Unk5;
+    //uint32  SmokeUnk4;
+    //uint32  UnkDisplayid;
+    //uint32  Unk6;
+    //uint32  Unk7;
+    //uint32  Unk8;
 };
 
 struct DungeonEncounterEntry
@@ -1022,17 +1024,22 @@ struct GtChanceToSpellCritEntry
     float    ratio;
 };
 
-struct GtOCTRegenHPEntry
-{
-    float    ratio;
-};
-
-//struct GtOCTRegenMPEntry
+//struct GtOCTRegenHPEntry
 //{
 //    float    ratio;
 //};
 
-struct GtRegenHPPerSptEntry
+struct GtOCTRegenMPEntry
+{
+    float    ratio;
+};
+
+//struct GtRegenHPPerSptEntry
+//{
+//    float    ratio;
+//};
+
+struct gtOCTHpPerStaminaEntry
 {
     float    ratio;
 };
@@ -1196,8 +1203,8 @@ struct ItemRandomSuffixEntry
     uint32    ID;                                           // 0        m_ID
     DBCString nameSuffix;                                   // 1        m_name_lang
                                                             // 2        m_internalName
-    uint32    enchant_id[MAX_ITEM_ENCHANTMENT_EFFECTS];     // 3-7      m_enchantment
-    uint32    prefix[MAX_ITEM_ENCHANTMENT_EFFECTS];         // 8-12     m_allocationPct
+    uint32    enchant_id[5];                                // 3-7      m_enchantment
+    uint32    prefix[5];                                    // 8-12     m_allocationPct
 };
 
 #define MAX_ITEM_SET_ITEMS 10
@@ -1750,8 +1757,8 @@ struct SpellTargetRestrictionsEntry
 struct SpellTotemsEntry
 {
     //uint32    Id;                                           // 0        m_ID
-    uint32    TotemCategory[2];                               // 162-163  m_requiredTotemCategoryID
-    uint32    Totem[2];                                       // 52-53    m_totem
+    uint32    TotemCategory[2];                               // 1        m_requiredTotemCategoryID
+    uint32    Totem[2];                                       // 2        m_totem
 };
 
 // Spell.dbc
@@ -1978,14 +1985,14 @@ struct SpellItemEnchantmentEntry
     uint32      amount[MAX_ITEM_ENCHANTMENT_EFFECTS];       // 5-7      m_effectPointsMin[MAX_ITEM_ENCHANTMENT_EFFECTS]
     //uint32      amount2[MAX_ITEM_ENCHANTMENT_EFFECTS]     // 8-10     m_effectPointsMax[MAX_ITEM_ENCHANTMENT_EFFECTS]
     uint32      spellid[MAX_ITEM_ENCHANTMENT_EFFECTS];      // 11-13    m_effectArg[MAX_ITEM_ENCHANTMENT_EFFECTS]
-    DBCString description;                                  // 14       m_name_lang
+    DBCString   description;                                // 14       m_name_lang
     uint32      aura_id;                                    // 15       m_itemVisual
     uint32      slot;                                       // 16       m_flags
     uint32      GemID;                                      // 17       m_src_itemID
     uint32      EnchantmentCondition;                       // 18       m_condition_id
     uint32      requiredSkill;                              // 19       m_requiredSkillID
     uint32      requiredSkillValue;                         // 20       m_requiredSkillRank
-                                                            // 21       new in 3.1
+    uint32      requiredLevel;                              // 21       new in 3.1
                                                             // 22       new in 3.1
 };
 
