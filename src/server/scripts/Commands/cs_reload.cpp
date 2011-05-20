@@ -139,6 +139,7 @@ public:
             { "smart_scripts",                SEC_ADMINISTRATOR, true,  &HandleReloadSmartScripts,                      "", NULL },
             { "spell_required",               SEC_ADMINISTRATOR, true,  &HandleReloadSpellRequiredCommand,              "", NULL },
             { "spell_area",                   SEC_ADMINISTRATOR, true,  &HandleReloadSpellAreaCommand,                  "", NULL },
+            { "spell_map",                    SEC_ADMINISTRATOR, true,  &HandleReloadSpellMapCommand,                  "", NULL },
             { "spell_bonus_data",             SEC_ADMINISTRATOR, true,  &HandleReloadSpellBonusesCommand,               "", NULL },
             { "spell_group",                  SEC_ADMINISTRATOR, true,  &HandleReloadSpellGroupsCommand,                "", NULL },
             { "spell_learn_spell",            SEC_ADMINISTRATOR, true,  &HandleReloadSpellLearnSpellCommand,            "", NULL },
@@ -813,6 +814,14 @@ public:
         sLog->outString("Re-Loading SpellArea Data...");
         sSpellMgr->LoadSpellAreas();
         handler->SendGlobalGMSysMessage("DB table `spell_area` (spell dependences from area/quest/auras state) reloaded.");
+        return true;
+    }
+
+    static bool HandleReloadSpellMapCommand(ChatHandler* handler, const char* /*args*/)
+    {
+        sLog->outString("Re-Loading SpellMap Data...");
+        sSpellMgr->LoadSpellMaps();
+        handler->SendGlobalGMSysMessage("DB table `spell_map` (spell dependences from map/quest/auras state) reloaded.");
         return true;
     }
 
