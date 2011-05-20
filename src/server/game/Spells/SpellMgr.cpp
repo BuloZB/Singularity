@@ -2625,6 +2625,208 @@ void SpellMgr::LoadSpellAreas()
     sLog->outString();
 }
 
+void SpellMgr::LoadSpellMaps()
+{
+    uint32 oldMSTime = getMSTime();
+
+    mSpellMapMap.clear();                                  // need for reload case
+    mSpellMapForQuestMap.clear();
+    mSpellMapForActiveQuestMap.clear();
+    mSpellMapForQuestEndMap.clear();
+    mSpellMapForAuraMap.clear();
+
+    //                                                  0     1         2              3               4           5          6        7       8
+    QueryResult result = WorldDatabase.Query("SELECT spell, map, quest_start, quest_start_active, quest_end, aura_spell, racemask, gender, autocast FROM spell_map");
+
+    if (!result)
+    {
+        sLog->outString(">> Loaded 0 spell map requirements. DB table `spell_map` is empty.");
+        sLog->outString();
+        return;
+    }
+
+    uint32 count = 0;
+
+    do
+    {
+        Field *fields = result->Fetch();
+
+        uint32 spell = fields[0].GetUInt32();
+        SpellMap spellMap;
+        spellMap.spellId             = spell;
+        spellMap.mapId              = fields[1].GetUInt32();
+        spellMap.questStart          = fields[2].GetUInt32();
+        spellMap.questStartCanActive = fields[3].GetBool();
+        spellMap.questEnd            = fields[4].GetUInt32();
+        spellMap.auraSpell           = fields[5].GetInt32();
+        spellMap.raceMask            = fields[6].GetUInt32();
+        spellMap.gender              = Gender(fields[7].GetUInt8());
+        spellMap.autocast            = fields[8].GetBool();
+
+        if (const SpellEntry* spellInfo = sSpellStore.LookupEntry(spell))
+        {
+            if (spellMap.autocast)
+                const_cast<SpellEntry*>(spellInfo)->Attributes |= SPELL_ATTR0_CANT_CANCEL;
+        }
+        else
+        {
+            sLog->outErrorDb("Spell %u listed in `spell_map` does not exist", spell);
+            continue;
+        }
+
+        {
+            bool ok = true;
+            SpellMapMapBounds sa_bounds = GetSpellMapMapBounds(spellMap.spellId);
+            for (SpellMapMap::const_iterator itr = sa_bounds.first; itr != sa_bounds.second; ++itr)
+            {
+                if (spellMap.spellId != itr->second.spellId)
+                    continue;
+                if (spellMap.mapId != itr->second.mapId)
+                    continue;
+                if (spellMap.questStart != itr->second.questStart)
+                    continue;
+                if (spellMap.auraSpell != itr->second.auraSpell)
+                    continue;
+                if ((spellMap.raceMask & itr->second.raceMask) == 0)
+                    continue;
+                if (spellMap.gender != itr->second.gender)
+                    continue;
+
+                // duplicate by requirements
+                ok =false;
+                break;
+            }
+
+            if (!ok)
+            {
+                sLog->outErrorDb("Spell %u listed in `spell_map` already listed with similar requirements.", spell);
+                continue;
+            }
+        }
+
+        if (spellMap.mapId && !GetMapEntry(spellMap.mapId))
+        {
+            sLog->outErrorDb("Spell %u listed in `spell_map` have wrong map (%u) requirement", spell, spellMap.mapId);
+            continue;
+        }
+
+        if (spellMap.questStart && !sObjectMgr->GetQuestTemplate(spellMap.questStart))
+        {
+            sLog->outErrorDb("Spell %u listed in `spell_map` have wrong start quest (%u) requirement", spell, spellMap.questStart);
+            continue;
+        }
+
+        if (spellMap.questEnd)
+        {
+            if (!sObjectMgr->GetQuestTemplate(spellMap.questEnd))
+            {
+                sLog->outErrorDb("Spell %u listed in `spell_map` have wrong end quest (%u) requirement", spell, spellMap.questEnd);
+                continue;
+            }
+
+            if (spellMap.questEnd == spellMap.questStart && !spellMap.questStartCanActive)
+            {
+                sLog->outErrorDb("Spell %u listed in `spell_map` have quest (%u) requirement for start and end in same time", spell, spellMap.questEnd);
+                continue;
+            }
+        }
+
+        if (spellMap.auraSpell)
+        {
+            SpellEntry const* spellInfo = sSpellStore.LookupEntry(abs(spellMap.auraSpell));
+            if (!spellInfo)
+            {
+                sLog->outErrorDb("Spell %u listed in `spell_map` have wrong aura spell (%u) requirement", spell, abs(spellMap.auraSpell));
+                continue;
+            }
+
+            if (uint32(abs(spellMap.auraSpell)) == spellMap.spellId)
+            {
+                sLog->outErrorDb("Spell %u listed in `spell_map` have aura spell (%u) requirement for itself", spell, abs(spellMap.auraSpell));
+                continue;
+            }
+
+            // not allow autocast chains by auraSpell field (but allow use as alternative if not present)
+            if (spellMap.autocast && spellMap.auraSpell > 0)
+            {
+                bool chain = false;
+                SpellMapForAuraMapBounds saBound = GetSpellMapForAuraMapBounds(spellMap.spellId);
+                for (SpellMapForAuraMap::const_iterator itr = saBound.first; itr != saBound.second; ++itr)
+                {
+                    if (itr->second->autocast && itr->second->auraSpell > 0)
+                    {
+                        chain = true;
+                        break;
+                    }
+                }
+
+                if (chain)
+                {
+                    sLog->outErrorDb("Spell %u listed in `spell_map` have aura spell (%u) requirement that itself autocast from aura", spell, spellMap.auraSpell);
+                    continue;
+                }
+
+                SpellMapMapBounds saBound2 = GetSpellMapMapBounds(spellMap.auraSpell);
+                for (SpellMapMap::const_iterator itr2 = saBound2.first; itr2 != saBound2.second; ++itr2)
+                {
+                    if (itr2->second.autocast && itr2->second.auraSpell > 0)
+                    {
+                        chain = true;
+                        break;
+                    }
+                }
+
+                if (chain)
+                {
+                    sLog->outErrorDb("Spell %u listed in `spell_map` have aura spell (%u) requirement that itself autocast from aura", spell, spellMap.auraSpell);
+                    continue;
+                }
+            }
+        }
+
+        if (spellMap.raceMask && (spellMap.raceMask & RACEMASK_ALL_PLAYABLE) == 0)
+        {
+            sLog->outErrorDb("Spell %u listed in `spell_map` have wrong race mask (%u) requirement", spell, spellMap.raceMask);
+            continue;
+        }
+
+        if (spellMap.gender != GENDER_NONE && spellMap.gender != GENDER_FEMALE && spellMap.gender != GENDER_MALE)
+        {
+            sLog->outErrorDb("Spell %u listed in `spell_map` have wrong gender (%u) requirement", spell, spellMap.gender);
+            continue;
+        }
+
+        SpellMap const* sa = &mSpellMapMap.insert(SpellMapMap::value_type(spell, spellMap))->second;
+
+        // for search by current zone/subzone at zone/subzone change
+        /*if (spellMap.mapId)
+            mSpellAreaForAreaMap.insert(SpellMapForAreaMap::value_type(spellArea.areaId, sa));*/
+
+        // for search at quest start/reward
+        if (spellMap.questStart)
+        {
+            if (spellMap.questStartCanActive)
+                mSpellMapForActiveQuestMap.insert(SpellMapForQuestMap::value_type(spellMap.questStart, sa));
+            else
+                mSpellMapForQuestMap.insert(SpellMapForQuestMap::value_type(spellMap.questStart, sa));
+        }
+
+        // for search at quest start/reward
+        if (spellMap.questEnd)
+            mSpellMapForQuestEndMap.insert(SpellMapForQuestMap::value_type(spellMap.questEnd, sa));
+
+        // for search at aura apply
+        if (spellMap.auraSpell)
+            mSpellMapForAuraMap.insert(SpellMapForAuraMap::value_type(abs(spellMap.auraSpell), sa));
+
+        ++count;
+    } while (result->NextRow());
+
+    sLog->outString(">> Loaded %u spell map requirements in %u ms", count, GetMSTimeDiffToNow(oldMSTime));
+    sLog->outString();
+}
+
+
 SpellCastResult SpellMgr::GetSpellAllowedInLocationError(SpellEntry const *spellInfo, uint32 map_id, uint32 zone_id, uint32 area_id, Player const* player)
 {
     // normal case

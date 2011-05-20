@@ -1428,6 +1428,9 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading SpellArea Data...");                // must be after quest load
     sSpellMgr->LoadSpellAreas();
 
+    sLog->outString("Loading SpellMap Data...");
+    sSpellMgr->LoadSpellMaps();
+
     sLog->outString("Loading AreaTrigger definitions...");
     sObjectMgr->LoadAreaTriggerTeleports();
 

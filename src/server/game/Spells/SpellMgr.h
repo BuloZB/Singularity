@@ -800,6 +800,31 @@ typedef std::pair<SpellAreaForQuestMap::const_iterator, SpellAreaForQuestMap::co
 typedef std::pair<SpellAreaForAuraMap::const_iterator, SpellAreaForAuraMap::const_iterator>  SpellAreaForAuraMapBounds;
 typedef std::pair<SpellAreaForAreaMap::const_iterator, SpellAreaForAreaMap::const_iterator>  SpellAreaForAreaMapBounds;
 
+struct SpellMap
+{
+    uint32 spellId;
+    uint32 mapId;                                          // mapid
+    uint32 questStart;                                      // quest start (quest must be active or rewarded for spell apply)
+    uint32 questEnd;                                        // quest end (quest don't must be rewarded for spell apply)
+    int32  auraSpell;                                       // spell aura must be applied for spell apply)if possitive) and it don't must be applied in other case
+    uint32 raceMask;                                        // can be applied only to races
+    Gender gender;                                          // can be applied only to gender
+    bool questStartCanActive;                               // if true then quest start can be active (not only rewarded)
+    bool autocast;                                          // if true then auto applied at area enter, in other case just allowed to cast
+
+    // helpers
+    //bool IsFitToRequirements(Player const* player, uint32 newZone, uint32 newArea) const;
+};
+
+typedef std::multimap<uint32, SpellMap> SpellMapMap;
+typedef std::multimap<uint32, SpellMap const*> SpellMapForQuestMap;
+typedef std::multimap<uint32, SpellMap const*> SpellMapForAuraMap;
+typedef std::multimap<uint32, SpellMap const*> SpellMapForAreaMap;
+typedef std::pair<SpellMapMap::const_iterator, SpellMapMap::const_iterator> SpellMapMapBounds;
+typedef std::pair<SpellMapForQuestMap::const_iterator, SpellMapForQuestMap::const_iterator> SpellMapForQuestMapBounds;
+typedef std::pair<SpellMapForAuraMap::const_iterator, SpellMapForAuraMap::const_iterator>  SpellMapForAuraMapBounds;
+typedef std::pair<SpellMapForAreaMap::const_iterator, SpellMapForAreaMap::const_iterator>  SpellMapForAreaMapBounds;
+
 // Spell rank chain  (accessed using SpellMgr functions)
 struct SpellChainNode
 {
@@ -1314,6 +1339,11 @@ class SpellMgr
             return SpellAreaMapBounds(mSpellAreaMap.lower_bound(spell_id), mSpellAreaMap.upper_bound(spell_id));
         }
 
+        SpellMapMapBounds GetSpellMapMapBounds(uint32 spell_id) const
+        {
+            return SpellMapMapBounds(mSpellMapMap.lower_bound(spell_id), mSpellMapMap.upper_bound(spell_id));
+        }
+
         SpellAreaForQuestMapBounds GetSpellAreaForQuestMapBounds(uint32 quest_id, bool active) const
         {
             if (active)
@@ -1330,6 +1360,11 @@ class SpellMgr
         SpellAreaForAuraMapBounds GetSpellAreaForAuraMapBounds(uint32 spell_id) const
         {
             return SpellAreaForAuraMapBounds(mSpellAreaForAuraMap.lower_bound(spell_id), mSpellAreaForAuraMap.upper_bound(spell_id));
+        }
+
+        SpellMapForAuraMapBounds GetSpellMapForAuraMapBounds(uint32 spell_id) const
+        {
+            return SpellMapForAuraMapBounds(mSpellMapForAuraMap.lower_bound(spell_id), mSpellMapForAuraMap.upper_bound(spell_id));
         }
 
         SpellAreaForAreaMapBounds GetSpellAreaForAreaMapBounds(uint32 area_id) const
@@ -1404,6 +1439,7 @@ class SpellMgr
         void LoadPetLevelupSpellMap();
         void LoadPetDefaultSpells();
         void LoadSpellAreas();
+        void LoadSpellMaps();
         void LoadSpellGroupStackRules();
 
     private:
@@ -1430,12 +1466,20 @@ class SpellMgr
         EnchantCustomAttribute  mEnchantCustomAttr;
         PetLevelupSpellMap  mPetLevelupSpellMap;
         PetDefaultSpellsMap mPetDefaultSpellsMap;           // only spells not listed in related mPetLevelupSpellMap entry
+        //spell_area
         SpellAreaMap         mSpellAreaMap;
         SpellAreaForQuestMap mSpellAreaForQuestMap;
         SpellAreaForQuestMap mSpellAreaForActiveQuestMap;
         SpellAreaForQuestMap mSpellAreaForQuestEndMap;
         SpellAreaForAuraMap  mSpellAreaForAuraMap;
         SpellAreaForAreaMap  mSpellAreaForAreaMap;
+        //spell_map
+        SpellMapMap         mSpellMapMap;
+        SpellMapForQuestMap mSpellMapForQuestMap;
+        SpellMapForQuestMap mSpellMapForActiveQuestMap;
+        SpellMapForQuestMap mSpellMapForQuestEndMap;
+        SpellMapForAuraMap  mSpellMapForAuraMap;
+        SpellMapForAreaMap  mSpellMapForAreaMap;
         SpellDifficultySearcherMap mSpellDifficultySearcherMap;
 };
 
