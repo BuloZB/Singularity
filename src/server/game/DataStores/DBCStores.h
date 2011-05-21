@@ -35,7 +35,7 @@ TalentSpellPos const* GetTalentSpellPos(uint32 spellId);
 SpellEffectEntry const* GetSpellEffectEntry(uint32 spellId, uint32 effect);
 
 int32 GetAreaFlagByAreaID(uint32 area_id);                  // -1 if not found
-AreaTableEntry const* GetMapEntry(uint32 map_id);
+MapEntry const* GetMapEntry(uint32 map_id);
 AreaTableEntry const* GetAreaEntryByAreaID(uint32 area_id);
 AreaTableEntry const* GetAreaEntryByAreaFlagAndMap(uint32 area_flag, uint32 map_id);
 uint32 GetAreaFlagByMapId(uint32 mapid);

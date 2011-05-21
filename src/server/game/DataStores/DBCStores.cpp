@@ -742,10 +742,10 @@ WMOAreaTableEntry const* GetWMOAreaTableEntryByTripple(int32 rootid, int32 adtid
         return i->second;
 }
 
-AreaTableEntry const* GetMapEntry(uint32 map_id)
+MapEntry const* GetMapEntry(uint32 map_id)
 {
     if (MapEntry const* mapEntry = sMapStore.LookupEntry(map_id))
-        return GetAreaEntryByAreaID(mapEntry->linked_zone);
+        return mapEntry;
     
     return NULL;
 }
