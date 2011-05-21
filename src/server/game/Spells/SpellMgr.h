@@ -819,11 +819,11 @@ struct SpellMap
 typedef std::multimap<uint32, SpellMap> SpellMapMap;
 typedef std::multimap<uint32, SpellMap const*> SpellMapForQuestMap;
 typedef std::multimap<uint32, SpellMap const*> SpellMapForAuraMap;
-typedef std::multimap<uint32, SpellMap const*> SpellMapForAreaMap;
+typedef std::multimap<uint32, SpellMap const*> SpellMapForMapMap;
 typedef std::pair<SpellMapMap::const_iterator, SpellMapMap::const_iterator> SpellMapMapBounds;
 typedef std::pair<SpellMapForQuestMap::const_iterator, SpellMapForQuestMap::const_iterator> SpellMapForQuestMapBounds;
 typedef std::pair<SpellMapForAuraMap::const_iterator, SpellMapForAuraMap::const_iterator>  SpellMapForAuraMapBounds;
-typedef std::pair<SpellMapForAreaMap::const_iterator, SpellMapForAreaMap::const_iterator>  SpellMapForAreaMapBounds;
+typedef std::pair<SpellMapForMapMap::const_iterator, SpellMapForMapMap::const_iterator>  SpellMapForMapMapBounds;
 
 // Spell rank chain  (accessed using SpellMgr functions)
 struct SpellChainNode
@@ -1479,7 +1479,7 @@ class SpellMgr
         SpellMapForQuestMap mSpellMapForActiveQuestMap;
         SpellMapForQuestMap mSpellMapForQuestEndMap;
         SpellMapForAuraMap  mSpellMapForAuraMap;
-        SpellMapForAreaMap  mSpellMapForAreaMap;
+        SpellMapForMapMap   mSpellMapForMapMap;
         SpellDifficultySearcherMap mSpellDifficultySearcherMap;
 };
 
