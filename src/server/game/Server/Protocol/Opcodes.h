@@ -39,8 +39,6 @@ enum Opcodes
     UNKNOWN_OPCODE = NUM_OPCODE_HANDLERS, // must be >= NUM_OPCODE_HANDLERS
 
     CMSG_BOOTME                                     = 0x001,
-    CMSG_DBLOOKUP                                   = 0x002,
-    SMSG_DBLOOKUP                                   = 0x003,
     CMSG_QUERY_OBJECT_POSITION                      = 0x004,
     SMSG_QUERY_OBJECT_POSITION                      = 0x005,
     CMSG_QUERY_OBJECT_ROTATION                      = 0x006,
@@ -79,7 +77,7 @@ enum Opcodes
     CMSG_SET_WORLDSTATE                             = 0x027,
     CMSG_COOLDOWN_CHEAT                             = 0x028,
     CMSG_USE_SKILL_CHEAT                            = 0x029,
-    CMSG_FLAG_QUEST                                 = 0x02A,
+    CMSG_FLAG_QUEST                                 = 0x010,
     CMSG_FLAG_QUEST_FINISH                          = 0x02B,
     CMSG_CLEAR_QUEST                                = 0x02C,
     CMSG_SEND_EVENT                                 = 0x02D,
@@ -1284,7 +1282,7 @@ enum Opcodes
     UMSG_UNKNOWN_1227                               = 0x4CB,     // not found 3.2
     UMSG_UNKNOWN_1228                               = 0x4CC,     // not found 3.2
     SMSG_MULTIPLE_PACKETS                           = 0xFEC0,    // 65216 - 4.0.6.13623, SMSG, handles any opcode
-    SMSG_FORCE_UNK1_SPEED_CHANGE                    = 0x7754,    // 30548 - 4.0.3.13329, SMSG, movement related
+    SMSG_FORCE_UNK1_SPEED_CHANGE                    = 0x4CDD,    // 30548 - 4.0.3.13329, SMSG, movement related
     CMSG_FORCE_UNK1_SPEED_CHANGE_ACK                = 0xF0C0,    // 61632 - 4.0.6.13623, movement related
     SMSG_FORCE_UNK2_SPEED_CHANGE                    = 0x075C,    // 1884  - 4.0.3.13329, SMSG, movement related
     CMSG_FORCE_UNK2_SPEED_CHANGE_ACK                = 0x7DE8,    // 32232 - 4.0.6.13623, movement related

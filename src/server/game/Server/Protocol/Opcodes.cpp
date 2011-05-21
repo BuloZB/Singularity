@@ -32,8 +32,6 @@ void InitOpcodes()
     memset(opcodeTable, 0, sizeof(opcodeTable));
 
     DEFINE_OPCODE_HANDLER( CMSG_BOOTME,                                          STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    DEFINE_OPCODE_HANDLER( CMSG_DBLOOKUP,                                        STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-    DEFINE_OPCODE_HANDLER( SMSG_DBLOOKUP,                                        STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( CMSG_QUERY_OBJECT_POSITION,                           STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     DEFINE_OPCODE_HANDLER( SMSG_QUERY_OBJECT_POSITION,                           STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( CMSG_QUERY_OBJECT_ROTATION,                           STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
