@@ -21,7 +21,7 @@
 #define TRINITY_DBCSFRM_H
 
 const char Achievementfmt[]="niixsxiixixxii";
-const std::string CustomAchievementfmt="pppaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaapapaaaaaaaaaaaaaaaaaapp";
+const std::string CustomAchievementfmt="ppppappppppppppp";
 const std::string CustomAchievementIndex = "ID";
 const char AchievementCriteriafmt[]="niiiiiiiisiiiiixxxxxxxx";
 const char AreaTableEntryfmt[]="iiinixxxxxisixxxxxxxxxxxx";
@@ -108,8 +108,8 @@ const std::string CustomSpellDifficultyfmt="ppppp";
 const std::string CustomSpellDifficultyIndex="id";
 const char SpellDurationfmt[]="niii";
 const char SpellEntryfmt[]="niiiiiiiixxiiiifiiiissxxiixxixiiiiiiixiiiiiiiix";
-//const std::string CustomSpellEntryfmt="pappppppppaapapapaaaaaaaaaaapaaapapppppppaaaaapaapaaaaaaaaaaaaaaaaaappppppppppppppppppppppppppppppppppppaaaaaapppppppppaaapppppppppaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaappppppppapppaaaaappaaaaaaa";
-//const std::string CustomSpellEntryIndex = "Id";
+const std::string CustomSpellEntryfmt="ppppppppppapppppppppaaaappaapapppppppappppppppa";
+const std::string CustomSpellEntryIndex = "Id";
 const char SpellAuraOptionsEntryfmt[]="niiii";
 const char SpellAuraRestrictionsEntryfmt[]="diiiiiiii";
 const char SpellCastingRequirementsEntryfmt[]="dixxixi";
