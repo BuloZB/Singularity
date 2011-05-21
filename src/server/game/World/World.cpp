@@ -403,7 +403,7 @@ void World::LoadConfigSettings(bool reload)
 
     ///- Read the player limit and the Message of the day from the config file
     SetPlayerAmountLimit(sConfig->GetIntDefault("PlayerLimit", 100));
-    SetMotd(sConfig->GetStringDefault("Motd", "Welcome to a Trinity Core Server."));
+    SetMotd(sConfig->GetStringDefault("Motd", "Welcome to a Singularity Core Server."));
 
     ///- Read ticket system setting from the config file
     m_bool_configs[CONFIG_ALLOW_TICKETS] = sConfig->GetBoolDefault("AllowTickets", true);
@@ -1731,6 +1731,9 @@ void World::SetInitialWorldSettings()
     }
     else
         sLog->SetLogDB(false);
+
+    sLog->outString("Initializing Opcodes...");
+    InitOpcodes();
 
     uint32 startupDuration = GetMSTimeDiffToNow(startupBegin);
     sLog->outString();

@@ -21,8 +21,8 @@
 #define TRINITY_DBCSFRM_H
 
 const char Achievementfmt[]="niixsxiixixxii";
-const std::string CustomAchievementfmt="pppaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaapapaaaaaaaaaaaaaaaaaapp";
-const std::string CustomAchievementIndex = "ID";
+//const std::string CustomAchievementfmt="ppppppppppppppp";
+//const std::string CustomAchievementIndex = "ID";
 const char AchievementCriteriafmt[]="niiiiiiiisiiiiixxxxxxxx";
 const char AreaTableEntryfmt[]="iiinixxxxxisixxxxxxxxxxxx";
 const char AreaGroupEntryfmt[]="niiiiiii";
@@ -108,7 +108,7 @@ const std::string CustomSpellDifficultyfmt="ppppp";
 const std::string CustomSpellDifficultyIndex="id";
 const char SpellDurationfmt[]="niii";
 const char SpellEntryfmt[]="niiiiiiiixxiiiifiiiissxxiixxixiiiiiiixiiiiiiiix";
-//const std::string CustomSpellEntryfmt="pappppppppaapapapaaaaaaaaaaapaaapapppppppaaaaapaapaaaaaaaaaaaaaaaaaappppppppppppppppppppppppppppppppppppaaaaaapppppppppaaapppppppppaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaappppppppapppaaaaappaaaaaaa";
+//const std::string CustomSpellEntryfmt="ppppppppppapppppppppaaaappaapapppppppappppppppa";
 //const std::string CustomSpellEntryIndex = "Id";
 const char SpellAuraOptionsEntryfmt[]="niiii";
 const char SpellAuraRestrictionsEntryfmt[]="diiiiiiii";
@@ -147,5 +147,6 @@ const char WMOAreaTableEntryfmt[]="niiixxxxxiixxxx";
 const char WorldMapAreaEntryfmt[]="xinxffffixxx";
 const char WorldMapOverlayEntryfmt[]="nxiiiixxxxxxxxx";
 const char WorldSafeLocsEntryfmt[]="nifffx";
+const char PhaseEntryfmt[]="nsi";
 
 #endif
