@@ -35,6 +35,9 @@
 /// List of Opcodes
 enum Opcodes
 {
+    NUM_OPCODE_HANDLERS = (0xFFFF+1),
+    UNKNOWN_OPCODE = NUM_OPCODE_HANDLERS, // must be >= NUM_OPCODE_HANDLERS
+
     CMSG_BOOTME                                     = 0x001,
     CMSG_DBLOOKUP                                   = 0x002,
     SMSG_DBLOOKUP                                   = 0x003,
@@ -1363,10 +1366,7 @@ enum Opcodes
     SMSG_UNKNOWN_1309                               = 0x51D,     // event EVENT_COMMENTATOR_SKIRMISH_QUEUE_REQUEST
     SMSG_UNKNOWN_1310                               = 0x865E,    // 34398 - 4.0.3.13329, some compressed packet?
     CMSG_WORLD_LOGIN                                = 0x8508,    // 34056 - 4.0.6.13623, New in 406
-    NUM_MSG_TYPES                                   = 0xFFFF
 };
-
-extern void InitOpcodeTable();
 
 /// Player state
 enum SessionStatus
@@ -1388,22 +1388,43 @@ enum PacketProcessing
 
 class WorldPacket;
 
+typedef void(WorldSession::*pOpcodeHandler)(WorldPacket& recvPacket);
+
 struct OpcodeHandler
 {
+    OpcodeHandler() {}
+    OpcodeHandler(const char* _name, SessionStatus _status, PacketProcessing _processing, pOpcodeHandler _handler)
+        : name(_name), status(_status), packetProcessing(_processing), handler(_handler) {}
+
     char const* name;
     SessionStatus status;
     PacketProcessing packetProcessing;
-    void (WorldSession::*handler)(WorldPacket& recvPacket);
+    pOpcodeHandler handler;
 };
 
-extern OpcodeHandler opcodeTable[NUM_MSG_TYPES];
+#define DEFINE_OPCODE_HANDLER(opcode, status, processing, handler)                              \
+    if (opcode < NUM_OPCODE_HANDLERS) {                                                         \
+        if (opcodeTable[opcode] != NULL)                                                        \
+        {                                                                                       \
+            sLog->outError("Tried to override handler of %s with %s (opcode %u)",               \
+                opcodeTable[opcode]->name, #opcode, opcode);                                    \
+        }                                                                                       \
+        else opcodeTable[opcode] = new OpcodeHandler(#opcode, status, processing, handler);     \
+    }
+
+extern OpcodeHandler* opcodeTable[NUM_OPCODE_HANDLERS];
+void InitOpcodes();
 
 /// Lookup opcode name for human understandable logging
-inline const char* LookupOpcodeName(uint16 id)
+inline const char* LookupOpcodeName(Opcodes id)
 {
-    if (id >= NUM_MSG_TYPES)
-        return "Received unknown opcode, it's more than max!";
-    return opcodeTable[id].name;
+    if (id < NUM_OPCODE_HANDLERS)
+    {
+        OpcodeHandler* handler = opcodeTable[uint32(id)];
+        return handler ? handler->name : "UNKNOWN OPCODE";
+    }
+    else
+        return "UNKNOWN OPCODE";
 }
 #endif
 /// @}
