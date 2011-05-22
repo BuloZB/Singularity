@@ -1,7 +1,8 @@
-= TrinityCore -- Thanks/credits file =
+= SingularityCore -- Thanks/credits file =
 
-TrinityCore is a derivation/rewrite of MaNGOS, which was originally written
-by Team Python and the WoW Daemon Team. Many people further helped Trinity Core
+SingularityCore is a derivation of TrinityCore, which itself
+is a derivation/rewrite of MaNGOS, which was originally written
+by Team Python and the WoW Daemon Team. Many people further helped Singularity
 by submitting bug reports, code patches, and suggestions. Thanks to the
 community!
 
@@ -13,7 +14,7 @@ Thanks to the ScriptDev2 team (http://www.scriptdev2.com) for scripts.
 Thanks to the WCell team (especially Ralek) for research on realm reconnect
 sequence, item scaling stats algorithm, gameobject rotation issues.
 
-Thanks to SkyFire Team for some Fixes (www.skyfireproject.org)
+Thanks to SkyFire Team for some miscellaneous changes (www.skyfireproject.org).
 
 Thanks go out to the following people for various patches/code (listed in the
 order they were added): w12x, dythzer, XEQT, death420, balrok, TOM_RUS,
