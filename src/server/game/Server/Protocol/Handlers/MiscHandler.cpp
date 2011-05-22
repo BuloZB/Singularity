@@ -471,9 +471,6 @@ void WorldSession::HandleTogglePvP(WorldPacket & recv_data)
         if (!GetPlayer()->pvpInfo.inHostileArea && GetPlayer()->IsPvP())
             GetPlayer()->pvpInfo.endTimer = time(NULL);     // start toggle-off
     }
-
-    //if (OutdoorPvP * pvp = _player->GetOutdoorPvP())
-    //    pvp->HandlePlayerActivityChanged(_player);
 }
 
 void WorldSession::HandleZoneUpdateOpcode(WorldPacket & recv_data)
@@ -487,7 +484,6 @@ void WorldSession::HandleZoneUpdateOpcode(WorldPacket & recv_data)
     uint32 newzone, newarea;
     GetPlayer()->GetZoneAndAreaId(newzone, newarea);
     GetPlayer()->UpdateZone(newzone, newarea);
-    //GetPlayer()->SendInitWorldStates(true, newZone);
 }
 
 void WorldSession::HandleSetTargetOpcode(WorldPacket & recv_data)
@@ -524,7 +520,6 @@ void WorldSession::HandleSetSelectionOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleStandStateChangeOpcode(WorldPacket & recv_data)
 {
-    // sLog->outDebug(LOG_FILTER_PACKETIO, "WORLD: Received CMSG_STANDSTATECHANGE"); -- too many spam in log at lags/debug stop
     uint32 animstate;
     recv_data >> animstate;
 
@@ -1097,25 +1092,11 @@ void WorldSession::HandleNextCinematicCamera(WorldPacket & /*recv_data*/)
 
 void WorldSession::HandleMoveTimeSkippedOpcode(WorldPacket & recv_data)
 {
-    /*  WorldSession::Update(getMSTime());*/
     sLog->outStaticDebug("WORLD: Time Lag/Synchronization Resent/Update");
 
     uint64 guid;
     recv_data.readPackGUID(guid);
     recv_data.read_skip<uint32>();
-    /*
-        uint64 guid;
-        uint32 time_skipped;
-        recv_data >> guid;
-        recv_data >> time_skipped;
-        sLog->outDebug(LOG_FILTER_PACKETIO, "WORLD: CMSG_MOVE_TIME_SKIPPED");
-
-        /// TODO
-        must be need use in Trinity
-        We substract server Lags to move time (AntiLags)
-        for exmaple
-        GetPlayer()->ModifyLastMoveTime(-int32(time_skipped));
-    */
 }
 
 void WorldSession::HandleFeatherFallAck(WorldPacket &recv_data)
@@ -1130,50 +1111,12 @@ void WorldSession::HandleMoveUnRootAck(WorldPacket& recv_data)
 {
     // no used
     recv_data.rpos(recv_data.wpos());                       // prevent warnings spam
-/*
-    uint64 guid;
-    recv_data >> guid;
-
-    // now can skip not our packet
-    if (_player->GetGUID() != guid)
-    {
-        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
-        return;
-    }
-
-    sLog->outDebug(LOG_FILTER_PACKETIO, "WORLD: CMSG_FORCE_MOVE_UNROOT_ACK");
-
-    recv_data.read_skip<uint32>();                          // unk
-
-    MovementInfo movementInfo;
-    movementInfo.guid = guid;
-    ReadMovementInfo(recv_data, &movementInfo);
-    recv_data.read_skip<float>();                           // unk2
-*/
 }
 
 void WorldSession::HandleMoveRootAck(WorldPacket& recv_data)
 {
     // no used
     recv_data.rpos(recv_data.wpos());                       // prevent warnings spam
-/*
-    uint64 guid;
-    recv_data >> guid;
-
-    // now can skip not our packet
-    if (_player->GetGUID() != guid)
-    {
-        recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
-        return;
-    }
-
-    sLog->outDebug(LOG_FILTER_PACKETIO, "WORLD: CMSG_FORCE_MOVE_ROOT_ACK");
-
-    recv_data.read_skip<uint32>();                          // unk
-
-    MovementInfo movementInfo;
-    ReadMovementInfo(recv_data, &movementInfo);
-*/
 }
 
 void WorldSession::HandleSetActionBarToggles(WorldPacket& recv_data)
@@ -1195,11 +1138,6 @@ void WorldSession::HandleSetActionBarToggles(WorldPacket& recv_data)
 void WorldSession::HandleWardenDataOpcode(WorldPacket& recv_data)
 {
     recv_data.read_skip<uint8>();
-    /*
-        uint8 tmp;
-        recv_data >> tmp;
-        sLog->outDebug("Received opcode CMSG_WARDEN_DATA, not resolve.uint8 = %u", tmp);
-    */
 }
 
 void WorldSession::HandlePlayedTime(WorldPacket& recv_data)
@@ -1289,7 +1227,6 @@ void WorldSession::HandleWorldTeleportOpcode(WorldPacket& recv_data)
     recv_data >> PositionZ;
     recv_data >> Orientation;                               // o (3.141593 = 180 degrees)
 
-    //sLog->outDebug("Received opcode CMSG_WORLD_TELEPORT");
     if (GetPlayer()->isInFlight())
     {
         sLog->outDebug(LOG_FILTER_NETWORKIO, "Player '%s' (GUID: %u) in flight, ignore worldport command.", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow());
@@ -1418,13 +1355,11 @@ void WorldSession::HandleRealmSplitOpcode(WorldPacket & recv_data)
     // 0x2 realm split pending
     data << split_date;
     SendPacket(&data);
-    //sLog->outDebug("response sent %u", unk);
 }
 
 void WorldSession::HandleFarSightOpcode(WorldPacket & recv_data)
 {
     sLog->outDebug(LOG_FILTER_NETWORKIO, "WORLD: CMSG_FAR_SIGHT");
-    //recv_data.hexlike();
 
     uint8 apply;
     recv_data >> apply;
@@ -1556,8 +1491,8 @@ void WorldSession::HandleSetDungeonDifficultyOpcode(WorldPacket & recv_data)
                     return;
                 }
             }
+
             // the difficulty is set even if the instances can't be reset
-            //_player->SendDungeonDifficulty(true);
             pGroup->ResetInstances(INSTANCE_RESET_CHANGE_DIFFICULTY, false, _player);
             pGroup->SetDungeonDifficulty(Difficulty(mode));
         }
@@ -1617,8 +1552,8 @@ void WorldSession::HandleSetRaidDifficultyOpcode(WorldPacket & recv_data)
                     return;
                 }
             }
+
             // the difficulty is set even if the instances can't be reset
-            //_player->SendDungeonDifficulty(true);
             pGroup->ResetInstances(INSTANCE_RESET_CHANGE_DIFFICULTY, true, _player);
             pGroup->SetRaidDifficulty(Difficulty(mode));
         }
@@ -1673,10 +1608,7 @@ void WorldSession::HandleMoveSetCanFlyAckOpcode(WorldPacket & recv_data)
 
 void WorldSession::HandleRequestPetInfoOpcode(WorldPacket & /*recv_data */)
 {
-    /*
-        sLog->outDebug(LOG_FILTER_PACKETIO, "WORLD: CMSG_REQUEST_PET_INFO");
-        recv_data.hexlike();
-    */
+	// TODO: Implement?
 }
 
 void WorldSession::HandleSetTaxiBenchmarkOpcode(WorldPacket & recv_data)
