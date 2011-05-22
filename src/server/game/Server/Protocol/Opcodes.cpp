@@ -29,6 +29,17 @@ OpcodeHandler* opcodeTable[NUM_OPCODE_HANDLERS] = { };
 /// Correspondence between opcodes and their names
 void InitOpcodes()
 {
+
+#define DEFINE_OPCODE_HANDLER(opcode, status, processing, handler)                              \
+    if (opcode < NUM_OPCODE_HANDLERS) {                                                         \
+        if (opcodeTable[opcode] != NULL)                                                        \
+        {                                                                                       \
+            sLog->outError("Tried to override handler of %s with %s (opcode %u)",               \
+                opcodeTable[opcode]->name, #opcode, opcode);                                    \
+        }                                                                                       \
+        else opcodeTable[opcode] = new OpcodeHandler(#opcode, status, processing, handler);     \
+    }
+
     memset(opcodeTable, 0, sizeof(opcodeTable));
 
     DEFINE_OPCODE_HANDLER( CMSG_BOOTME,                                          STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
@@ -638,7 +649,6 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( SMSG_SPELLDAMAGESHIELD,                               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_SPELLNONMELEEDAMAGELOG,                          STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( CMSG_LEARN_TALENT,                                    STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLearnTalentOpcode         );
-//    DEFINE_OPCODE_HANDLER( CMSG_SET_PRIMARY_TALENT_TREE,                         STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleSetPrimaryTalentTree      );
     DEFINE_OPCODE_HANDLER( SMSG_RESURRECT_FAILED,                                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( CMSG_TOGGLE_PVP,                                      STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleTogglePvP                 );
     DEFINE_OPCODE_HANDLER( SMSG_ZONE_UNDER_ATTACK,                               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
@@ -1070,7 +1080,6 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( MSG_GUILD_BANK_MONEY_WITHDRAWN,                       STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleGuildBankMoneyWithdrawn   );
     DEFINE_OPCODE_HANDLER( MSG_GUILD_EVENT_LOG_QUERY,                            STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleGuildEventLogQueryOpcode  );
     DEFINE_OPCODE_HANDLER( CMSG_MAELSTROM_RENAME_GUILD,                          STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
-//    DEFINE_OPCODE_HANDLER( CMSG_GET_MIRRORIMAGE_DATA,                            STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleMirrrorImageDataRequest   );
     DEFINE_OPCODE_HANDLER( SMSG_MIRRORIMAGE_DATA,                                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_FORCE_DISPLAY_UPDATE,                            STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_SPELL_CHANCE_RESIST_PUSHBACK,                    STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
@@ -1356,4 +1365,6 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( SMSG_UNKNOWN_1308,                                    STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_UNKNOWN_1309,                                    STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     DEFINE_OPCODE_HANDLER( SMSG_UNKNOWN_1310,                                    STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
+
+#undef DEFINE_OPCODE_HANDLER
 }

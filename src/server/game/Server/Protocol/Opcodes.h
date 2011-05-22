@@ -27,7 +27,7 @@
 #include "Common.h"
 
 // Note: this include need for be sure have full definition of class WorldSession
-//       if this class definition not complite then VS for x64 release use different size for
+//       if this class definition not complete then VS for x64 release use different size for
 //       struct OpcodeHandler in this header and Opcode.cpp and get totally wrong data from
 //       table opcodeTable in source when Opcode.h included but WorldSession.h not included
 #include "WorldSession.h"
@@ -1399,16 +1399,6 @@ struct OpcodeHandler
     PacketProcessing packetProcessing;
     pOpcodeHandler handler;
 };
-
-#define DEFINE_OPCODE_HANDLER(opcode, status, processing, handler)                              \
-    if (opcode < NUM_OPCODE_HANDLERS) {                                                         \
-        if (opcodeTable[opcode] != NULL)                                                        \
-        {                                                                                       \
-            sLog->outError("Tried to override handler of %s with %s (opcode %u)",               \
-                opcodeTable[opcode]->name, #opcode, opcode);                                    \
-        }                                                                                       \
-        else opcodeTable[opcode] = new OpcodeHandler(#opcode, status, processing, handler);     \
-    }
 
 extern OpcodeHandler* opcodeTable[NUM_OPCODE_HANDLERS];
 void InitOpcodes();
