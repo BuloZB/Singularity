@@ -4763,15 +4763,15 @@ SpellCastResult Spell::CheckCast(bool strict)
     // not for triggered spells (needed by execute)
     if (!m_IsTriggeredSpell)
     {
-        if (m_spellInfo->GetSpellAuraRestrictions()->CasterAuraState && !m_caster->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->CasterAuraState), m_spellInfo, m_caster))
+        if (m_spellInfo->GetCasterAuraState() && !m_caster->HasAuraState(AuraState(m_spellInfo->GetCasterAuraState()), m_spellInfo, m_caster))
             return SPELL_FAILED_CASTER_AURASTATE;
-        if (m_spellInfo->GetSpellAuraRestrictions()->CasterAuraStateNot && m_caster->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->CasterAuraStateNot), m_spellInfo, m_caster))
+        if (m_spellInfo->GetCasterAuraStateNot() && m_caster->HasAuraState(AuraState(m_spellInfo->GetCasterAuraStateNot()), m_spellInfo, m_caster))
             return SPELL_FAILED_CASTER_AURASTATE;
 
         // Note: spell 62473 requres casterAuraSpell = triggering spell
-        if (m_spellInfo->GetSpellAuraRestrictions()->casterAuraSpell && !m_caster->HasAura(m_spellInfo->GetSpellAuraRestrictions()->casterAuraSpell))
+        if (m_spellInfo->GetCasterAuraSpell() && !m_caster->HasAura(m_spellInfo->GetCasterAuraSpell()))
             return SPELL_FAILED_CASTER_AURASTATE;
-        if (m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell && m_caster->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell))
+        if (m_spellInfo->GetExcludeCasterAuraSpell() && m_caster->HasAura(m_spellInfo->GetExcludeCasterAuraSpell()))
             return SPELL_FAILED_CASTER_AURASTATE;
 
         if (reqCombat && m_caster->isInCombat() && IsNonCombatSpell(m_spellInfo))
@@ -4797,13 +4797,13 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (target)
     {
         // target state requirements (not allowed state), apply to self also
-        if (!m_IsTriggeredSpell && m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot && target->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot), m_spellInfo, m_caster))
+        if (!m_IsTriggeredSpell && m_spellInfo->GetTargetAuraStateNot() && target->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot), m_spellInfo, m_caster))
             return SPELL_FAILED_TARGET_AURASTATE;
 
-        if (m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell && !target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell))
+        if (m_spellInfo->GetTargetAuraSpell() && !target->HasAura(m_spellInfo->GetTargetAuraSpell()))
             return SPELL_FAILED_TARGET_AURASTATE;
 
-        if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
+        if (m_spellInfo->GetExcludeTargetAuraSpell() && target->HasAura(m_spellInfo->GetExcludeTargetAuraSpell()))
             return SPELL_FAILED_TARGET_AURASTATE;
 
         if (!m_IsTriggeredSpell && target == m_caster && m_spellInfo->AttributesEx & SPELL_ATTR1_CANT_TARGET_SELF)
@@ -4814,7 +4814,7 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (non_caster_target)
         {
             // target state requirements (apply to non-self only), to allow cast affects to self like Dirty Deeds
-            if (!m_IsTriggeredSpell && m_spellInfo->GetSpellAuraRestrictions()->TargetAuraState && !target->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->TargetAuraState), m_spellInfo, m_caster))
+            if (!m_IsTriggeredSpell && m_spellInfo->GetTargetAuraState() && !target->HasAuraState(AuraState(m_spellInfo->GetTargetAuraState()), m_spellInfo, m_caster))
                 return SPELL_FAILED_TARGET_AURASTATE;
 
             // Not allow casting on flying player or on vehicle player (if caster isnt vehicle)
