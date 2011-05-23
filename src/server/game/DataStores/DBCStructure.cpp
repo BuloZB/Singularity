@@ -451,42 +451,6 @@ uint32 SpellEntry::GetCasterAuraState() const
     return aura ? aura->CasterAuraState : 0;
 }
 
-uint32 SpellEntry::GetCasterAuraStateNot() const
-{
-    SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
-    return aura ? aura->CasterAuraStateNot : 0;
-}
-
-uint32 SpellEntry::GetExcludeCasterAuraSpell() const
-{
-    SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
-    return aura ? aura->excludeCasterAuraSpell : 0;
-}
-
-uint32 SpellEntry::GetCasterAuraSpell() const
-{
-    SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
-    return aura ? aura->casterAuraSpell : 0;
-}
-
-uint32 SpellEntry::GetTargetAuraSpell() const
-{
-    SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
-    return aura ? aura->targetAuraSpell : 0;
-}
-
-uint32 SpellEntry::GetTargetAuraStateNot() const
-{
-    SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
-    return aura ? aura->TargetAuraStateNot : 0;
-}
-
-uint32 SpellEntry::GetExcludeTargetAuraSpell() const
-{
-    SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
-    return aura ? aura->excludeTargetAuraSpell : 0;
-}
-
 uint32 SpellEntry::GetTargets() const
 {
     SpellTargetRestrictionsEntry const* target = GetSpellTargetRestrictions();

@@ -1895,12 +1895,6 @@ struct SpellEntry
     uint32 GetChannelInterruptFlags() const;
     uint32 GetManaCostPerLevel() const;
     uint32 GetCasterAuraState() const;
-    uint32 GetCasterAuraStateNot() const;
-    uint32 GetExcludeCasterAuraSpell() const;
-    uint32 GetCasterAuraSpell() const;
-    uint32 GetTargetAuraSpell() const;
-    uint32 GetTargetAuraStateNot() const;
-    uint32 GetExcludeTargetAuraSpell() const;
     uint32 GetTargets() const;
     uint32 GetEffectApplyAuraNameByIndex(uint32 index) const;
 
