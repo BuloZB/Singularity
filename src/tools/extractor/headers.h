@@ -42,6 +42,7 @@
 static int const patchRev[] = {13164, 13205, 13287, 13329, 13596, 13623};
 #define PATCH_REV_COUNT 6
 #define CLIENT_BUILD 13623
+#define MAX_EXPANSION 3
 
 static const char* const langs[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
 #define LANG_COUNT 12
