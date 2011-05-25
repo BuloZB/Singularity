@@ -65,8 +65,8 @@ target_link_libraries(extractor
   huffman
   sparse
   lzma
-  bzip2
-  zlib
+  ${BZIP2_LIBRARIES}
+  ${ZLIB_LIBRARIES}
 )
 
 if( UNIX )
