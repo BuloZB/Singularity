@@ -20,6 +20,7 @@
 #define TRINITYCORE_CHATLINK_H
 
 #include "SharedDefines.h"
+#include "DBCStructure.h"
 #include <sstream>
 #include <list>
 
