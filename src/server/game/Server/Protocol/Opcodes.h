@@ -1385,6 +1385,7 @@ enum PacketProcessing
 };
 
 class WorldPacket;
+class WorldSession;
 
 typedef void(WorldSession::*pOpcodeHandler)(WorldPacket& recvPacket);
 
