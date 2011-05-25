@@ -30,14 +30,13 @@ set(extractor_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/typedefs.h
 	${CMAKE_CURRENT_SOURCE_DIR}/wdt.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/wdt.h
-	
 )
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}/dep
-  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/dep/Stormlib
+  ${CMAKE_SOURCE_DIR}/dep/libtomcrypt/src/headers
+  ${CMAKE_SOURCE_DIR}/dep/jenkins
 )
-
 
 set(extractor_C_FLAGS "-D_7ZIP_ST -DBZ_STRICT_ANSI")
 
@@ -63,11 +62,12 @@ target_link_libraries(extractor
   libtommath
   adpcm
   pklib
-  lzma
   huffman
   sparse
+  lzma
+  bzip2
+  zlib
 )
-
 
 if( UNIX )
   install(TARGETS extractor DESTINATION bin)

@@ -8,23 +8,15 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-#file(GLOB sources C/*.c)
-
-#set(lzma_STAT_SRCS
-#  ${sources}
-#)
-
 set (lzma_SRCS
          ${CMAKE_CURRENT_SOURCE_DIR}/C/LzFind.c
          ${CMAKE_CURRENT_SOURCE_DIR}/C/LzmaDec.c
          ${CMAKE_CURRENT_SOURCE_DIR}/C/LzmaEnc.c
 )
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/C
-)
-
 set(lzma_C_FLAGS "-D_7ZIP_ST -DBZ_STRICT_ANSI")
+
+add_definitions(-D_7ZIP_ST -DBZ_STRICT_ANSI)
 
 if(WIN32)
     if(MSVC)
@@ -32,6 +24,5 @@ if(WIN32)
     endif()
     set(lzma_SRC_ADDITIONAL_FILES ${ZLIB_BZIP2_FILES})
 endif()
-
 
 add_library(lzma STATIC ${lzma_SRCS})

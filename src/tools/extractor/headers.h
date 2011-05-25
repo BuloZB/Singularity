@@ -35,8 +35,8 @@
 #include <crtdbg.h>
 #endif
 
-#include "StormLib/StormLib.h"
-#include "StormLib/StormCommon.h"
+#include "StormLib.h"
+#include "StormCommon.h"
 #include "typedefs.h"
 
 static int const patchRev[] = {13164, 13205, 13287, 13329, 13596, 13623};

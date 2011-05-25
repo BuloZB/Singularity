@@ -50,8 +50,8 @@
 // when a source needs the functions
 
 #ifdef __INCLUDE_CRYPTOGRAPHY__
-#include "libtomcrypt/src/headers/tomcrypt.h"
-#include "jenkins/lookup.h"
+#include "tomcrypt.h"
+#include "lookup.h"
 #endif
 
 //-----------------------------------------------------------------------------
