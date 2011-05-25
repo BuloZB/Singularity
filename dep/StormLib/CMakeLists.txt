@@ -20,7 +20,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/dep/zlib
   ${CMAKE_SOURCE_DIR}/dep/bzip2
   ${CMAKE_SOURCE_DIR}/dep/jenkins
-  ${CMAKE_SOURCE_DIR}/dep/lzma
   ${CMAKE_SOURCE_DIR}/dep/libtomcrypt/src/headers
 )
 
