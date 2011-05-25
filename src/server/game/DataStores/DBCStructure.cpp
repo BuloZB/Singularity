@@ -280,7 +280,7 @@ uint32 SpellEntry::GetSpellFamilyName() const
 flag96 SpellEntry::GetSpellFamilyFlags() const
 {
     SpellClassOptionsEntry const* classOpt = GetSpellClassOptions();
-    return classOpt ? classOpt->SpellFamilyFlags : 0;
+    return classOpt ? classOpt->SpellFamilyFlags : flag96(0);
 }
 
 uint32 SpellEntry::GetDmgClass() const
