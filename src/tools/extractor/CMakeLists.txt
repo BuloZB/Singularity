@@ -33,7 +33,7 @@ set(extractor_SRCS
 )
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}/dep/Stormlib
+  ${CMAKE_SOURCE_DIR}/dep/StormLib
   ${CMAKE_SOURCE_DIR}/dep/libtomcrypt/src/headers
   ${CMAKE_SOURCE_DIR}/dep/jenkins
 )
