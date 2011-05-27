@@ -1886,7 +1886,7 @@ void Spell::SearchGOAreaTarget(std::list<GameObject*> &TagGOMap, float radius, S
     m_caster->GetMap()->VisitGrid(pos->m_positionX, pos->m_positionY, radius, searcher);
 }
 
-WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, SpellEffectEntry const* effect)
+WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, SpellEffectEntry const *effect)
 {
     switch(TargetType)
     {
@@ -1909,7 +1909,7 @@ WorldObject* Spell::SearchNearbyTarget(float range, SpellTargets TargetType, Spe
             {
                 if ((*i_spellST)->mConditionType != CONDITION_SPELL_SCRIPT_TARGET)
                     continue;
-                if ((*i_spellST)->mConditionValue3 && !((*i_spellST)->mConditionValue3 & (1 << uint32(effect))))
+                if ((*i_spellST)->mConditionValue3 && !((*i_spellST)->mConditionValue3 & (1 << uint64(effect))))
                     continue;
                 switch((*i_spellST)->mConditionValue1)
                 {
