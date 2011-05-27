@@ -4796,15 +4796,15 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (target)
     {
-        // target state requirements (not allowed state), apply to self also
-        if (!m_IsTriggeredSpell && m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot && target->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot), m_spellInfo, m_caster))
-            return SPELL_FAILED_TARGET_AURASTATE;
+        //// target state requirements (not allowed state), apply to self also
+        //if (!m_IsTriggeredSpell && m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot && target->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot), m_spellInfo, m_caster))
+        //    return SPELL_FAILED_TARGET_AURASTATE;
 
-        if (m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell && !target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell))
-            return SPELL_FAILED_TARGET_AURASTATE;
+        //if (m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell && !target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell))
+        //    return SPELL_FAILED_TARGET_AURASTATE;
 
-        if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
-            return SPELL_FAILED_TARGET_AURASTATE;
+        //if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
+        //    return SPELL_FAILED_TARGET_AURASTATE;
 
         if (!m_IsTriggeredSpell && target == m_caster && m_spellInfo->AttributesEx & SPELL_ATTR1_CANT_TARGET_SELF)
             return SPELL_FAILED_BAD_TARGETS;
@@ -6501,32 +6501,32 @@ void Spell::UpdatePointers()
 
 bool Spell::CheckTargetCreatureType(Unit* target) const
 {
-    uint32 spellCreatureTargetMask = m_spellInfo->GetSpellTargetRestrictions()->TargetCreatureType;
+    //uint32 spellCreatureTargetMask = m_spellInfo->GetSpellTargetRestrictions()->TargetCreatureType;
 
-    // Curse of Doom & Exorcism: not find another way to fix spell target check :/
-    if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->GetCategory() == 1179)
-    {
-        // not allow cast at player
-        if (target->GetTypeId() == TYPEID_PLAYER)
-            return false;
+    ////// Curse of Doom & Exorcism: not find another way to fix spell target check :/
+    ////if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->GetCategory() == 1179)
+    ////{
+    ////    // not allow cast at player
+    ////    if (target->GetTypeId() == TYPEID_PLAYER)
+    ////        return false;
 
-        spellCreatureTargetMask = 0x7FF;
-    }
+    ////    spellCreatureTargetMask = 0x7FF;
+    ////}
 
-    // Dismiss Pet and Taming Lesson skipped
-    if (m_spellInfo->Id == 2641 || m_spellInfo->Id == 23356)
-        spellCreatureTargetMask =  0;
+    //// Dismiss Pet and Taming Lesson skipped
+    //if (m_spellInfo->Id == 2641 || m_spellInfo->Id == 23356)
+    //    spellCreatureTargetMask =  0;
 
-    // Polymorph and Grounding Totem
-    if (target->GetEntry() == 5925 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x1000000) && m_spellInfo->GetEffectApplyAuraNameByIndex(0) == SPELL_AURA_MOD_CONFUSE)
-        return true;
+    //// Polymorph and Grounding Totem
+    //if (target->GetEntry() == 5925 && m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_MAGE && (m_spellInfo->GetSpellClassOptions()->SpellFamilyFlags[0] & 0x1000000) && m_spellInfo->GetEffectApplyAuraNameByIndex(0) == SPELL_AURA_MOD_CONFUSE)
+    //    return true;
 
-    if (spellCreatureTargetMask)
-    {
-        uint32 TargetCreatureType = target->GetCreatureTypeMask();
+    //if (spellCreatureTargetMask)
+    //{
+    //    uint32 TargetCreatureType = target->GetCreatureTypeMask();
 
-        return !TargetCreatureType || (spellCreatureTargetMask & TargetCreatureType);
-    }
+    //    return !TargetCreatureType || (spellCreatureTargetMask & TargetCreatureType);
+    //}
     return true;
 }
 
@@ -6552,10 +6552,10 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     }
 
     // Check Aura spell req (need for AoE spells)
-    if (m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell && !target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell))
-        return false;
-    if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
-        return false;
+    //if (m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell && !target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell))
+    //    return false;
+    //if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
+    //    return false;
 
     // Check targets for not_selectable unit flag and remove
     // A player can cast spells on his pet (or other controlled unit) though in any state
