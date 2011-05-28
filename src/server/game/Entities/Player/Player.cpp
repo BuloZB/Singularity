@@ -16361,8 +16361,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     //"resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, instance_mode_mask, "
     // 39           40                41                 42                    43          44          45              46           47               48              49
     //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, "
-    // 50      51      52      53      54      55      56      57      58      59      60       61      62           63         64          65             66              67           68
-    //"health, power1, power2, power3, power4, power5, power6, power7, power8, power9, power10, power11 instance_id, speccount, activespec, exploredZones, equipmentCache, knownTitles, actionBars FROM characters WHERE guid = '%u'", guid);
+    // 50      51      52      53      54      55      56      57      58      59      60       61      62           63         64          65       66             67              68        69           70
+    //"health, power1, power2, power3, power4, power5, power6, power7, power8, power9, power10, power11 instance_id, speccount, activespec, unknown, exploredZones, equipmentCache, unknown2, knownTitles, actionBars FROM characters WHERE guid = '%u'", guid);
     PreparedQueryResult result = holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
     if (!result)
@@ -16421,8 +16421,8 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     SetUInt32Value(UNIT_FIELD_LEVEL, fields[6].GetUInt8());
     SetUInt32Value(PLAYER_XP, fields[7].GetUInt32());
 
-    _LoadIntoDataField(fields[65].GetCString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_SIZE);
-    _LoadIntoDataField(fields[67].GetCString(), PLAYER__FIELD_KNOWN_TITLES, KNOWN_TITLES_SIZE*2);
+    _LoadIntoDataField(fields[66].GetCString(), PLAYER_EXPLORED_ZONES_1, PLAYER_EXPLORED_ZONES_SIZE);
+    _LoadIntoDataField(fields[69].GetCString(), PLAYER__FIELD_KNOWN_TITLES, KNOWN_TITLES_SIZE*2);
 
     SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE);
     SetFloatValue(UNIT_FIELD_COMBATREACH, 1.5f);
@@ -16445,7 +16445,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     SetUInt64Value(0, fields[47].GetUInt64());
 
     // set which actionbars the client has active - DO NOT REMOVE EVER AGAIN (can be changed though, if it does change fieldwise)
-    SetByteValue(PLAYER_FIELD_BYTES, 2, fields[68].GetUInt8());
+    SetByteValue(PLAYER_FIELD_BYTES, 2, fields[70].GetUInt8());
 
     InitDisplayIds();
 
@@ -18167,7 +18167,7 @@ void Player::SaveToDB()
         "trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, "
         "death_expire_time, taxi_path, arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, "
         "todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk, health, power1, power2, power3, "
-        "power4, power5, power6, power7, power8, power9, power10, power11, latency, speccount, activespec, exploredZones, equipmentCache, knownTitles, actionBars) VALUES ("
+        "power4, power5, power6, power7, power8, power9, power10, power11, latency, speccount, activespec, unknown, exploredZones, equipmentCache, unknown2, knownTitles, actionBars) VALUES ("
         << GetGUIDLow() << ", "
         << GetSession()->GetAccountId() << ", '"
         << sql_name << "', "
@@ -18256,23 +18256,26 @@ void Player::SaveToDB()
     ss << GetUInt16Value(PLAYER_FIELD_KILLS, 1) << ", ";
 
     ss << GetUInt32Value(PLAYER_CHOSEN_TITLE) << ", ";
-
+    //currencies
     ss << GetUInt64Value(0) << ", ";
 
     ss << GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX) << ", ";
-
+    //drunk
     ss << (uint16)(GetUInt32Value(PLAYER_BYTES_3) & 0xFFFE) << ", ";
 
     ss << GetHealth();
 
     for (uint32 i = 0; i < MAX_POWERS; ++i)
         ss << ", " << GetPower(Powers(i));
+
     ss << ", ";
     ss << GetSession()->GetLatency();
     ss << ", ";
     ss << uint32(m_specsCount);
     ss << ", ";
-    ss << uint32(m_activeSpec) << ", '";
+    ss << uint32(m_activeSpec);
+    ss << ", '";
+
     for (uint32 i = 0; i < PLAYER_EXPLORED_ZONES_SIZE; ++i)
         ss << GetUInt32Value(PLAYER_EXPLORED_ZONES_1 + i) << " ";
 
@@ -18291,7 +18294,9 @@ void Player::SaveToDB()
         ss << " 0 ";
     }
 
-    ss << ", '";
+    ss << "', ";
+
+    ss << GetUInt32Value(0) << ", '";
     for (uint32 i = 0; i < KNOWN_TITLES_SIZE*2; ++i)
         ss << GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES + i) << " ";
 
