@@ -89,6 +89,7 @@ enum Opcodes
     CMSG_AUTH_SRP6_BEGIN                            = 0x033,
     CMSG_AUTH_SRP6_PROOF                            = 0x034,
     CMSG_AUTH_SRP6_RECODE                           = 0x035,
+    CMSG_LOGIN_UNK                                  = 0x64C,
     CMSG_CHAR_CREATE                                = 0x7EEC,    // 32492 - 4.0.6.13623
     CMSG_CHAR_ENUM                                  = 0x6AA4,    // 27300 - 4.0.6.13623
     CMSG_CHAR_DELETE                                = 0x3B84,    // 15236 - 4.0.6.13623

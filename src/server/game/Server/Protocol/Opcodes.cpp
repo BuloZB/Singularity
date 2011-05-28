@@ -93,6 +93,7 @@ void InitOpcodes()
     DEFINE_OPCODE_HANDLER( CMSG_AUTH_SRP6_BEGIN,                                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     DEFINE_OPCODE_HANDLER( CMSG_AUTH_SRP6_PROOF,                                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     DEFINE_OPCODE_HANDLER( CMSG_AUTH_SRP6_RECODE,                                STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
+    DEFINE_OPCODE_HANDLER( CMSG_LOGIN_UNK,                                       STATUS_AUTHED,   PROCESS_THREADUNSAFE, &WorldSession::Handle_NULL                     );
     DEFINE_OPCODE_HANDLER( CMSG_CHAR_CREATE,                                     STATUS_AUTHED,   PROCESS_THREADUNSAFE, &WorldSession::HandleCharCreateOpcode          );
     DEFINE_OPCODE_HANDLER( CMSG_CHAR_ENUM,                                       STATUS_AUTHED,   PROCESS_THREADUNSAFE, &WorldSession::HandleCharEnumOpcode            );
     DEFINE_OPCODE_HANDLER( CMSG_CHAR_DELETE,                                     STATUS_AUTHED,   PROCESS_THREADUNSAFE, &WorldSession::HandleCharDeleteOpcode          );
