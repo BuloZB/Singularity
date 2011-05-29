@@ -9527,7 +9527,7 @@ void Unit::ModifyAuraState(AuraState flag, bool apply)
                     if (itr->second->state == PLAYERSPELL_REMOVED || itr->second->disabled) continue;
                     SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
                     if (!spellInfo || !IsPassiveSpell(itr->first)) continue;
-                    if (spellInfo->GetSpellAuraRestrictions()->CasterAuraState == uint32(flag))
+                    if (spellInfo->GetCasterAuraState() == uint32(flag))
                         CastSpell(this, itr->first, true, NULL);
                 }
             }
@@ -9539,7 +9539,7 @@ void Unit::ModifyAuraState(AuraState flag, bool apply)
                     if (itr->second.state == PETSPELL_REMOVED) continue;
                     SpellEntry const *spellInfo = sSpellStore.LookupEntry(itr->first);
                     if (!spellInfo || !IsPassiveSpell(itr->first)) continue;
-                    if (spellInfo->GetSpellAuraRestrictions()->CasterAuraState == uint32(flag))
+                    if (spellInfo->GetCasterAuraState() == uint32(flag))
                         CastSpell(this, itr->first, true, NULL);
                 }
             }
@@ -9557,7 +9557,7 @@ void Unit::ModifyAuraState(AuraState flag, bool apply)
                 for (Unit::AuraApplicationMap::iterator itr = tAuras.begin(); itr != tAuras.end();)
                 {
                     SpellEntry const* spellProto = (*itr).second->GetBase()->GetSpellProto();
-                    if (spellProto->GetSpellAuraRestrictions()->CasterAuraState == uint32(flag))
+                    if (spellProto->GetCasterAuraState() == uint32(flag))
                         RemoveAura(itr);
                     else
                         ++itr;

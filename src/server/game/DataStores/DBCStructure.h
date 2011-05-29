@@ -1875,7 +1875,6 @@ struct SpellEntry
     uint32 GetProcCharges() const;
     uint32 GetProcChance() const;
     uint32 GetMaxLevel() const;
-    uint32 GetTargetAuraState() const;
     uint32 GetManaPerSecond() const;
     uint32 GetRequiresSpellFocus() const;
     uint32 GetSpellEffectIdByIndex(uint32 index) const;
@@ -1894,9 +1893,16 @@ struct SpellEntry
     uint32 GetProcFlags() const;
     uint32 GetChannelInterruptFlags() const;
     uint32 GetManaCostPerLevel() const;
-    uint32 GetCasterAuraState() const;
     uint32 GetTargets() const;
     uint32 GetEffectApplyAuraNameByIndex(uint32 index) const;
+    //SpellAuraRestrictionsEntry
+    uint32 GetTargetAuraSpell() const;
+    uint32 GetTargetAuraState() const;
+    uint32 GetCasterAuraSpell() const;
+    uint32 GetCasterAuraState() const;
+    uint32 GetCasterAuraStateNot() const;
+    uint32 GetExcludeTargetAuraSpell() const;
+    uint32 GetExcludeCasterAuraSpell() const;
 
     private:
         // prevent creating custom entries (copy data from original in fact)
