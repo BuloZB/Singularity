@@ -1899,7 +1899,7 @@ bool Player::BuildEnumData(QueryResult result, WorldPacket* data)
 
     // guild id
     if (uint32 guildId = fields[13].GetUInt32())
-        *data << uint64(MAKE_NEW_GUID(guildId, 0, HIGHGUID_GUILD);
+        *data << uint64(MAKE_NEW_GUID(guildId, 0, HIGHGUID_GUILD));
     else
         *data << uint64(0);
 
