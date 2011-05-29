@@ -35,6 +35,9 @@
 /// List of Opcodes
 enum Opcodes
 {
+    NUM_OPCODE_HANDLERS                              = 0x102B7,  // last unknown opcode + 1.
+    UNKNOWN_OPCODE = NUM_OPCODE_HANDLERS, // must be >= NUM_OPCODE_HANDLERS
+
     CMSG_WORLD_TELEPORT                              = 0x08581, // 4.0.6a 13623
     CMSG_TELEPORT_TO_UNIT                            = 0x0E1AC, // 4.0.6a 13623
     SMSG_CHECK_FOR_BOTS                              = 0x0FEC8, // 4.0.6a 13623
@@ -1293,8 +1296,7 @@ enum Opcodes
     CMSG_SET_PRIMARY_TALENT_TREE                     = 0x0FEA8, // 4.0.6a 13623
     CMSG_GROUP_SET_ROLES                             = 0x08509, // 4.0.6a 13623
     CMSG_WORLD_LOGIN                                 = 0x08508, // 4.0.6a 13623
-    CMSG_RETURN_TO_GRAVEYARD                         = 0x00593, // 4.0.6a 13623
-    NUM_OPCODE_HANDLERS                              = 0x102B7  // last unknown opcode + 1.
+    CMSG_RETURN_TO_GRAVEYARD                         = 0x00593, // 4.0.6a 13623    
 };
 
 /// Player state
