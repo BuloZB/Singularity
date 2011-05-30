@@ -3183,10 +3183,10 @@ void Spell::cast(bool skipCheck)
 
     if (m_spellInfo->GetSpellFamilyName())
     {
-        if (m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell && !IsPositiveSpell(m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell))
-            m_preCastSpell = m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell;
-        else if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && !IsPositiveSpell(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
-            m_preCastSpell = m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell;
+        if (m_spellInfo->GetExcludeCasterAuraSpell() && !IsPositiveSpell(m_spellInfo->GetExcludeCasterAuraSpell()))
+           m_preCastSpell = m_spellInfo->GetExcludeCasterAuraSpell();
+       else if (m_spellInfo->GetExcludeTargetAuraSpell() && !IsPositiveSpell(m_spellInfo->GetExcludeTargetAuraSpell()))
+           m_preCastSpell = m_spellInfo->GetExcludeTargetAuraSpell();
     }
 
     switch (m_spellInfo->GetSpellFamilyName())
@@ -4763,15 +4763,15 @@ SpellCastResult Spell::CheckCast(bool strict)
     // not for triggered spells (needed by execute)
     if (!m_IsTriggeredSpell)
     {
-        if (m_spellInfo->GetSpellAuraRestrictions()->CasterAuraState && !m_caster->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->CasterAuraState), m_spellInfo, m_caster))
+        if (m_spellInfo->GetCasterAuraState() && !m_caster->HasAuraState(AuraState(m_spellInfo->GetCasterAuraState()), m_spellInfo, m_caster))
             return SPELL_FAILED_CASTER_AURASTATE;
-        if (m_spellInfo->GetSpellAuraRestrictions()->CasterAuraStateNot && m_caster->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->CasterAuraStateNot), m_spellInfo, m_caster))
+        if (m_spellInfo->GetCasterAuraStateNot() && m_caster->HasAuraState(AuraState(m_spellInfo->GetCasterAuraStateNot()), m_spellInfo, m_caster))
             return SPELL_FAILED_CASTER_AURASTATE;
 
         // Note: spell 62473 requres casterAuraSpell = triggering spell
-        if (m_spellInfo->GetSpellAuraRestrictions()->casterAuraSpell && !m_caster->HasAura(m_spellInfo->GetSpellAuraRestrictions()->casterAuraSpell))
+        if (m_spellInfo->GetCasterAuraSpell() && !m_caster->HasAura(m_spellInfo->GetCasterAuraSpell()))
             return SPELL_FAILED_CASTER_AURASTATE;
-        if (m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell && m_caster->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeCasterAuraSpell))
+        if (m_spellInfo->GetExcludeCasterAuraSpell() && m_caster->HasAura(m_spellInfo->GetExcludeCasterAuraSpell()))
             return SPELL_FAILED_CASTER_AURASTATE;
 
         if (reqCombat && m_caster->isInCombat() && IsNonCombatSpell(m_spellInfo))
@@ -4800,11 +4800,13 @@ SpellCastResult Spell::CheckCast(bool strict)
         if (!m_IsTriggeredSpell && m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot && target->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot), m_spellInfo, m_caster))
             return SPELL_FAILED_TARGET_AURASTATE;
 
-        if (m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell && !target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell))
-            return SPELL_FAILED_TARGET_AURASTATE;
+        if (m_spellInfo->GetTargetAuraSpell())
+            if (!target->HasAura(m_spellInfo->GetTargetAuraSpell()))
+                return SPELL_FAILED_TARGET_AURASTATE;
 
-        if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
-            return SPELL_FAILED_TARGET_AURASTATE;
+        if (m_spellInfo->GetExcludeTargetAuraSpell())
+            if (target->HasAura(m_spellInfo->GetExcludeTargetAuraSpell()))
+                return SPELL_FAILED_TARGET_AURASTATE;
 
         if (!m_IsTriggeredSpell && target == m_caster && m_spellInfo->AttributesEx & SPELL_ATTR1_CANT_TARGET_SELF)
             return SPELL_FAILED_BAD_TARGETS;
@@ -6055,39 +6057,44 @@ SpellCastResult Spell::CheckItems()
 
         // check totem-item requirements (items presence in inventory)
         uint32 Totems = 2;
-        SpellTotemsEntry const* totems = m_spellInfo->GetSpellTotems();
-        for (int i = 0; i < 2 ; ++i)
+        if (SpellTotemsEntry const* totems = m_spellInfo->GetSpellTotems())
         {
-            if (totems->Totem[i] != 0)
+            for (int i = 0; i < 2 ; ++i)
             {
-                if (p_caster->HasItemCount(totems->Totem[i], 1))
+                if (totems->Totem[i] != 0)
                 {
+                    if (p_caster->HasItemCount(totems->Totem[i], 1))
+                    {
+                        Totems -= 1;
+                        continue;
+                    }
+                }
+                else
                     Totems -= 1;
-                    continue;
-                }
-            }else
-            Totems -= 1;
-        }
-        if (Totems != 0)
-            return SPELL_FAILED_TOTEMS;                         //0x7C
-
-        // Check items for TotemCategory  (items presence in inventory)
-        uint32 TotemCategory = 2;
-        for (int i= 0; i < 2; ++i)
-        {
-            if (totems->TotemCategory[i] != 0)
-            {
-                if (p_caster->HasItemTotemCategory(totems->TotemCategory[i]))
-                {
-                    TotemCategory -= 1;
-                    continue;
-                }
             }
-            else
-                TotemCategory -= 1;
+
+            if (Totems != 0)
+                return SPELL_FAILED_TOTEMS;                         //0x7C
+
+            // Check items for TotemCategory  (items presence in inventory)
+            uint32 TotemCategory = 2;
+            for (int i= 0; i < 2; ++i)
+            {
+                if (totems->TotemCategory[i] != 0)
+                {
+                    if (p_caster->HasItemTotemCategory(totems->TotemCategory[i]))
+                    {
+                        TotemCategory -= 1;
+                        continue;
+                    }
+                }
+                else
+                    TotemCategory -= 1;
+            }
+
+            if (TotemCategory != 0)
+                return SPELL_FAILED_TOTEM_CATEGORY;                 //0x7B
         }
-        if (TotemCategory != 0)
-            return SPELL_FAILED_TOTEM_CATEGORY;                 //0x7B
     }
 
     // special checks for spell effects
@@ -6552,9 +6559,9 @@ bool Spell::CheckTarget(Unit* target, uint32 eff)
     }
 
     // Check Aura spell req (need for AoE spells)
-    if (m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell && !target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->targetAuraSpell))
+    if (m_spellInfo->GetTargetAuraSpell() && !target->HasAura(m_spellInfo->GetTargetAuraSpell()))
         return false;
-    if (m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell && target->HasAura(m_spellInfo->GetSpellAuraRestrictions()->excludeTargetAuraSpell))
+    if (m_spellInfo->GetExcludeTargetAuraSpell() && target->HasAura(m_spellInfo->GetExcludeTargetAuraSpell()))
         return false;
 
     // Check targets for not_selectable unit flag and remove
