@@ -160,18 +160,6 @@ std::string Object::_ConcatFields(uint16 startIndex, uint16 size) const
     return ss.str();
 }
 
-void Object::BuildMovementUpdateBlock(UpdateData * data, uint32 flags) const
-{
-    ByteBuffer buf(500);
-
-    buf << uint8(UPDATETYPE_MOVEMENT);
-    buf.append(GetPackGUID());
-
-    _BuildMovementUpdate(&buf, flags);
-
-    data->AddUpdateBlock(buf);
-}
-
 void Object::BuildCreateUpdateBlockForPlayer(UpdateData *data, Player *target) const
 {
     if (!target)
@@ -300,8 +288,6 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint16 flags) const
         // 0x08000000
         if (GetTypeId() == TYPEID_PLAYER && this->ToPlayer()->isInFlight())
         {
-      //WPAssert(this->ToPlayer()->GetMotionMaster()->GetCurrentMovementGeneratorType() == FLIGHT_MOTION_TYPE);
-
             Player *player = const_cast<Object*>(this)->ToPlayer();
             if (!player)
                 return;
@@ -318,16 +304,18 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint16 flags) const
             }
             else
             {
-                if (flags3 & 0x8000)                         // probably x, y, z coords there
-                {
-                    *data << (float)0;
-                    *data << (float)0;
-                    *data << (float)0;
-                }
-
                 if (flags3 & 0x10000)                        // probably guid there
                 {
                     *data << uint64(0);
+                }
+                else
+                {
+                    if (flags3 & 0x8000)
+                    {
+                        *data << float(player->GetPositionX());
+                        *data << float(player->GetPositionY());
+                        *data << float(player->GetPositionZ());
+                    }
                 }
             }
 
@@ -408,46 +396,6 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint16 flags) const
         }
     }
 
-    // 0x8
-    if (flags & UPDATEFLAG_LOWGUID)
-    {
-        switch(GetTypeId())
-        {
-            case TYPEID_OBJECT:
-            case TYPEID_ITEM:
-            case TYPEID_CONTAINER:
-            case TYPEID_GAMEOBJECT:
-            case TYPEID_DYNAMICOBJECT:
-            case TYPEID_CORPSE:
-                *data << uint32(GetGUIDLow());              // GetGUIDLow()
-                break;
-            case TYPEID_UNIT:
-            {
-                if (this->ToCreature()->canFly())
-                    flags |= MOVEMENTFLAG_LEVITATING;
-
-                *data << uint32(0x0000000B);                // unk, can be 0xB or 0xC
-                break;
-            }
-            case TYPEID_PLAYER:
-                if (flags & UPDATEFLAG_SELF)
-                    *data << uint32(0x0000002F);            // unk, can be 0x15 or 0x22
-                else
-                    *data << uint32(0x00000008);            // unk, can be 0x7 or 0x8
-                break;
-            default:
-                *data << uint32(0x00000000);                // unk
-                break;
-        }
-    }
-
-    // 0x10
-    if (flags & UPDATEFLAG_HIGHGUID)
-    {
-        // not high guid
-        *data << uint32(0x00000000);                // unk
-    }
-
     // 0x4
     if (flags & UPDATEFLAG_HAS_TARGET)                       // packed guid (current target guid)
     {
@@ -459,9 +407,7 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint16 flags) const
 
     // 0x2
     if (flags & UPDATEFLAG_TRANSPORT)
-    {
         *data << uint32(getMSTime());                       // ms time
-    }
 
     // 0x80
     if (flags & UPDATEFLAG_VEHICLE)                          // unused for now
@@ -470,10 +416,23 @@ void Object::_BuildMovementUpdate(ByteBuffer * data, uint16 flags) const
         *data << float(((Creature*)this)->GetOrientation());  // facing adjustment
     }
 
+    // 0x800
+    if (flags & UPDATEFLAG_UNK2)
+	    *data << uint16(0) << uint16(0) << uint16(0); //unk
+
     // 0x200
     if (flags & UPDATEFLAG_ROTATION)
     {
         *data << uint64(((GameObject*)this)->GetRotation());
+    }
+
+    // 0x1000
+    if (flags & UPDATEFLAG_UNK3)
+    {
+        uint8 bytes = 0;
+        *data << bytes;
+        for (uint8 i = 0; i < bytes; i++)
+            *data << uint32(0);
     }
 }
 
@@ -481,6 +440,10 @@ void Object::_BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask 
 {
     if (!target)
         return;
+
+    uint32 valuesCount = m_valuesCount;
+    if (GetTypeId() == TYPEID_PLAYER && target != this)
+        valuesCount = PLAYER_FIELD_INV_SLOT_HEAD;
 
     bool IsActivateToQuest = false;
     if (updatetype == UPDATETYPE_CREATE_OBJECT || updatetype == UPDATETYPE_CREATE_OBJECT2)
@@ -531,7 +494,7 @@ void Object::_BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask 
     // 2 specialized loops for speed optimization in non-unit case
     if (isType(TYPEMASK_UNIT))                               // unit (creature/player) case
     {
-        for (uint16 index = 0; index < m_valuesCount; ++index)
+        for (uint16 index = 0; index < valuesCount; ++index)
         {
             if (updateMask->GetBit(index))
             {
@@ -679,7 +642,7 @@ void Object::_BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask 
     }
     else if (isType(TYPEMASK_GAMEOBJECT))                    // gameobject case
     {
-        for (uint16 index = 0; index < m_valuesCount; ++index)
+        for (uint16 index = 0; index < valuesCount; ++index)
         {
             if (updateMask->GetBit(index))
             {
@@ -732,7 +695,7 @@ void Object::_BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask 
     }
     else                                                    // other objects case (no special index checks)
     {
-        for (uint16 index = 0; index < m_valuesCount; ++index)
+        for (uint16 index = 0; index < valuesCount; ++index)
         {
             if (updateMask->GetBit(index))
             {
@@ -798,23 +761,31 @@ void Object::_LoadIntoDataField(const char* data, uint32 startOffset, uint32 cou
         m_uint32Values[startOffset + index] = atol(tokens[index]);
 }
 
-void Object::_SetUpdateBits(UpdateMask *updateMask, Player* /*target*/) const
+void Object::_SetUpdateBits(UpdateMask *updateMask, Player* target) const
 {
     uint32 *value = m_uint32Values;
     uint32 *mirror = m_uint32Values_mirror;
 
-    for (uint16 index = 0; index < m_valuesCount; ++index, ++value, ++mirror)
+    uint32 valuesCount = m_valuesCount;
+    if (GetTypeId() == TYPEID_PLAYER && target != this)
+        valuesCount = PLAYER_FIELD_INV_SLOT_HEAD;
+    
+    for (uint16 index = 0; index < valuesCount; ++index, ++value, ++mirror)
     {
         if (*mirror != *value)
             updateMask->SetBit(index);
     }
 }
 
-void Object::_SetCreateBits(UpdateMask *updateMask, Player* /*target*/) const
+void Object::_SetCreateBits(UpdateMask *updateMask, Player* target) const
 {
     uint32 *value = m_uint32Values;
 
-    for (uint16 index = 0; index < m_valuesCount; ++index, ++value)
+    uint32 valuesCount = m_valuesCount;
+    if (GetTypeId() == TYPEID_PLAYER && target != this)
+        valuesCount = PLAYER_FIELD_INV_SLOT_HEAD;
+    
+    for (uint16 index = 0; index < valuesCount; ++index, ++value)
     {
         if (*value)
             updateMask->SetBit(index);
