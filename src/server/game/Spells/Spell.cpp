@@ -6057,39 +6057,44 @@ SpellCastResult Spell::CheckItems()
 
         // check totem-item requirements (items presence in inventory)
         uint32 Totems = 2;
-        SpellTotemsEntry const* totems = m_spellInfo->GetSpellTotems();
-        for (int i = 0; i < 2 ; ++i)
+        if (SpellTotemsEntry const* totems = m_spellInfo->GetSpellTotems())
         {
-            if (totems->Totem[i] != 0)
+            for (int i = 0; i < 2 ; ++i)
             {
-                if (p_caster->HasItemCount(totems->Totem[i], 1))
+                if (totems->Totem[i] != 0)
                 {
+                    if (p_caster->HasItemCount(totems->Totem[i], 1))
+                    {
+                        Totems -= 1;
+                        continue;
+                    }
+                }
+                else
                     Totems -= 1;
-                    continue;
-                }
-            }else
-            Totems -= 1;
-        }
-        if (Totems != 0)
-            return SPELL_FAILED_TOTEMS;                         //0x7C
-
-        // Check items for TotemCategory  (items presence in inventory)
-        uint32 TotemCategory = 2;
-        for (int i= 0; i < 2; ++i)
-        {
-            if (totems->TotemCategory[i] != 0)
-            {
-                if (p_caster->HasItemTotemCategory(totems->TotemCategory[i]))
-                {
-                    TotemCategory -= 1;
-                    continue;
-                }
             }
-            else
-                TotemCategory -= 1;
+
+            if (Totems != 0)
+                return SPELL_FAILED_TOTEMS;                         //0x7C
+
+            // Check items for TotemCategory  (items presence in inventory)
+            uint32 TotemCategory = 2;
+            for (int i= 0; i < 2; ++i)
+            {
+                if (totems->TotemCategory[i] != 0)
+                {
+                    if (p_caster->HasItemTotemCategory(totems->TotemCategory[i]))
+                    {
+                        TotemCategory -= 1;
+                        continue;
+                    }
+                }
+                else
+                    TotemCategory -= 1;
+            }
+
+            if (TotemCategory != 0)
+                return SPELL_FAILED_TOTEM_CATEGORY;                 //0x7B
         }
-        if (TotemCategory != 0)
-            return SPELL_FAILED_TOTEM_CATEGORY;                 //0x7B
     }
 
     // special checks for spell effects
