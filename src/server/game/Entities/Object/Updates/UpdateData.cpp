@@ -53,7 +53,7 @@ bool UpdateData::BuildPacket(WorldPacket *packet)
 
     *packet << uint16(m_map);
 
-    *packet << uint32((!m_outOfRangeGUIDs.empty() ? m_blockCount + 1 : m_blockCount));
+    *packet << uint32(!m_outOfRangeGUIDs.empty() ? m_blockCount + 1 : m_blockCount);
 
     if (!m_outOfRangeGUIDs.empty())
     {
