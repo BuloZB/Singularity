@@ -969,7 +969,6 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
     SetByteValue(PLAYER_BYTES_3, 0, gender);
     SetByteValue(PLAYER_BYTES_3, 3, 0);                     // BattlefieldArenaFaction (0 or 1)
 
-    SetUInt32Value(0, 0);
     SetUInt32Value(PLAYER_GUILDRANK, 0);
     SetUInt32Value(PLAYER_GUILD_TIMESTAMP, 0);
 
@@ -1164,11 +1163,6 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
                     RemoveItem(INVENTORY_SLOT_BAG_0, i, true);
                     pItem = StoreItem(sDest, pItem, true);
                 }
-
-                // if  this is ammo then use it
-                msg = CanUseAmmo(pItem->GetEntry());
-                if (msg == EQUIP_ERR_OK)
-                    SetAmmo(pItem->GetEntry());
             }
         }
     }
@@ -7123,7 +7117,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, int32 honor, bool pvpt
             // count the number of playerkills in one day
             ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
             // and those in a lifetime
-            ApplyModUInt32Value(0, 1, true);
+            ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, 1, true);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS, pVictim->getClass());
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_RACE, pVictim->getRace());
@@ -7616,9 +7610,6 @@ void Player::_ApplyItemMods(Item *item, uint8 slot, bool apply)
         _ApplyWeaponDependentAuraMods(item, WeaponAttackType(attacktype), apply);
 
     _ApplyItemBonuses(proto, slot, apply);
-
-    if (slot == EQUIPMENT_SLOT_RANGED)
-        _ApplyAmmoBonuses();
 
     ApplyItemEquipSpell(item, apply);
     ApplyEnchantment(item, apply);
@@ -8421,9 +8412,6 @@ void Player::_RemoveAllItemMods()
                 _ApplyWeaponDependentAuraMods(m_items[i], WeaponAttackType(attacktype), false);
 
             _ApplyItemBonuses(proto, i, false);
-
-            if (i == EQUIPMENT_SLOT_RANGED)
-                _ApplyAmmoBonuses();
         }
     }
 
@@ -8450,9 +8438,6 @@ void Player::_ApplyAllItemMods()
                 _ApplyWeaponDependentAuraMods(m_items[i], WeaponAttackType(attacktype), true);
 
             _ApplyItemBonuses(proto, i, true);
-
-            if (i == EQUIPMENT_SLOT_RANGED)
-                _ApplyAmmoBonuses();
         }
     }
 
@@ -8495,63 +8480,6 @@ void Player::_ApplyAllLevelScaleItemMods(bool apply)
             _ApplyItemBonuses(proto, i, apply, true);
         }
     }
-}
-
-void Player::_ApplyAmmoBonuses()
-{
-    // check ammo
-    uint32 ammo_id = GetUInt32Value(0);
-    if (!ammo_id)
-        return;
-
-    float currentAmmoDPS;
-
-    ItemTemplate const *ammo_proto = sObjectMgr->GetItemTemplate(ammo_id);
-    if (!ammo_proto || ammo_proto->Class != ITEM_CLASS_PROJECTILE || !CheckAmmoCompatibility(ammo_proto))
-        currentAmmoDPS = 0.0f;
-    else
-        currentAmmoDPS = (ammo_proto->Damage[0].DamageMin + ammo_proto->Damage[0].DamageMax) / 2;
-
-    if (currentAmmoDPS == GetAmmoDPS())
-        return;
-
-    m_ammoDPS = currentAmmoDPS;
-
-    if (CanModifyStats())
-        UpdateDamagePhysical(RANGED_ATTACK);
-}
-
-bool Player::CheckAmmoCompatibility(const ItemTemplate *ammo_proto) const
-{
-    if (!ammo_proto)
-        return false;
-
-    // check ranged weapon
-    Item *weapon = GetWeaponForAttack(RANGED_ATTACK);
-    if (!weapon  || weapon->IsBroken())
-        return false;
-
-    ItemTemplate const* weapon_proto = weapon->GetTemplate();
-    if (!weapon_proto || weapon_proto->Class != ITEM_CLASS_WEAPON)
-        return false;
-
-    // check ammo ws. weapon compatibility
-    switch (weapon_proto->SubClass)
-    {
-        case ITEM_SUBCLASS_WEAPON_BOW:
-        case ITEM_SUBCLASS_WEAPON_CROSSBOW:
-            if (ammo_proto->SubClass != ITEM_SUBCLASS_ARROW)
-                return false;
-            break;
-        case ITEM_SUBCLASS_WEAPON_GUN:
-            if (ammo_proto->SubClass != ITEM_SUBCLASS_BULLET)
-                return false;
-            break;
-        default:
-            return false;
-    }
-
-    return true;
 }
 
 /*  If in a battleground a player dies, and an enemy removes the insignia, the player's bones is lootable
@@ -11771,71 +11699,6 @@ InventoryResult Player::CanUseItem(ItemTemplate const *pProto) const
         return EQUIP_ERR_OK;
     }
     return EQUIP_ERR_ITEM_NOT_FOUND;
-}
-
-InventoryResult Player::CanUseAmmo(uint32 item) const
-{
-    sLog->outDebug(LOG_FILTER_PLAYER_ITEMS, "STORAGE:  CanUseAmmo item = %u", item);
-    if (!isAlive())
-        return EQUIP_ERR_YOU_ARE_DEAD;
-    //if (isStunned())
-    //    return EQUIP_ERR_YOU_ARE_STUNNED;
-    ItemTemplate const *pProto = sObjectMgr->GetItemTemplate(item);
-    if (pProto)
-    {
-        if (pProto->InventoryType!= INVTYPE_AMMO)
-            return EQUIP_ERR_ONLY_AMMO_CAN_GO_HERE;
-
-        InventoryResult res = CanUseItem(pProto);
-        if (res != EQUIP_ERR_OK)
-            return res;
-
-        /*if (GetReputationMgr().GetReputation() < pProto->RequiredReputation)
-        return EQUIP_ERR_CANT_EQUIP_REPUTATION;
-        */
-
-        // Requires No Ammo
-        if (HasAura(46699))
-            return EQUIP_ERR_BAG_FULL6;
-
-        return EQUIP_ERR_OK;
-    }
-    return EQUIP_ERR_ITEM_NOT_FOUND;
-}
-
-void Player::SetAmmo(uint32 item)
-{
-    if (!item)
-        return;
-
-    // already set
-    if (GetUInt32Value(0) == item)
-        return;
-
-    // check ammo
-    if (item)
-    {
-        InventoryResult msg = CanUseAmmo(item);
-        if (msg != EQUIP_ERR_OK)
-        {
-            SendEquipError(msg, NULL, NULL, item);
-            return;
-        }
-    }
-
-    SetUInt32Value(0, item);
-
-    _ApplyAmmoBonuses();
-}
-
-void Player::RemoveAmmo()
-{
-    SetUInt32Value(0, 0);
-
-    m_ammoDPS = 0.0f;
-
-    if (CanModifyStats())
-        UpdateDamagePhysical(RANGED_ATTACK);
 }
 
 // Return stored item (if stored to stack, it can diff. from pItem). And pItem ca be deleted in this case.
@@ -16425,8 +16288,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     SetUInt32Value(PLAYER_FLAGS, fields[11].GetUInt32());
     SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, fields[48].GetUInt32());
 
-    SetUInt64Value(0, fields[47].GetUInt64());
-
     // set which actionbars the client has active - DO NOT REMOVE EVER AGAIN (can be changed though, if it does change fieldwise)
     SetByteValue(PLAYER_FIELD_BYTES, 2, fields[70].GetUInt8());
 
@@ -18228,11 +18089,11 @@ void Player::SaveToDB()
 
     ss << GetHonorPoints() << ", ";
 
-    ss << GetUInt32Value(0) << ", ";
+    ss << uint32(0) << ", ";
 
-    ss << GetUInt32Value(0) << ", ";
+    ss << uint32(0) << ", ";
 
-    ss << GetUInt32Value(0) << ", ";
+    ss << uint32(0) << ", ";
 
     ss << GetUInt16Value(PLAYER_FIELD_KILLS, 0) << ", ";
 
@@ -18279,7 +18140,7 @@ void Player::SaveToDB()
 
     ss << "', ";
 
-    ss << GetUInt32Value(0) << ", '";
+    ss << uint32(0) << ", '";
     for (uint32 i = 0; i < KNOWN_TITLES_SIZE*2; ++i)
         ss << GetUInt32Value(PLAYER__FIELD_KNOWN_TITLES + i) << " ";
 
