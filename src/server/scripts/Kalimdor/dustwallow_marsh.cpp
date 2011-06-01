@@ -711,9 +711,6 @@ class spell_ooze_zap : public SpellScriptLoader
 
             SpellCastResult CheckRequirement()
             {
-                if (!GetCaster()->HasAura(SpellMgr::CalculateSpellEffectAmount(GetSpellInfo(), EFFECT_1)))
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW; // This is actually correct
-
                 if (!GetTargetUnit())
                     return SPELL_FAILED_BAD_TARGETS;
 

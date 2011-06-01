@@ -2563,7 +2563,6 @@ void Spell::SelectEffectTargets(uint32 i, uint32 cur)
                                 {
                                     if (m_caster->GetTypeId() == TYPEID_PLAYER)
                                         m_caster->ToPlayer()->RemoveSpellCooldown(m_spellInfo->Id, true);
-                                    SendCastResult(SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW);
                                     finish(false);
                                 }
                             }
@@ -5275,10 +5274,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             }
             case SPELL_EFFECT_LEAP_BACK:
             {
-                // Spell 781 (Disengage) requires player to be in combat
-                if (m_caster->GetTypeId() == TYPEID_PLAYER && m_spellInfo->Id == 781 && !m_caster->isInCombat())
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
-
                 Unit* target = m_targets.getUnitTarget();
                 if (m_caster == target && m_caster->HasUnitState(UNIT_STAT_ROOT))
                 {
@@ -5807,11 +5802,6 @@ SpellCastResult Spell::CheckItems()
         ItemTemplate const *proto = m_CastItem->GetTemplate();
         if (!proto)
             return SPELL_FAILED_ITEM_NOT_READY;
-
-        for (int i = 0; i < MAX_ITEM_SPELLS; ++i)
-            if (proto->Spells[i].SpellCharges)
-                if (m_CastItem->GetSpellCharges(i) == 0)
-                    return SPELL_FAILED_NO_CHARGES_REMAIN;
 
         // consumable cast item checks
         if (proto->Class == ITEM_CLASS_CONSUMABLE && m_targets.getUnitTarget())
