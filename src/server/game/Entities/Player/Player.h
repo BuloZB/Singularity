@@ -1773,10 +1773,19 @@ class Player : public Unit, public GridObject<Player>
             stmt->setUInt64(1, GetGUID());
             CharacterDatabase.Execute(stmt);
         }
+
+        uint32 GetGuildId() 
+        {
+            PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_GET_GUILD_ID);
+            stmt->setUInt64(0, GetGUIDLow());
+            PreparedQueryResult result = CharacterDatabase.Query(stmt);
+            return result ? (*result)[0].GetUInt32() : 0;
+        }
+
         void SetRank(uint8 rankId) { SetUInt32Value(PLAYER_GUILDRANK, rankId); }
         uint8 GetRank() { return uint8(GetUInt32Value(PLAYER_GUILDRANK)); }
         void SetGuildIdInvited(uint32 GuildId) { m_GuildIdInvited = GuildId; }
-        uint32 GetGuildId() { return GetUInt32Value(0);  }
+        
         static uint32 GetGuildIdFromDB(uint64 guid);
         static uint8 GetRankFromDB(uint64 guid);
         int GetGuildIdInvited() { return m_GuildIdInvited; }
