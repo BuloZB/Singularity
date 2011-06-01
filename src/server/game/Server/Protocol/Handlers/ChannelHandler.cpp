@@ -45,6 +45,7 @@ void WorldSession::HandleJoinChannel(WorldPacket& recvPacket)
     }
 
     recvPacket >> unknown1 >> unknown2;
+    recvPacket >> pass;
     recvPacket >> channelname;
 
     if (channelname.empty())
