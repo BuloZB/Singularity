@@ -1607,8 +1607,8 @@ class Player : public Unit, public GridObject<Player>
         void SetReputation(uint32 factionentry, uint32 value);
         uint32 GetReputation(uint32 factionentry);
         std::string GetGuildName();
-        uint32 GetFreeTalentPoints() const { return 0; }
-        void SetFreeTalentPoints(uint32 points);
+        uint32 GetFreeTalentPoints() const { return m_freeTalentPoints; }
+        void SetFreeTalentPoints(uint32 points) { m_freeTalentPoints = points; }
         bool resetTalents(bool no_cost = false);
         uint32 resetTalentsCost() const;
         void InitTalentForLevel();
@@ -2577,6 +2577,8 @@ class Player : public Unit, public GridObject<Player>
 
         uint8 m_activeSpec;
         uint8 m_specsCount;
+
+        uint32 m_freeTalentPoints;
 
         uint32 m_Glyphs[MAX_TALENT_SPECS][MAX_GLYPH_SLOT_INDEX];
 

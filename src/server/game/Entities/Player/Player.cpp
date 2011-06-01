@@ -3157,11 +3157,13 @@ void Player::InitStatsForLevel(bool reapplyMods)
     SetFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE, 0.0f);
 
     SetInt32Value(UNIT_FIELD_ATTACK_POWER,            0);
-    SetInt32Value(0,       0);
-    SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER, 0.0f);
+    SetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_POS,       0);
+    SetInt32Value(UNIT_FIELD_ATTACK_POWER_MOD_NEG,       0);
+    SetFloatValue(UNIT_FIELD_ATTACK_POWER_MULTIPLIER,0.0f);
     SetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER,     0);
-    SetInt32Value(0, 0);
-    SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER, 0.0f);
+    SetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_POS,0);
+    SetInt32Value(UNIT_FIELD_RANGED_ATTACK_POWER_MOD_NEG,0);
+    SetFloatValue(UNIT_FIELD_RANGED_ATTACK_POWER_MULTIPLIER,0.0f);
 
     // Base crit values (will be recalculated in UpdateAllStats() at loading and in _ApplyAllStatBonuses() at reset
     SetFloatValue(PLAYER_CRIT_PERCENTAGE, 0.0f);
@@ -4413,12 +4415,6 @@ bool Player::resetTalents(bool no_cost)
     */
 
     return true;
-}
-
-void Player::SetFreeTalentPoints(uint32 points)
-{
-    sScriptMgr->OnPlayerFreeTalentPointsChanged(this, points);
-    SetUInt32Value(0, points);
 }
 
 Mail* Player::GetMail(uint32 id)
@@ -7015,22 +7011,6 @@ void Player::UpdateHonorFields()
         time_t yesterday = today - DAY;
 
         uint16 kills_today = PAIR32_LOPART(GetUInt32Value(PLAYER_FIELD_KILLS));
-
-        // update yesterday's contribution
-        if (m_lastHonorUpdateTime >= yesterday)
-        {
-            SetUInt32Value(0, GetUInt32Value(0));
-
-            // this is the first update today, reset today's contribution
-            SetUInt32Value(0, 0);
-            SetUInt32Value(PLAYER_FIELD_KILLS, MAKE_PAIR32(0, kills_today));
-        }
-        else
-        {
-            // no honor/kills yesterday or today, reset
-            SetUInt32Value(0, 0);
-            SetUInt32Value(PLAYER_FIELD_KILLS, 0);
-        }
     }
 
     m_lastHonorUpdateTime = now;
@@ -7161,8 +7141,6 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, int32 honor, bool pvpt
     // add honor points
     ModifyHonorPoints(honor);
 
-    ApplyModUInt32Value(0, honor, true);
-
     if (InBattleground() && honor > 0)
     {
         if (Battleground *bg = GetBattleground())
@@ -7200,7 +7178,7 @@ void Player::SetHonorPoints(uint32 value)
 {
     if (value > sWorld->getIntConfig(CONFIG_MAX_HONOR_POINTS))
         value = sWorld->getIntConfig(CONFIG_MAX_HONOR_POINTS);
-    SetUInt32Value(0, value);
+    /*SetUInt32Value(0, value);*/
     if (value)
         AddKnownCurrency(ITEM_HONOR_POINTS_ID);
 }
@@ -7209,7 +7187,7 @@ void Player::SetArenaPoints(uint32 value)
 {
     if (value > sWorld->getIntConfig(CONFIG_MAX_ARENA_POINTS))
         value = sWorld->getIntConfig(CONFIG_MAX_ARENA_POINTS);
-    SetUInt32Value(0, value);
+    /*SetUInt32Value(0, value);*/
     if (value)
         AddKnownCurrency(ITEM_ARENA_POINTS_ID);
 }
@@ -16358,9 +16336,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     }
 
     SetHonorPoints(fields[40].GetUInt32());
-    SetUInt32Value(0, fields[41].GetUInt32());
-    SetUInt32Value(0, fields[42].GetUInt32());
-    SetUInt32Value(0, fields[43].GetUInt32());
+    //SetUInt32Value(0, fields[41].GetUInt32());
+    //SetUInt32Value(0, fields[42].GetUInt32());
+    //SetUInt32Value(0, fields[43].GetUInt32());
     SetUInt16Value(PLAYER_FIELD_KILLS, 0, fields[44].GetUInt16());
     SetUInt16Value(PLAYER_FIELD_KILLS, 1, fields[45].GetUInt16());
 
@@ -18093,7 +18071,7 @@ void Player::SaveToDB()
 
     ss << uint32(0) << ", ";
 
-    ss << uint32(0) << ", ";
+    ss << GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS) << ", ";
 
     ss << GetUInt16Value(PLAYER_FIELD_KILLS, 0) << ", ";
 
@@ -18101,7 +18079,7 @@ void Player::SaveToDB()
 
     ss << GetUInt32Value(PLAYER_CHOSEN_TITLE) << ", ";
     //currencies
-    ss << GetUInt64Value(0) << ", ";
+    ss << uint32(0) << ", ";
 
     ss << GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX) << ", ";
     //drunk
