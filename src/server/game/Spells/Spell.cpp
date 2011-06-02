@@ -6348,7 +6348,7 @@ void Spell::UpdatePointers()
 
 bool Spell::CheckTargetCreatureType(Unit* target) const
 {
-    uint32 spellCreatureTargetMask = m_spellInfo->GetSpellTargetRestrictions()->TargetCreatureType;
+    uint32 spellCreatureTargetMask = m_spellInfo->GetExcludeTargetAuraSpell();
 
     // Curse of Doom & Exorcism: not find another way to fix spell target check :/
     if (m_spellInfo->GetSpellFamilyName() == SPELLFAMILY_WARLOCK && m_spellInfo->GetCategory() == 1179)
