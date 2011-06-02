@@ -61,7 +61,7 @@ enum Opcodes
     SMSG_GAMETIME_UPDATE                             = 0x0F1EC, // 4.0.6a 13623
     CMSG_GAMETIME_SET                                = 0x020C4, // 4.0.6a 13623
     SMSG_GAMETIME_SET                                = 0x07888, // 4.0.6a 13623
-    CMSG_GAMESPEED_SET                               = 0x02084, // 4.0.6a 13623
+    CMSG_GAMESPEED_SET                               = 0x10004, // 
     SMSG_GAMESPEED_SET                               = 0x03EC0, // 4.0.6a 13623
     CMSG_SERVERTIME                                  = 0x10005, //
     SMSG_SERVERTIME                                  = 0x023A4, // 4.0.6a 13623
