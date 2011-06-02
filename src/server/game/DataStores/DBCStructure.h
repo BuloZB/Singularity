@@ -64,7 +64,7 @@ struct AchievementCategoryEntry
 {
     uint32    ID;                                           // 0
     uint32    parentCategory;                               // 1 -1 for main category
-    //char *name;                                           // 2
+    //DBCString name;                                           // 2
     //uint32    sortOrder;                                  // 3
 };
 
@@ -601,7 +601,7 @@ struct AuctionHouseEntry
     uint32    faction;                                      // 1 id of faction.dbc for player factions associated with city
     uint32    depositPercent;                               // 2 1/3 from real
     uint32    cutPercent;                                   // 3
-    //char*     name;                                       // 4
+    //DBCString     name;                                       // 4
 };
 
 struct BankBagSlotPricesEntry
@@ -614,7 +614,7 @@ struct BarberShopStyleEntry
 {
     uint32  Id;                                             // 0
     uint32  type;                                           // 1 value 0 -> hair, value 2 -> facialhair
-    //char*   name;                                         // 2        m_DisplayName_lang
+    //DBCString   name;                                         // 2        m_DisplayName_lang
     //uint32  unk_name;                                     // 3        m_Description_lang
     //float   CostMultiplier;                               // 4        m_Cost_Modifier
     uint32  race;                                           // 5        m_race
@@ -671,7 +671,7 @@ struct ChatChannelsEntry
     uint32  flags;                                          // 1
     //uint32                                                // 2        m_factionGroup
     DBCString pattern;                                      // 3        m_name_lang
-    //char*       name;                                     // 4        m_shortcut_lang
+    //DBCString       name;                                     // 4        m_shortcut_lang
 };
 
 struct ChrClassesEntry
@@ -680,9 +680,9 @@ struct ChrClassesEntry
     uint32  powerType;                                      // 1        m_DisplayPower
                                                             // 2        m_petNameToken
     DBCString name;                                         // 3        m_name_lang
-    //char*       nameFemale;                               // 4        m_name_female_lang
-    //char*       nameNeutralGender;                        // 5        m_name_male_lang
-    //char*       capitalizedName                           // 6,       m_filename
+    //DBCString       nameFemale;                               // 4        m_name_female_lang
+    //DBCString       nameNeutralGender;                        // 5        m_name_male_lang
+    //DBCString       capitalizedName                           // 6,       m_filename
     uint32  spellfamily;                                    // 7        m_spellClassSet
     //uint32 flags2;                                        // 8        m_flags (0x08 HasRelicSlot)
     uint32  CinematicSequence;                              // 9        m_cinematicSequenceID
@@ -706,8 +706,8 @@ struct ChrRacesEntry
     uint32      CinematicSequence;                          // 12 id from CinematicSequences.dbc
     //uint32    unk_322;                                    // 13       m_alliance (0 alliance, 1 horde, 2 not available?)
     DBCString name;                                         // 14       m_name_lang used for DBC language detection/selection
-    //char*       nameFemale;                               // 15       m_name_female_lang
-    //char*       nameNeutralGender;                        // 16       m_name_male_lang
+    //DBCString       nameFemale;                               // 15       m_name_female_lang
+    //DBCString       nameNeutralGender;                        // 16       m_name_male_lang
                                                             // 17-18    m_facialHairCustomization[2]
                                                             // 19       m_hairCustomization
     uint32      expansion;                                  // 20       m_required_expansion
@@ -720,7 +720,7 @@ struct ChrRacesEntry
 struct CinematicCameraEntry
 {
     uint32      id;                                         // 0 index
-    char*       filename;                                   // 1
+    DBCString       filename;                                   // 1
     uint32      soundid;                                    // 2 in SoundEntries.dbc or 0
     float       start_x;                                    // 3
     float       start_y;                                    // 4
@@ -783,7 +783,7 @@ struct CreatureSpellDataEntry
 struct CreatureTypeEntry
 {
     uint32    ID;                                           // 0        m_ID
-    //char*   Name;                                         // 1        m_name_lang
+    //DBCString   Name;                                         // 1        m_name_lang
     //uint32    no_expirience;                              // 2        m_flags no exp? critters, non-combat pets, gas cloud.
 };
 
@@ -792,7 +792,7 @@ struct CurrencyCategoryEntry
 {
     uint32    ID;                                           // 0
     uint32    Unk1;                                         // 1        0 for known categories and 3 for unknown one (3.0.9)
-    char*   Name[16];                                       // 2-17     name
+    DBCString   Name[16];                                       // 2-17     name
     //                                                      // 18       string flags
 };
 */
@@ -809,7 +809,7 @@ struct CurrencyTypesEntry
     //uint32                                                // 7
     //uint32                                                // 8
     //uint32                                                // 9
-    //char* description;                                    // 10
+    //DBCString description;                                    // 10
 };
 
 struct DestructibleModelDataEntry
@@ -867,7 +867,7 @@ struct DurabilityQualityEntry
 struct EmotesEntry
 {
     uint32  Id;                                             // 0
-    //char*   Name;                                         // 1, internal name
+    //DBCString   Name;                                         // 1, internal name
     //uint32  AnimationId;                                  // 2, ref to animationData
     uint32  Flags;                                          // 3, bitmask, may be unit_flags
     uint32  EmoteType;                                      // 4, Can be 0, 1 or 2 (determine how emote are shown)
@@ -895,7 +895,7 @@ struct FactionEntry
     uint32      spilloverMaxRankIn;                         // 21       The highest rank the faction will profit from incoming spillover
     //uint32    spilloverRank_unk;                          // 22       It does not seem to be the max standing at which a faction outputs spillover ...so no idea
     DBCString name;                                         // 23       m_name_lang
-    //char*     description;                                // 24       m_description_lang
+    //DBCString     description;                                // 24       m_description_lang
     //uint32                                                // 25
 };
 
@@ -1060,7 +1060,7 @@ struct GtRegenMPPerSptEntry
 struct HolidayDescriptionsEntry
 {
     uint32 ID;                                              // 0, this is NOT holiday id
-    //char*     name[16]                                    // 1-16 m_name_lang
+    //DBCString     name[16]                                    // 1-16 m_name_lang
                                                             // 17 name flags
 };
 */
@@ -1069,7 +1069,7 @@ struct HolidayDescriptionsEntry
 struct HolidayNamesEntry
 {
     uint32 ID;                                              // 0, this is NOT holiday id
-    //char*     name[16]                                    // 1-16 m_name_lang
+    //DBCString     name[16]                                    // 1-16 m_name_lang
     // 17 name flags
 };
 */
@@ -1127,7 +1127,7 @@ struct ItemArmorTotalEntry
 struct ItemBagFamilyEntry
 {
     uint32   ID;                                            // 0
-    //char*     name;                                       // 1        m_name_lang
+    //DBCString     name;                                       // 1        m_name_lang
 };
 
 struct ItemDisplayInfoEntry
@@ -1189,7 +1189,7 @@ struct ItemExtendedCostEntry
 struct ItemLimitCategoryEntry
 {
     uint32      ID;                                         // 0 Id
-    //char*     name;                                       // 1        m_name_lang
+    //DBCString     name;                                       // 1        m_name_lang
     uint32      maxCount;                                   // 2,       m_quantity max allowed equipped as item or in gem slot
     uint32      mode;                                       // 3,       m_flags 0 = have, 1 = equip (enum ItemLimitCategoryMode)
 };
@@ -1231,7 +1231,7 @@ struct ItemSetEntry
 struct LFGDungeonEntry
 {
     uint32  ID;                                             // 0
-    //char*   name[16];                                     // 1-17 Name lang
+    //DBCString   name[16];                                     // 1-17 Name lang
     uint32  minlevel;                                       // 18
     uint32  maxlevel;                                       // 19
     uint32  reclevel;                                       // 20
@@ -1242,11 +1242,11 @@ struct LFGDungeonEntry
     //uint32  unk;                                          // 25
     uint32  type;                                           // 26
     //uint32  unk2;                                         // 27
-    //char*   unk3;                                         // 28
+    //DBCString   unk3;                                         // 28
     uint32  expansion;                                      // 29
     //uint32  unk4;                                         // 30
     uint32  grouptype;                                      // 31
-    //char*   desc[16];                                     // 32-47 Description
+    //DBCString   desc;                                     // 32-47 Description
     // Helpers
     uint32 Entry() const { return ID + (type << 24); }
 };
@@ -1265,22 +1265,22 @@ struct LockEntry
 struct MailTemplateEntry
 {
     uint32      ID;                                         // 0
-    //char*       subject;                                  // 1        m_subject_lang
+    //DBCString       subject;                                  // 1        m_subject_lang
     DBCString content;                                      // 2        m_body_lang
 };
 
 struct MapEntry
 {
     uint32  MapID;                                          // 0
-    //char*       internalname;                             // 1 unused
+    //DBCString       internalname;                             // 1 unused
     uint32  map_type;                                       // 2
     //uint32 unk_330;                                       // 3
     //uint32 unk4;                                          // 4 4.0.1
     //uint32 isPvP;                                         // 5        m_PVP 0 or 1 for battlegrounds (not arenas)
     DBCString name;                                         // 6        m_MapName_lang
     uint32  linked_zone;                                    // 7        m_areaTableID
-    //char*     hordeIntro;                                 // 8        m_MapDescription0_lang
-    //char*     allianceIntro;                              // 9        m_MapDescription1_lang
+    //DBCString     hordeIntro;                                 // 8        m_MapDescription0_lang
+    //DBCString     allianceIntro;                              // 9        m_MapDescription1_lang
     uint32  multimap_id;                                    // 10       m_LoadingScreenID (LoadingScreens.dbc)
     //float   BattlefieldMapIconScale;                      // 11       m_minimapIconScale
     int32   entrance_map;                                   // 12       m_corpseMapID map_id of entrance map in ghost mode (continent always and in most cases = normal entrance)
@@ -1327,13 +1327,13 @@ struct MapDifficultyEntry
     DBCString   areaTriggerText;                          // 3        m_message_lang (text showed when transfer to map failed)
     uint32      resetTime;                                  // 4,       m_raidDuration in secs, 0 if no fixed reset time
     uint32      maxPlayers;                                 // 5,       m_maxPlayers some heroic versions have 0 when expected same amount as in normal version
-    //char*       difficultyString;                         // 6        m_difficultystring
+    //DBCString       difficultyString;                         // 6        m_difficultystring
 };
 
 struct MovieEntry
 {
     uint32      Id;                                         // 0 index
-    //char*       filename;                                 // 1
+    //DBCString       filename;                                 // 1
     //uint32      unk1;                                     // 2        m_volume
     //uint32      unk2;                                     // 3 4.0.0
 };
@@ -1364,7 +1364,7 @@ struct PvPDifficultyEntry
 struct QuestSortEntry
 {
     uint32      id;                                         // 0        m_ID
-    //char*       name;                                     // 1        m_SortName_lang
+    //DBCString       name;                                     // 1        m_SortName_lang
 };
 
 struct QuestXPEntry
@@ -1488,12 +1488,13 @@ struct ScalingStatValuesEntry
 
 //struct SkillLineCategoryEntry{
 //    uint32    id;                                         // 0      m_ID
-//    char*     name[16];                                   // 1-17   m_name_lang
+//    DBCString     name[16];                                   // 1-17   m_name_lang
 //                                                          // 18 string flag
 //    uint32    displayOrder;                               // 19     m_sortIndex
 //};
 
-//struct SkillRaceClassInfoEntry{
+//struct SkillRaceClassInfoEntry
+//{
 //    uint32    id;                                         // 0      m_ID
 //    uint32    skillId;                                    // 1      m_skillID
 //    uint32    raceMask;                                   // 2      m_raceMask
@@ -1504,7 +1505,8 @@ struct ScalingStatValuesEntry
 //    uint32    skillCostID;                                // 7      m_skillCostIndex
 //};
 
-//struct SkillTiersEntry{
+//struct SkillTiersEntry
+//{
 //    uint32    id;                                         // 0      m_ID
 //    uint32    skillValue[16];                             // 1-17   m_cost
 //    uint32    maxSkillValue[16];                          // 18-32  m_valueMax
@@ -1516,9 +1518,9 @@ struct SkillLineEntry
     int32     categoryId;                                   // 1        m_categoryID
     //uint32    skillCostID;                                // 2        m_skillCostsID
     DBCString name;                                         // 3        m_displayName_lang
-    //char*     description;                                // 4        m_description_lang
+    //DBCString     description;                                // 4        m_description_lang
     uint32    spellIcon;                                    // 5        m_spellIconID
-    //char*     alternateVerb;                              // 6        m_alternateVerb_lang
+    //DBCString     alternateVerb;                              // 6        m_alternateVerb_lang
     uint32    canLink;                                      // 7        m_canLink (prof. with recipes)
 };
 
@@ -1544,10 +1546,10 @@ struct SoundEntriesEntry
 {
     uint32    Id;                                           // 0        m_ID
     //uint32    Type;                                       // 1        m_soundType
-    //char*     InternalName;                               // 2        m_name
-    //char*     FileName[10];                               // 3-12     m_File[10]
+    //DBCString     InternalName;                               // 2        m_name
+    //DBCString     FileName[10];                               // 3-12     m_File[10]
     //uint32    Unk13[10];                                  // 13-22    m_Freq[10]
-    //char*     Path;                                       // 23       m_DirectoryBase
+    //DBCString     Path;                                       // 23       m_DirectoryBase
                                                             // 24       m_volumeFloat
                                                             // 25       m_flags
                                                             // 26       m_minDistance
@@ -1619,7 +1621,7 @@ struct SpellClassOptionsEntry
     //uint32    modalNextSpell;                             // 1       m_modalNextSpell not used
     flag96    SpellFamilyFlags;                             // 2-4
     uint32    SpellFamilyName;                              // 5       m_spellClassSet
-    //char*   Description;                                  // 6 4.0.0
+    //DBCString   Description;                                  // 6 4.0.0
 };
 
 // SpellCooldowns.dbc
@@ -1931,7 +1933,7 @@ struct SpellDifficultyEntry
 struct SpellFocusObjectEntry
 {
     uint32    ID;                                           // 0
-    //char*     Name;                                       // 1        m_name_lang
+    //DBCString     Name;                                       // 1        m_name_lang
 };
 
 struct SpellRadiusEntry
@@ -1950,8 +1952,8 @@ struct SpellRangeEntry
     float     maxRangeHostile;
     float     maxRangeFriend;                               //friend means unattackable unit here
     uint32    type;
-    //char*   Name;                                         // 6-21     m_displayName_lang
-    //char*   ShortName;                                    // 23-38    m_displayNameShort_lang
+    //DBCString   Name;                                         // 6-21     m_displayName_lang
+    //DBCString   ShortName;                                    // 23-38    m_displayNameShort_lang
 };
 
 struct SpellRuneCostEntry
@@ -2053,13 +2055,13 @@ struct TalentEntry
 struct TalentTabEntry
 {
     uint32  TalentTabID;                                    // 0
-    //char* name;                                           // 1        m_name_lang
+    //DBCString name;                                           // 1        m_name_lang
     //unit32  spellicon;                                    // 2        m_spellIconID
     uint32  ClassMask;                                      // 3        m_classMask
     uint32  petTalentMask;                                  // 4        m_petTalentMask
     uint32  tabpage;                                        // 5        m_orderIndex
-    //char* internalname;                                   // 6        m_backgroundFile
-    //char* description;                                    // 7
+    //DBCString internalname;                                   // 6        m_backgroundFile
+    //DBCString description;                                    // 7
     //uint32 rolesMask;                                     // 8 4.0.0
     //uint32 spellIds[2];                                   // 9-10 passive mastery bonus spells?
 };
@@ -2101,7 +2103,7 @@ struct TaxiPathNodeEntry
 struct TotemCategoryEntry
 {
     uint32    ID;                                           // 0
-    //char*   name;                                         // 1        m_name_lang
+    //DBCString   name;                                         // 1        m_name_lang
     uint32    categoryType;                                 // 2        m_totemCategoryType (one for specialization)
     uint32    categoryMask;                                 // 3        m_totemCategoryMask (compatibility mask for same type: different for totems, compatible from high to low for rods)
 };
@@ -2229,7 +2231,7 @@ struct WorldMapAreaEntry
     //uint32  ID;                                           // 0
     uint32  map_id;                                         // 1
     uint32  area_id;                                        // 2 index (continent 0 areas ignored)
-    //char* internal_name                                   // 3
+    //DBCString internal_name                                   // 3
     float   y1;                                             // 4
     float   y2;                                             // 5
     float   x1;                                             // 6
@@ -2246,7 +2248,7 @@ struct WorldMapOverlayEntry
     uint32    ID;                                           // 0
     //uint32    worldMapAreaId;                             // 1 idx in WorldMapArea.dbc
     uint32    areatableID[MAX_WORLD_MAP_OVERLAY_AREA_IDX];  // 2-5
-    //char* internal_name                                   // 6        m_textureName
+    //DBCString internal_name                                   // 6        m_textureName
                                                             // 7        m_textureWidth
                                                             // 8        m_textureHeight
                                                             // 9        m_offsetX
@@ -2264,7 +2266,7 @@ struct WorldSafeLocsEntry
     float     x;                                            // 2
     float     y;                                            // 3
     float     z;                                            // 4
-    //char*   name;                                         // 5        m_AreaName_lang
+    //DBCString   name;                                         // 5        m_AreaName_lang
 };
 
 // GCC have alternative #pragma pack() syntax and old gcc version not support pack(pop), also any gcc version not support it at some platform
