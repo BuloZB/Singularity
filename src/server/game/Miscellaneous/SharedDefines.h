@@ -168,17 +168,17 @@ enum Stats
 
 enum Powers
 {
-    POWER_MANA                          = 1,
-    POWER_RAGE                          = 2,
-    POWER_FOCUS                         = 3,
-    POWER_ENERGY                        = 4,
-    POWER_HAPPINESS                     = 5,
-    POWER_RUNE                          = 6,
-    POWER_RUNIC_POWER                   = 7,
-    POWER_SOUL_SHARDS                   = 8,
-    POWER_ECLIPSE                       = 9,
-    POWER_HOLY_POWER                    = 10,
-    MAX_POWERS                          = 11,
+    POWER_MANA                          = 0,
+    POWER_RAGE                          = 1,
+    POWER_FOCUS                         = 2,
+    POWER_ENERGY                        = 3,
+    POWER_HAPPINESS                     = 4,
+    POWER_RUNE                          = 5,
+    POWER_RUNIC_POWER                   = 6,
+    POWER_SOUL_SHARDS                   = 7,
+    POWER_ECLIPSE                       = 8,
+    POWER_HOLY_POWER                    = 9,
+    MAX_POWERS                          = 11,     // checks are < not <=
     POWER_ALL                           = 127,    // default for class?
     POWER_HEALTH                        = 0xFFFFFFFE    // (-2 as signed value)
 };
