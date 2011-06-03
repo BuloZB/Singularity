@@ -792,31 +792,10 @@ void AddEasternKingdomsScripts()
     AddSC_boss_wushoolay();
     AddSC_instance_zulgurub();
 
-    //AddSC_alterac_mountains();
-    AddSC_arathi_highlands();
-    AddSC_blasted_lands();
-    AddSC_boss_kruul();
-    AddSC_burning_steppes();
-    AddSC_duskwood();
-    AddSC_eastern_plaguelands();
     AddSC_eversong_woods();
     AddSC_ghostlands();
-    AddSC_hinterlands();
-    AddSC_ironforge();
     AddSC_isle_of_queldanas();
-    AddSC_loch_modan();
-    AddSC_redridge_mountains();
-    AddSC_searing_gorge();
-    AddSC_silvermoon_city();
-    AddSC_silverpine_forest();
-    AddSC_stormwind_city();
-    AddSC_stranglethorn_vale();
-    AddSC_swamp_of_sorrows();
-    AddSC_tirisfal_glades();
-    AddSC_undercity();
-    AddSC_western_plaguelands();
-    AddSC_westfall();
-    AddSC_wetlands();
+
 #endif
 }
 
@@ -884,29 +863,10 @@ void AddKalimdorScripts()
     AddSC_zulfarrak();                      //Zul'Farrak generic
     AddSC_instance_zulfarrak();             //Zul'Farrak instance script
 
-    AddSC_ashenvale();
-    AddSC_azshara();
+   
     AddSC_azuremyst_isle();
     AddSC_bloodmyst_isle();
-    AddSC_boss_azuregos();
-    AddSC_darkshore();
-    AddSC_desolace();
-    AddSC_durotar();
-    AddSC_dustwallow_marsh();
-    AddSC_felwood();
-    AddSC_feralas();
-    AddSC_moonglade();
-    AddSC_mulgore();
-    AddSC_orgrimmar();
-    AddSC_silithus();
-    AddSC_stonetalon_mountains();
-    AddSC_tanaris();
-    AddSC_teldrassil();
-    AddSC_the_barrens();
-    AddSC_thousand_needles();
-    AddSC_thunder_bluff();
-    AddSC_ungoro_crater();
-    AddSC_winterspring();
+  
 #endif
 }
 
