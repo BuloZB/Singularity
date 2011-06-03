@@ -4689,7 +4689,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     if (target)
     {
         // target state requirements (not allowed state), apply to self also
-        if (!m_IsTriggeredSpell && m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot && target->HasAuraState(AuraState(m_spellInfo->GetSpellAuraRestrictions()->TargetAuraStateNot), m_spellInfo, m_caster))
+        if (!m_IsTriggeredSpell && m_spellInfo->GetTargetAuraStateNot() && target->HasAuraState(AuraState(m_spellInfo->GetTargetAuraStateNot()), m_spellInfo, m_caster))
             return SPELL_FAILED_TARGET_AURASTATE;
 
         if (m_spellInfo->GetTargetAuraSpell())

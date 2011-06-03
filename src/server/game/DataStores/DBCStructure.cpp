@@ -427,6 +427,12 @@ uint32 SpellEntry::GetExcludeCasterAuraSpell() const
     SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
     return aura ? aura->excludeCasterAuraSpell : 0;
 }
+
+uint32 SpellEntry::GetTargetAuraStateNot() const
+{
+    SpellAuraRestrictionsEntry const* aura = GetSpellAuraRestrictions();
+    return aura ? aura->TargetAuraStateNot : 0;
+}
 //SpellCastingRequirementsEntry
 uint32 SpellEntry::GetRequiresSpellFocus() const
 {

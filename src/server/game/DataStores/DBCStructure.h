@@ -1905,6 +1905,7 @@ struct SpellEntry
     uint32 GetCasterAuraStateNot() const;
     uint32 GetExcludeTargetAuraSpell() const;
     uint32 GetExcludeCasterAuraSpell() const;
+    uint32 GetTargetAuraStateNot() const;
 
     private:
         // prevent creating custom entries (copy data from original in fact)
